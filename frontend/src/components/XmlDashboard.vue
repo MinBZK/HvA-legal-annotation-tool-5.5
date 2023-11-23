@@ -92,6 +92,10 @@
 <template>
   <v-container fluid>
     <v-row>
+      <v-dialog width="500" v-model="isVisible">
+        <AnnotatieDialog :isVisible="isVisible" @close="isVisible=false">
+        </AnnotatieDialog>
+      </v-dialog>
       <v-col col="6">
         <v-card>
           <v-card-title>Load XML File</v-card-title>
@@ -105,14 +109,15 @@
               color="primary"
               @click="loadXML"
               :disabled="!xmlFile"
-            >Load XML</v-btn>
+            >Load XML
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0">
+          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
             <v-scroll-area>
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
@@ -127,7 +132,8 @@
           <v-card-text v-else>
             <v-alert
               type="info"
-            >No XML file loaded.</v-alert>
+            >No XML file loaded.
+            </v-alert>
           </v-card-text>
         </v-card>
       </v-col>
@@ -159,13 +165,16 @@
 
 <script>
 import vkbeautify from "vkbeautify";
+import AnnotatieDialog from "@/components/Annotatie";
 
 export default {
+  components: {AnnotatieDialog},
   data() {
     return {
+      isVisible: false,
       xmlFile: null,
       xmlContent: null,
-      parsedData: { articles: [] },
+      parsedData: {articles: []},
     };
   },
   computed: {
@@ -177,6 +186,13 @@ export default {
     },
   },
   methods: {
+    handleSelection() {
+      const selectedText = window.getSelection().toString().trim();
+      if (selectedText) {
+        this.isVisible = true;
+      }
+    },
+
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
     },
@@ -196,7 +212,7 @@ export default {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
       const articles = xmlDoc.querySelectorAll('artikel');
-      const parsedData = { articles: [] };
+      const parsedData = {articles: []};
 
       articles.forEach((article) => {
         const articleNumberNode = article.querySelector('kop');
@@ -211,7 +227,7 @@ export default {
             paragraphs.push(paragraphText);
           });
 
-          parsedData.articles.push({ number: articleNumber, title: articleTitle, paragraphs });
+          parsedData.articles.push({number: articleNumber, title: articleTitle, paragraphs});
         }
       });
 
