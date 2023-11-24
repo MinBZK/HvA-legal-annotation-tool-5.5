@@ -92,8 +92,9 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-dialog width="500" v-model="isVisible">
-        <AnnotatieDialog :isVisible="isVisible" @close="isVisible=false">
+      <v-dialog max-width="50%" max-height="80vh" v-model="isVisible" >
+        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
+                         @close="isVisible=false">
         </AnnotatieDialog>
       </v-dialog>
       <v-col col="6">
@@ -166,6 +167,8 @@
 <script>
 import vkbeautify from "vkbeautify";
 import AnnotatieDialog from "@/components/Annotatie";
+import {store} from "@/store/app";
+
 
 export default {
   components: {AnnotatieDialog},
@@ -175,6 +178,7 @@ export default {
       xmlFile: null,
       xmlContent: null,
       parsedData: {articles: []},
+      selectedText: "",
     };
   },
   computed: {
@@ -187,8 +191,8 @@ export default {
   },
   methods: {
     handleSelection() {
-      const selectedText = window.getSelection().toString().trim();
-      if (selectedText) {
+      this.selectedText = window.getSelection().toString().trim();
+      if (this.selectedText) {
         this.isVisible = true;
       }
     },
