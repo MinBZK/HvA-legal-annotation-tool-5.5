@@ -68,7 +68,6 @@ export default {
       if (matchingDefinition) {
         this.definition = matchingDefinition.definition;
       }
-      console.log("HERE" + this.definition)
     },
 
     clearSelectedText() {
