@@ -93,8 +93,10 @@
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
+import AnnotatieDialog from "@/components/Annotatie";
 
 export default {
+  components: {AnnotatieDialog},
   data() {
     return {
       isVisible: false,
