@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-dialog max-width="50%" max-height="80vh" v-model="isVisible" >
+      <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
                          @close="isVisible=false">
         </AnnotatieDialog>
@@ -19,7 +19,8 @@
               color="primary"
               @click="loadXML"
               :disabled="!xmlFile"
-            >Load XML</v-btn>
+            >Load XML
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
@@ -59,6 +60,7 @@
   </v-container>
 </template>
 
+
 <style scoped>
 .formatted-xml {
   margin: 0; /* Remove default margin */
@@ -91,20 +93,24 @@
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
-import AnnotatieDialog from "@/components/Annotatie";
 
 export default {
-  components: {AnnotatieDialog},
   data() {
     return {
       isVisible: false,
+      selectedText: "",
       xmlFile: null,
       xmlContent: null,
       parsedData: {articles: []},
-      selectedText: "",
     };
   },
   computed: {
+    handleSelection() {
+      this.selectedText = window.getSelection().toString().trim();
+      if (this.selectedText) {
+        this.isVisible = true;
+      }
+    },
     formattedXml() {
       if (this.xmlContent) {
         return vkbeautify.xml(this.xmlContent);
@@ -113,13 +119,6 @@ export default {
     },
   },
   methods: {
-    handleSelection() {
-      this.selectedText = window.getSelection().toString().trim();
-      if (this.selectedText) {
-        this.isVisible = true;
-      }
-    },
-
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
     },
@@ -136,11 +135,11 @@ export default {
       reader.readAsText(this.xmlFile);
     },
     parseXML(xmlString) {
-      const xmlObject = xml2js.xml2js(xmlString, { compact: true });
+      const xmlObject = xml2js.xml2js(xmlString, {compact: true});
       this.handleParsedData(xmlObject.artikel);
-    handleParsedData(articleNode) {
     },
-      const parsedData = { articles: [] };
+    handleParsedData(articleNode) {
+      const parsedData = {articles: []};
 
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
@@ -156,13 +155,13 @@ export default {
 
             const subPartName = liNode.al?._text?.trim();
 
-            return { number: subPartNumber, name: subPartName };
+            return {number: subPartNumber, name: subPartName};
           });
 
-          return { number: partNumber, name: partName, subParts };
+          return {number: partNumber, name: partName, subParts};
         });
 
-        parsedData.articles.push({ number: articleNumber, title: articleTitle, parts });
+        parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
       }
 
       this.parsedData = parsedData;
