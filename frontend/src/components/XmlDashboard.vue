@@ -105,12 +105,6 @@ export default {
     };
   },
   computed: {
-    handleSelection() {
-      this.selectedText = window.getSelection().toString().trim();
-      if (this.selectedText) {
-        this.isVisible = true;
-      }
-    },
     formattedXml() {
       if (this.xmlContent) {
         return vkbeautify.xml(this.xmlContent);
@@ -119,6 +113,13 @@ export default {
     },
   },
   methods: {
+    handleSelection() {
+      this.selectedText = window.getSelection().toString().trim();
+      if (this.selectedText) {
+        this.isVisible = true;
+      }
+    },
+
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
     },
