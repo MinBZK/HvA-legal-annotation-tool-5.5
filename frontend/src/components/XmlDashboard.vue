@@ -19,15 +19,14 @@
               color="primary"
               @click="loadXML"
               :disabled="!xmlFile"
-            >Load XML
-            </v-btn>
+            >Load XML</v-btn>
           </v-card-text>
         </v-card>
       </v-col>
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
+          <v-card-text v-if="parsedData.articles.length > 0">
             <v-scroll-area>
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
@@ -35,7 +34,7 @@
                   <ol>
                     <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                       <div>
-<!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
+                        <!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
                         <span> {{ part.name }}</span>
 
                         <ul>
@@ -92,7 +91,6 @@
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
-import {store} from "@/store/app";
 import AnnotatieDialog from "@/components/Annotatie";
 
 export default {
