@@ -1,94 +1,3 @@
-<!--<template>-->
-<!--  <v-container fluid>-->
-<!--    <v-row>-->
-<!--      <v-col col="6">-->
-<!--        <v-card>-->
-<!--          <v-card-title>Load XML File</v-card-title>-->
-<!--          <v-card-text>-->
-<!--            <v-file-input-->
-<!--              label="Select XML File"-->
-<!--              accept=".xml"-->
-<!--              @change="handleFileChange"-->
-<!--            ></v-file-input>-->
-<!--            <v-btn-->
-<!--              color="primary"-->
-<!--              @click="loadXML"-->
-<!--              :disabled="!xmlFile"-->
-<!--            >Load XML</v-btn>-->
-<!--          </v-card-text>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-<!--      <v-col col="6">-->
-<!--        <v-card>-->
-<!--          <v-card-title>XML Content</v-card-title>-->
-<!--          <v-card-text v-if="formattedXml">-->
-<!--            <v-scroll-area>-->
-<!--              <code class="formatted-xml" v-html="formattedXml"></code>-->
-<!--            </v-scroll-area>-->
-<!--          </v-card-text>-->
-<!--          <v-card-text v-else>-->
-<!--            <v-alert-->
-<!--              type="info"-->
-<!--            >No XML file loaded.</v-alert>-->
-<!--          </v-card-text>-->
-<!--        </v-card>-->
-<!--      </v-col>-->
-<!--    </v-row>-->
-<!--  </v-container>-->
-<!--</template>-->
-
-<!--<style scoped>-->
-<!--.formatted-xml {-->
-<!--  font-family: monospace;-->
-<!--  font-size: 14px;-->
-<!--  white-space: pre-wrap; /* Preserve line breaks and wrap long lines */-->
-<!--  margin: 0; /* Remove default margin */-->
-<!--  line-height: 1.5; /* Adjust line height for better readability */-->
-<!--  padding: 10px;-->
-<!--  border: 1px solid #ccc;-->
-<!--  border-radius: 5px;-->
-<!--  display: block;-->
-<!--  text-align: left; /* Ensure text starts at the left side */-->
-<!--}-->
-<!--</style>-->
-
-<!--<script>-->
-<!--import vkbeautify from "vkbeautify";-->
-
-<!--export default {-->
-<!--  data() {-->
-<!--    return {-->
-<!--      xmlFile: null,-->
-<!--      xmlContent: null,-->
-<!--    };-->
-<!--  },-->
-<!--  computed: {-->
-<!--    formattedXml() {-->
-<!--      if (this.xmlContent) {-->
-<!--        return vkbeautify.xml(this.xmlContent);-->
-<!--      }-->
-<!--      return '';-->
-<!--    },-->
-<!--  },-->
-<!--  methods: {-->
-<!--    handleFileChange(event) {-->
-<!--      this.xmlFile = event.target.files[0];-->
-<!--    },-->
-<!--    loadXML() {-->
-<!--      if (!this.xmlFile) {-->
-<!--        return;-->
-<!--      }-->
-
-<!--      const reader = new FileReader();-->
-<!--      reader.onload = (event) => {-->
-<!--        this.xmlContent = event.target.result;-->
-<!--      };-->
-<!--      reader.readAsText(this.xmlFile);-->
-<!--    },-->
-<!--  },-->
-<!--};-->
-<!--</script>-->
-
 <template>
   <v-container fluid>
     <v-row>
@@ -124,20 +33,29 @@
                 <div v-for="article in parsedData.articles" :key="article.number">
                   <h3>{{ article.title }}</h3>
                   <ol>
-                    <li v-for="(paragraph, index) in article.paragraphs" :key="index">{{ paragraph }}</li>
+                    <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                      <div>
+<!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
+                        <span> {{ part.name }}</span>
+
+                        <ul>
+                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
+                            <span>{{ subPart.number }} {{ subPart.name }}</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
                   </ol>
                 </div>
               </div>
             </v-scroll-area>
           </v-card-text>
           <v-card-text v-else>
-            <v-alert
-              type="info"
-            >No XML file loaded.
-            </v-alert>
+            <v-alert type="info">No XML file loaded.</v-alert>
           </v-card-text>
         </v-card>
       </v-col>
+
     </v-row>
   </v-container>
 </template>
@@ -149,26 +67,33 @@
 }
 
 .formatted-xml h3 {
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 5px;
 }
 
 .formatted-xml ol {
-  font-size: 14px;
-  list-style-type: lower-alpha;
+  font-size: 15px;
+  list-style-type: decimal;
   margin-bottom: 10px;
 }
 
 .formatted-xml li {
   margin-bottom: 5px;
 }
+
+.formatted-xml ul li {
+  /* Remove the asterisk for subparts */
+  list-style-type: none;
+}
 </style>
+
 
 <script>
 import vkbeautify from "vkbeautify";
-import AnnotatieDialog from "@/components/Annotatie";
+import $ from "jquery";
+import xml2js from "xml-js";
 import {store} from "@/store/app";
-
+import AnnotatieDialog from "@/components/Annotatie";
 
 export default {
   components: {AnnotatieDialog},
@@ -208,34 +133,41 @@ export default {
       const reader = new FileReader();
       reader.onload = (event) => {
         this.xmlContent = event.target.result;
-        this.parsedData = this.parseXML(this.xmlContent);
+        this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
     },
     parseXML(xmlString) {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-      const articles = xmlDoc.querySelectorAll('artikel');
-      const parsedData = {articles: []};
+      const xmlObject = xml2js.xml2js(xmlString, { compact: true });
+      this.handleParsedData(xmlObject.artikel);
+    handleParsedData(articleNode) {
+    },
+      const parsedData = { articles: [] };
 
-      articles.forEach((article) => {
-        const articleNumberNode = article.querySelector('kop');
-        if (articleNumberNode) {
-          const articleNumber = articleNumberNode.textContent.trim();
-          const articleTitleNode = articleNumberNode.nextElementSibling;
-          const articleTitle = articleTitleNode.textContent.trim();
-          const paragraphs = [];
-          const paragraphNodes = article.querySelectorAll('al');
-          paragraphNodes.forEach((paragraphNode) => {
-            const paragraphText = paragraphNode.textContent.trim();
-            paragraphs.push(paragraphText);
+      if (articleNode) {
+        const articleNumber = articleNode.kop?.nr?._text?.trim();
+        const articleTitle = articleNode.kop?._text?.trim();
+
+        const parts = (articleNode.lid || []).map((lidNode) => {
+          const partNumber = lidNode.lidnr?._text?.trim();
+          const partName = lidNode.al?._text?.trim();
+
+          const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
+            const subPartNumberNode = $(liNode).find('li.nr').first();
+            const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
+
+            const subPartName = liNode.al?._text?.trim();
+
+            return { number: subPartNumber, name: subPartName };
           });
 
-          parsedData.articles.push({number: articleNumber, title: articleTitle, paragraphs});
-        }
-      });
+          return { number: partNumber, name: partName, subParts };
+        });
 
-      return parsedData;
+        parsedData.articles.push({ number: articleNumber, title: articleTitle, parts });
+      }
+
+      this.parsedData = parsedData;
     },
   },
 };
