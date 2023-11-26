@@ -27,7 +27,7 @@
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0">
+          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
             <v-scroll-area>
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
