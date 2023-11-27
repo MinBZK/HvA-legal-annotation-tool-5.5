@@ -3,7 +3,8 @@
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
-                         @close="isVisible=false">
+                         @close="isVisible=false"
+                         @annotation-saved="applyAnnotation">
         </AnnotatieDialog>
       </v-dialog>
       <v-col col="6">
@@ -36,11 +37,12 @@
                     <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                       <div>
                         <!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
-                        <span> {{ part.name }}</span>
+                        <span v-html="part.name"></span>
 
                         <ul>
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
-                            <span>{{ subPart.number }} {{ subPart.name }}</span>
+<!--                            <span>{{ subPart.number }} {{ subPart.name }}</span>-->
+                            <span>{{subPart.number}}</span><span v-html=" subPart.name"></span>
                           </li>
                         </ul>
                       </div>
@@ -120,6 +122,29 @@ export default {
       if (this.selectedText) {
         this.isVisible = true;
       }
+    },
+
+    applyAnnotation(annotation) {
+      let { text, color } = annotation;
+      const regex = new RegExp(this.RegExp(text), 'g');
+      const replacement = `<span style="background-color: ${color};">${text}</span>`;
+
+      this.parsedData.articles.forEach(article => {
+        article.parts.forEach(part => {
+          if (part.name) {
+            part.name = part.name.replace(regex, replacement);
+          }
+          part.subParts.forEach(subPart => {
+            if (subPart.name) {
+              subPart.name = subPart.name.replace(regex, replacement);
+            }
+          });
+        });
+      });
+    },
+
+    RegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
     handleFileChange(event) {
