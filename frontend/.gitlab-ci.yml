@@ -1,0 +1,15 @@
+Stages:
+  - build
+
+build:
+  Stage: build
+  script:
+    - npm set progress=off
+    - npm ci
+    - export NODE_ENV=production
+    - npm run build
+  cache:
+    policy: push
+    paths:
+      - node_modules/
+
