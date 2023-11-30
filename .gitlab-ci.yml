@@ -1,4 +1,5 @@
-Stages:
+image: node:latest
+stages:
   - build
 
 build:
