@@ -3,6 +3,8 @@ Stages:
 
 build:
   Stage: build
+  tags:
+    - hva
   script:
     - npm set progress=off
     - npm ci
