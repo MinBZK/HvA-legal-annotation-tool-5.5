@@ -8,7 +8,7 @@ build:
   tags:
     - hva
   script:
-    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/
+    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/frontend
     - npm set progress=off
     - npm install
     - export NODE_ENV=production
