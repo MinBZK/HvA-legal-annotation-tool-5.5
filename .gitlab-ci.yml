@@ -1,4 +1,5 @@
 image: node:latest
+
 stages:
   - build
 
@@ -7,6 +8,7 @@ build:
   tags:
     - hva
   script:
+    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/
     - npm set progress=off
     - npm install
     - export NODE_ENV=production
@@ -15,4 +17,3 @@ build:
     policy: push
     paths:
       - node_modules/
-
