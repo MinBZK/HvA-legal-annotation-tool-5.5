@@ -1,9 +1,9 @@
 image: node:latest
 
 stages:
-  - build
+#  - build
 #  - sonarqube-check
-#  - deploy
+  - deploy
 #
 #build:
 #  stage: build
