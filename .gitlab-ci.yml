@@ -1,24 +1,23 @@
 image: node:latest
 
 stages:
-#  - build
+  - build
   - sonarqube-check
-  - sonarqube-vulnerability-report
-#
-#build:
-#  stage: build
-#  tags:
-#    - hva
-#  script:
-#    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/frontend
-#    - npm set progress=off
-#    - npm install
-#    - export NODE_ENV=production
-#    - npm run build
-#  cache:
-#    policy: push
-#    paths:
-#      - node_modules/
+
+build:
+  stage: build
+  tags:
+    - hva
+  script:
+    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/frontend
+    - npm set progress=off
+    - npm install
+    - export NODE_ENV=production
+    - npm run build
+  cache:
+    policy: push
+    paths:
+      - node_modules/
 
 
 sonarqube-check:
@@ -45,22 +44,3 @@ sonarqube-check:
     - master
     - main
     - develop
-
-sonarqube-vulnerability-report:
-  stage: sonarqube-vulnerability-report
-  tags:
-    - hva
-  script:
-    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=se-specialization-2023-1_projects-md_team-5.5_linkextractor_AYwgl40iP9OxEICtGyb2&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
-  allow_failure: true
-  only:
-    - merge_requests
-    - master
-    - main
-    - develop
-  artifacts:
-    expire_in: 1 day
-    reports:
-      sast: gl-sast-sonar-report.json
-  dependencies:
-    - sonarqube-check
