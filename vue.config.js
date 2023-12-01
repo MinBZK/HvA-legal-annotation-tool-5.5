@@ -8,6 +8,7 @@ module.exports = {
 
     // Example: Configure devServer
     devServer: {
+        allowedHosts: "all",
         disableHostCheck: true,
     },
 
