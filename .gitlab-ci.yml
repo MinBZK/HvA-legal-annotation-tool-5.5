@@ -3,6 +3,7 @@ image: node:latest
 stages:
 #  - build
   - sonarqube-check
+  - sonarqube-vulnerability-report
 #
 #build:
 #  stage: build
@@ -45,6 +46,8 @@ sonarqube-check:
 
 sonarqube-vulnerability-report:
   stage: sonarqube-vulnerability-report
+  tags:
+    - hva
   script:
     - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=se-specialization-2023-1_projects-md_team-5.5_linkextractor_AYwgl40iP9OxEICtGyb2&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
   allow_failure: true
