@@ -4,7 +4,7 @@ stages:
 #  - build
 #  - sonarqube-check
   - deploy
-#
+
 #build:
 #  stage: build
 #  tags:
@@ -19,7 +19,7 @@ stages:
 #    policy: push
 #    paths:
 #      - node_modules/
-#
+
 #
 #sonarqube-check:
 #  stage: sonarqube-check
@@ -37,7 +37,7 @@ stages:
 #      - .sonar/cache
 #  script:
 #    - sonar-scanner -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
-#  allow_failure: true
+#  allow_failure: false
 #  only:
 #    - main
 
@@ -47,7 +47,12 @@ heroku_deploy:
     - hva
   script:
     - cd frontend
+    - npm set progress=off
+    - npm install
+    - export NODE_ENV=production
+    - npm run dev &
+    - sleep 5  # Wait for the server to start (adjust as needed)
     - apt-get update -qy
     - apt-get install -y ruby  # Install Ruby
     - gem install dpl
-    - - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
