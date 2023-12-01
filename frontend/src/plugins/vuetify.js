@@ -30,24 +30,19 @@
 // })
 // plugins/vuetify.js
 
-// Remove this import line
-// import Vue from 'vue';
+// plugins/vuetify.js
 
-// Add these import lines
+// Other imports...
+
+// Change the import statement to use a named import
 import { createApp } from 'vue';
 import Vuetify from 'vuetify/lib/framework';
 
 const app = createApp();
 app.use(Vuetify);
 
-// Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+// Other configurations...
 
-// Composables
-import { createVuetify } from 'vuetify'
-
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
     themes: {
@@ -59,4 +54,4 @@ export default createVuetify({
       },
     },
   },
-})
+});
