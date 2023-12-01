@@ -35,8 +35,10 @@ sonarqube-check:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
+#  script:
+#    - sonar-scanner
   script:
-    - sonar-scanner
+    - 'sonar-scanner -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONARQUBE_TOKEN}'
   allow_failure: true
   only:
     - merge_requests
