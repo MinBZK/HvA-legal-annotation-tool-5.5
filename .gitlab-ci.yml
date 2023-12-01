@@ -38,8 +38,7 @@ sonarqube-check:
 #  script:
 #    - sonar-scanner
   script:
-    - sonar-scanner
-    - 'sonar-scanner -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONARQUBE_TOKEN}'
+    - sonar-scanner -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
   allow_failure: true
   only:
     - merge_requests
