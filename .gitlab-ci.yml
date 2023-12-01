@@ -2,49 +2,51 @@ image: node:latest
 
 stages:
   - build
-  - sonarqube-check
-  - deploy
-
-build:
-  stage: build
-  tags:
-    - hva
-  script:
-    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/frontend
-    - npm set progress=off
-    - npm install
-    - export NODE_ENV=production
-    - npm run build
-  cache:
-    policy: push
-    paths:
-      - node_modules/
-
-
-sonarqube-check:
-  stage: sonarqube-check
-  tags:
-    - hva
-  image:
-    name: sonarsource/sonar-scanner-cli:5.0
-    entrypoint: [""]
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
-  script:
-    - sonar-scanner -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
-  allow_failure: true
-  only:
-    - main
+#  - sonarqube-check
+#  - deploy
+#
+#build:
+#  stage: build
+#  tags:
+#    - hva
+#  script:
+#    - cd /builds/se-specialization-2023-1/projects-md/team-5.5/linkextractor/frontend
+#    - npm set progress=off
+#    - npm install
+#    - export NODE_ENV=production
+#    - npm run build
+#  cache:
+#    policy: push
+#    paths:
+#      - node_modules/
+#
+#
+#sonarqube-check:
+#  stage: sonarqube-check
+#  tags:
+#    - hva
+#  image:
+#    name: sonarsource/sonar-scanner-cli:5.0
+#    entrypoint: [""]
+#  variables:
+#    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+#    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+#  cache:
+#    key: "${CI_JOB_NAME}"
+#    paths:
+#      - .sonar/cache
+#  script:
+#    - sonar-scanner -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
+#  allow_failure: true
+#  only:
+#    - main
 
 heroku_deploy:
   stage: deploy
   tags:
     - hva
   script:
+    - apt-get update -qy
+    - apt-get install -y ruby  # Install Ruby
     - gem install dpl
     - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
