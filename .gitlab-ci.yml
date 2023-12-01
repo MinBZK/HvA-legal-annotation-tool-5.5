@@ -49,8 +49,9 @@ heroku_deploy:
     - cd frontend
     - npm set progress=off
     - npm install
+    - npm install vuetify
     - export NODE_ENV=production
-    - npm run dev &
+    - npm run build
     - sleep 5  # Wait for the server to start (adjust as needed)
     - apt-get update -qy
     - apt-get install -y ruby  # Install Ruby
