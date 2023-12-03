@@ -9,6 +9,8 @@ module.exports = {
     // Example: Configure devServer
     devServer: {
         allowedHosts: "all",
+        host: '0.0.0.0', // Allow connections from outside the container
+        port: 3000
     },
 
 

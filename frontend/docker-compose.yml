@@ -1,0 +1,28 @@
+#version: '3'
+#services:
+#    web:
+#        build: .
+#        network_mode: "host"
+#        stdin_open: true
+#        tty: true
+#        ports:
+#            - "8081:8081"
+#            - "3000:3000"
+#        volumes:
+#            - "/app/node_modules"
+#            - ".:/app"
+
+version: "3.4"
+services:
+    vite_docker:
+        image: node:alpine
+        container_name: vite_docker
+        entrypoint: /bin/ash  # Use /bin/ash instead of /bin/sh
+        ports:
+            - 8000:8000
+        working_dir: /srv/app
+        volumes:
+            - type: bind
+              source: ./
+              target: /srv/app
+        tty: true

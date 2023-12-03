@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
+    "@vue/cli-service": "^5.0.0",
     "axios": "^1.6.2",
     "core-js": "^3.29.0",
     "jquery": "^3.7.1",
@@ -27,11 +28,10 @@
     "xml-formatter": "^3.6.0",
     "xml-js": "^1.6.11",
     "xml2js": "^0.6.2",
-    "xml2json": "^0.12.0",
-    "@vue/cli-service": "^5.0.0"
+    "xml2json": "^0.12.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue": "^4.5.1",
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.3.0",
     "sass": "^1.60.0",
@@ -44,6 +44,5 @@
       "node": "14.x",
       "npm": "6.x"
     }
-
   }
 }
