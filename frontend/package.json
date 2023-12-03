@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "start": "vue-cli-service serve",
+    "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
@@ -40,7 +40,7 @@
     "vite-plugin-vuetify": "^1.0.0"
   },
   "engines": {
-    "node": "18.x",
+    "node": "10.2.4",
     "npm": "10.2.4"
   }
 }
