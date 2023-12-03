@@ -51,7 +51,6 @@ heroku_deploy:
     - npm install
     - export NODE_ENV=production
     - npm run build
-    - sleep 5  # Wait for the server to start (adjust as needed)
     - apt-get update -qy
     - apt-get install -y ruby  # Install Ruby
     - gem install dpl
