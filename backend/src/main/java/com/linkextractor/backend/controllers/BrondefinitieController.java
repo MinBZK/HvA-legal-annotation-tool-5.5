@@ -1,4 +1,4 @@
-package com.linkextractor.controllers;
+package com.linkextractor.backend.controllers;
 
 import java.net.URI;
 
@@ -14,14 +14,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.linkextractor.models.Brondefinitie;
-import com.linkextractor.models.Rechtssubject;
-import com.linkextractor.respositories.BrondefinitieRepository;
-import com.linkextractor.respositories.RechtssubjectRepository;
+import com.linkextractor.backend.models.Brondefinitie;
+import com.linkextractor.backend.models.Rechtssubject;
+import com.linkextractor.backend.respositories.BrondefinitieRepository;
+import com.linkextractor.backend.respositories.RechtssubjectRepository;
 
 @RestController
 @RequestMapping("/brondefinitie")
 public class BrondefinitieController {
+    
     private BrondefinitieRepository brondefinitieRepository;
 
     @Autowired
@@ -37,8 +38,7 @@ public class BrondefinitieController {
 
     @PostMapping
     private ResponseEntity<Brondefinitie> createBrondefinitie(@RequestBody Brondefinitie brondefinitie){
-
-        Brondefinitie toBeSavedBrondefinitie = brondefinitieRepository.save(brondefinitie)
+        Brondefinitie toBeSavedBrondefinitie = brondefinitieRepository.save(brondefinitie);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -50,7 +50,7 @@ public class BrondefinitieController {
     }
 
     @DeleteMapping("/{id}")
-    private void deleteById(@PathVariable String rs_code){
+    private void deleteById(@PathVariable int id){
         
     }
 }
