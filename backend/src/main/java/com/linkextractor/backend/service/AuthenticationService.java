@@ -1,13 +1,14 @@
-package com.linkextractor.service;
+package com.linkextractor.backend.service;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.linkextractor.models.LoginResponseDTO;
-import com.linkextractor.models.Role;
-import com.linkextractor.models.User;
-import com.linkextractor.respositories.RoleRepository;
-import com.linkextractor.respositories.UserRepository;
+import com.linkextractor.backend.models.LoginResponseDTO;
+import com.linkextractor.backend.models.Role;
+import com.linkextractor.backend.models.User;
+import com.linkextractor.backend.respositories.RoleRepository;
+import com.linkextractor.backend.respositories.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

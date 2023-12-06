@@ -1,4 +1,4 @@
-package com.linkextractor.service;
+package com.linkextractor.backend.service;
 
 import java.time.Instant;
 import java.util.stream.Collectors;

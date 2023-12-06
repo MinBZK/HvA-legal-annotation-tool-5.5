@@ -1,4 +1,4 @@
-package com.linkextractor.controllers;
+package com.linkextractor.backend.controllers;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.linkextractor.utils;
+package com.linkextractor.backend.utils;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;

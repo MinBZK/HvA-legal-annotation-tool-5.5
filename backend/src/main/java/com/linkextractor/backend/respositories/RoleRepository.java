@@ -1,8 +1,9 @@
-package com.linkextractor.respositories;
+package com.linkextractor.backend.respositories;
 
-import com.linkextractor.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.linkextractor.backend.models.Role;
 
 import java.util.Optional;
 

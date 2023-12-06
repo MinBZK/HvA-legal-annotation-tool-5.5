@@ -1,4 +1,4 @@
-package com.linkextractor.models;
+package com.linkextractor.backend.models;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package com.linkextractor.models;
+package com.linkextractor.backend.models;
 
 import org.springframework.security.core.GrantedAuthority;
 

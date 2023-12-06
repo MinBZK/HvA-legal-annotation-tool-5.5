@@ -1,9 +1,10 @@
-package com.linkextractor.controllers;
+package com.linkextractor.backend.controllers;
 
-import com.linkextractor.models.LoginResponseDTO;
-import com.linkextractor.models.RegistrationDTO;
-import com.linkextractor.models.User;
-import com.linkextractor.service.AuthenticationService;
+import com.linkextractor.backend.models.LoginResponseDTO;
+import com.linkextractor.backend.models.RegistrationDTO;
+import com.linkextractor.backend.models.User;
+import com.linkextractor.backend.service.AuthenticationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
