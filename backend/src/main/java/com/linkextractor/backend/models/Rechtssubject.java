@@ -30,6 +30,9 @@ public class Rechtssubject {
     @Column(name = "specalisatie")
     private boolean specalisatie;
 
+    @Column(name = "rs_definitie",nullable = true)
+    private String rs_definitie;
+
     @ManyToOne
     private Rechtssubject rechtssubject;
 
