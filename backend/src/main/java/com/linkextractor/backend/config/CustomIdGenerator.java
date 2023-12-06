@@ -24,13 +24,13 @@ public class CustomIdGenerator implements IdentifierGenerator {
 
         if (object instanceof Rechtsfeit) {
             prefix = "RF";
-            query = "select count(rf_code) as Id from Rechtsfeit";
+            query = "select count(rf_code) as Id from rechtsfeit";
         } else if (object instanceof Rechtsbetrekking) {
             prefix = "RB";
-            query = "select count(rb_code) as Id from Rechtsbetrekking";
+            query = "select count(rb_code) as Id from rechtsbetrekking";
         } else if (object instanceof Rechtssubject) {
             prefix = "RS";
-            query = "select count(rs_code) as Id from Rechtssubject";
+            query = "select count(rs_code) as Id from rechtssubject";
         }
 
         try {
