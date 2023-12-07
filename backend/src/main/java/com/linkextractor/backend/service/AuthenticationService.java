@@ -3,7 +3,9 @@ package com.linkextractor.backend.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.linkextractor.backend.models.LoginResponseDTO;
+import com.linkextractor.backend.dto.LoginDTO;
+import com.linkextractor.backend.dto.RegistrationDTO;
+import com.linkextractor.backend.dto.LoginResponseDTO;
 import com.linkextractor.backend.models.Role;
 import com.linkextractor.backend.models.User;
 import com.linkextractor.backend.respositories.RoleRepository;
@@ -37,30 +39,30 @@ public class AuthenticationService {
     @Autowired
     private TokenService tokenService;
 
-    public User registerUser(String username, String password){
+    public User registerUser(RegistrationDTO registrationDTO) {
 
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(registrationDTO.getPassword());
         Role userRole = roleRepository.findByAuthority("USER").get();
 
         Set<Role> authorities = new HashSet<>();
 
         authorities.add(userRole);
 
-        return userRepository.save(new User(0, username, encodedPassword, authorities));
+        return userRepository.save(new User(0, registrationDTO.getUsername(), encodedPassword, registrationDTO.getEmail(), registrationDTO.getFirstname(), registrationDTO.getLastname(), authorities));
     }
 
-    public LoginResponseDTO loginUser(String username, String password){
+    public LoginResponseDTO loginUser(LoginDTO loginDTO) {
 
-        try{
+        try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword())
             );
 
             String token = tokenService.generateJwt(auth);
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+            return new LoginResponseDTO(userRepository.findByUsername(loginDTO.getUsername()).get(), token);
 
-        } catch(AuthenticationException e){
+        } catch (AuthenticationException e) {
             return new LoginResponseDTO(null, "");
         }
     }

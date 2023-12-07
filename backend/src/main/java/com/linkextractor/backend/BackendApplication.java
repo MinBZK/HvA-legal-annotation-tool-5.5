@@ -35,7 +35,7 @@ public class BackendApplication {
 			roles.add(adminRole);
 
 			// Creating an admin user with a default password (for testing purposes)
-			User admin = new User(1, "admin", passwordEncode.encode("password"), roles);
+			User admin = new User(1, "admin", passwordEncode.encode("password"), "Admin@hva.nl", "A", "Admin", roles);
 
 			userRepository.save(admin);
 		};

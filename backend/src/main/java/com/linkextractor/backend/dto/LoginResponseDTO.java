@@ -1,12 +1,10 @@
-package com.linkextractor.backend.models;
+package com.linkextractor.backend.dto;
+
+import com.linkextractor.backend.models.User;
 
 public class LoginResponseDTO {
     private User user;
     private String jwt;
-
-    public LoginResponseDTO(){
-        super();
-    }
 
     public LoginResponseDTO(User user, String jwt){
         this.user = user;
