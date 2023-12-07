@@ -20,14 +20,14 @@
           </v-window-item>
 
           <v-window-item value="two">
-            <v-select label="Label" :items="colorOptions" item-title="label" item-value="color" v-model="selectedColor" >
+            <v-select label="Label" :items="colorOptions" item-title="label" item-value="color" v-model="selectedColor">
               <template v-slot:item="{ props, item }">
                 <v-list-item v-bind="props">
                   <v-chip
-                      variant="flat"
-                      text-color="white"
-                      :color="item.raw.color"
-                      size="small">
+                    variant="flat"
+                    text-color="white"
+                    :color="item.raw.color"
+                    size="small">
                   </v-chip>
                 </v-list-item>
               </template>
@@ -70,22 +70,22 @@ export default {
       definition: "",
       selectedColor: "",
       colorOptions: [
-        { label: 'Rechtssubject', color: 'rgb(194, 231, 255)' },
-        { label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)' },
-        { label: 'Rechtsobject', color: 'rgb(152, 190, 241)' },
-        { label: 'Rechtsfeit', color: 'rgb(151, 214, 254)' },
-        { label: 'Voorwaarde', color: 'rgb(145, 232, 211)' },
-        { label: 'Afleidingsregel', color: 'rgb(255, 122, 122)' },
-        { label: 'Variabele', color: 'rgb(255, 217, 93)' },
-        { label: 'Variabelewaarde', color: 'rgb(255, 243, 128)' },
-        { label: 'Parameter', color: 'rgb(255, 180, 180)' },
-        { label: 'Parameterwaarde', color: 'rgb(255, 216, 239)' },
-        { label: 'Operator', color: 'rgb(193, 235, 225)' },
-        { label: 'Tijdsaanduiding', color: 'rgb(216, 176, 249)' },
-        { label: 'Plaatsaanduiding', color: 'rgb(239, 202, 246)' },
-        { label: 'Delegatiebevoegdheid', color: 'rgb(206, 206, 206)' },
-        { label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)' },
-        { label: 'Brondefinitie', color: 'rgb(246, 246, 246)' },
+        {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
+        {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
+        {label: 'Rechtsobject', color: 'rgb(152, 190, 241)'},
+        {label: 'Rechtsfeit', color: 'rgb(151, 214, 254)'},
+        {label: 'Voorwaarde', color: 'rgb(145, 232, 211)'},
+        {label: 'Afleidingsregel', color: 'rgb(255, 122, 122)'},
+        {label: 'Variabele', color: 'rgb(255, 217, 93)'},
+        {label: 'Variabelewaarde', color: 'rgb(255, 243, 128)'},
+        {label: 'Parameter', color: 'rgb(255, 180, 180)'},
+        {label: 'Parameterwaarde', color: 'rgb(255, 216, 239)'},
+        {label: 'Operator', color: 'rgb(193, 235, 225)'},
+        {label: 'Tijdsaanduiding', color: 'rgb(216, 176, 249)'},
+        {label: 'Plaatsaanduiding', color: 'rgb(239, 202, 246)'},
+        {label: 'Delegatiebevoegdheid', color: 'rgb(206, 206, 206)'},
+        {label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)'},
+        {label: 'Brondefinitie', color: 'rgb(246, 246, 246)'},
       ],
     }
   },
@@ -106,11 +106,10 @@ export default {
         this.definition = matchingDefinition.definition;
         this.selectedColor = matchingDefinition.selectedColor;
       }
-      console.log(this.selectedColor)
     },
 
     saveDefinition() {
-      const selectedText = this.selectedText;
+      const selectedText = this.removeDotsAndSymbols(this.selectedText);
 
       if (selectedText) {
         const newDefinition = {
@@ -128,7 +127,17 @@ export default {
       }
     },
 
+    removeDotsAndSymbols(word) {
+      // Remove special symbols
+      const cleanedWord = word.replace(/[^\w\s]/gi, '');
+
+      // Remove leading and trailing spaces
+      return cleanedWord.trim();
+    }
+
   },
+
+
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
   },

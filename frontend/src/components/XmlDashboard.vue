@@ -1,12 +1,5 @@
 <template>
   <v-container fluid>
-    <v-tooltip bottom v-if="showTooltip">
-      <template v-slot:activator="{ on, attrs }">
-        <span v-bind="attrs" @mouseleave="hideTooltip">
-          Hover over me
-        </span>
-      </template>
-    </v-tooltip>
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
@@ -35,23 +28,48 @@
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
-            <v-scroll-area>
+          <v-card-text v-if="parsedData.articles.length > 0">
+            <v-scroll-area @mouseup="handleSelection">
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
                   <h3>{{ article.title }}</h3>
-                  <ol @mouseover="checkCondition($event)">
+                  <ol>
                     <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                       <div>
-                        <span v-html="part.name"></span>
+                        <span @mouseleave="hideTooltip"
+                              v-for="(word, wordIndex) in part.partWords"
+                              :key="wordIndex"
+                              @mouseover="handleWordHover($event, word.name)"
+                        >
+                          {{ word.name }}
+                          <span v-if="wordIndex < part.partWords.length - 1"> </span>
+
+                                   <v-tooltip bottom v-if="showTooltip && word.name === hoveredWord"
+                                              activator="parent"
+                                              location="top"
+                                   >
+                                     {{ matchedWord.definition }}
+                        </v-tooltip>
+
+                        </span>
                         <ul>
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                             <span>{{ subPart.number }}</span>
-                            <span v-for="(word, wordIndex) in subPart.words" :key="wordIndex">
-                      <span>{{ word.name }}</span>
-&#8205; 
-                      <span v-if="wordIndex < subPart.words.length - 1"> </span>
-                    </span>
+                            <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                  @mouseleave="hideTooltip" @mouseover="handleWordHover($event, word.name)"
+                            >
+                              <span>{{ word.name }}</span>
+                              &#8205;
+                              <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
+
+                               <v-tooltip bottom v-if="showTooltip && word.name === hoveredWord"
+                                          activator="parent"
+                                          location="top"
+                               >
+                                     {{ matchedWord.definition }}
+                        </v-tooltip>
+
+                            </span>
                           </li>
                         </ul>
                       </div>
@@ -65,9 +83,7 @@
             <v-alert type="info">No XML file loaded.</v-alert>
           </v-card-text>
         </v-card>
-
       </v-col>
-
     </v-row>
   </v-container>
 </template>
@@ -106,6 +122,7 @@ import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
+import {store} from "@/store/app";
 
 export default {
   components: {AnnotatieDialog},
@@ -117,6 +134,8 @@ export default {
       xmlContent: null,
       parsedData: {articles: []},
       showTooltip: false,
+      hoveredWord: "",
+      matchedWord: "",
     };
   },
   computed: {
@@ -135,16 +154,21 @@ export default {
       }
     },
 
-    handleWordHover(subPartNumber, wordNumber, word) {
-      console.log(`Hovered over word ${wordNumber} in sub-part ${subPartNumber}: ${word}`);
-      // Perform any additional actions based on the hovered word
-    },
+    handleWordHover(event, word) {
+      this.hoveredWord = word;
+      this.matchedWord = this.findMatchingDefinition(this.hoveredWord);
 
-    checkCondition(textHovered) {
-      console.log(textHovered.target)
-      if (1 > 0.5) {
+      console.log(this.hoveredWord)
+      console.log(this.matchedWord)
+      console.log(JSON.stringify(store().definitions))
+
+      if (this.matchedWord !== undefined) {
         this.showTooltip = true;
       }
+    },
+
+    findMatchingDefinition(hoveredText) {
+      return store().definitions.find(definition => definition.text === hoveredText);
     },
 
     hideTooltip() {
@@ -207,22 +231,32 @@ export default {
           const partNumber = lidNode.lidnr?._text?.trim();
           const partName = lidNode.al?._text?.trim();
 
+          const partNameWords = partName.split(/\s+/); // Split by whitespace to get individual words
+          const partNameWordsElements = partNameWords.map((word, wordIndex) => ({
+            number: partNumber + (wordIndex + 1), // Append word index to partNumber
+            name: word.trim(),
+          }));
+
           const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
             const subPartNumberNode = $(liNode).find('li.nr').first();
             const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
 
             const subPartName = liNode.al?._text?.trim();
-            const words = subPartName.split(/\s+/); // Split by whitespace to get individual words
-            console.log(words)
-            const wordElements = words.map((word, wordIndex) => ({
+            const subPartWords = subPartName.split(/\s+/); // Split by whitespace to get individual words
+            const subPartWordElements = subPartWords.map((word, wordIndex) => ({
               number: subPartNumber + (wordIndex + 1), // Append word index to subPartNumber
               name: word.trim(),
             }));
 
-            return {number: subPartNumber, name: subPartName, words: wordElements};
+
+            return {
+              number: subPartNumber,
+              name: subPartName,
+              subPartWords: subPartWordElements,
+            };
           });
 
-          return {number: partNumber, name: partName, subParts};
+          return {number: partNumber, name: partName, partWords: partNameWordsElements, subParts};
         });
 
         parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
@@ -233,5 +267,7 @@ export default {
   },
 };
 </script>
+
+
 
 
