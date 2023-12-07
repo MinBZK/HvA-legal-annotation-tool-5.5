@@ -16,7 +16,7 @@
         <v-window v-model="tab">
 
           <v-window-item value="one">
-            <v-text-field label="Definitie" v-model="definition"></v-text-field>
+            <v-text-field label="Definitie" @keyup.enter="saveDialog" v-model="definition"></v-text-field>
           </v-window-item>
 
           <v-window-item value="two">
