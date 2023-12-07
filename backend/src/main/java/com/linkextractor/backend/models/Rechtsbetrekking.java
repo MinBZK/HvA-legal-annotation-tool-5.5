@@ -1,7 +1,8 @@
-package com.linkextractor.models;
+package com.linkextractor.backend.models;
 
-import com.linkextractor.models.enums.Hoofdsoort;
-import com.linkextractor.models.enums.Ondersoort;
+import com.linkextractor.backend.config.CustomIdGenerator;
+import com.linkextractor.backend.models.enums.Hoofdsoort;
+import com.linkextractor.backend.models.enums.Ondersoort;
 
 import java.lang.String;
 
@@ -11,11 +12,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Rechtsbetrekking{
-    
     @Id
+    @GenericGenerator(name = "rb_code", strategy =  "com.linkextractor.backend.config.CustomIdGenerator")
+    @GeneratedValue(generator = "rb_code")
     @Column(name = "rb_code")
     private String rb_code;
 
@@ -28,6 +31,12 @@ public class Rechtsbetrekking{
     @Column(name = "ondersoort")
     private Ondersoort ondersoort;
 
+    @OneToOne(mappedBy = "rechtsbetrekking")
+    private Rechtssubject rechtssubject;
+
+    @OneToOne(mappedBy = "rechtsbetrekking_ro")
+    private Rechtsobject rechtsobject;
+
     public Rechtsbetrekking(String rb_code, String rb_naam, Hoofdsoort hoofdsoort,
             Ondersoort ondersoort) {
         this.rb_code = rb_code;
@@ -35,11 +44,9 @@ public class Rechtsbetrekking{
         this.hoofdsoort = hoofdsoort;
         this.ondersoort = ondersoort;
     }
-
     
     public Rechtsbetrekking() {
     }
-
 
     public String getRb_code() {
         return rb_code;

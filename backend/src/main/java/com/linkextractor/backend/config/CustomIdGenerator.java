@@ -1,5 +1,4 @@
-package com.linkextractor.config;
-
+package com.linkextractor.backend.config;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,27 +11,26 @@ import org.hibernate.engine.jdbc.connections.spi.JdbcConnectionAccess;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
 
-import com.linkextractor.models.Rechtsbetrekking;
-import com.linkextractor.models.Rechtsfeit;
-import com.linkextractor.models.Rechtssubject;
+import com.linkextractor.backend.models.Rechtsbetrekking;
+import com.linkextractor.backend.models.Rechtsfeit;
+import com.linkextractor.backend.models.Rechtssubject;
 
 public class CustomIdGenerator implements IdentifierGenerator {
 
     @Override
-    public Object generate(SharedSessionContractImplementor session, Object object){
+    public Object generate(SharedSessionContractImplementor session, Object object) {
         String prefix = "";
         String query = "";
-        JdbcConnectionAccess connection = session.getJdbcConnectionAccess();
 
         if (object instanceof Rechtsfeit) {
             prefix = "RF";
-            query = "select count(rf_code) as Id from Rechtsfeit";
+            query = "select count(rf_code) as Id from rechtsfeit";
         } else if (object instanceof Rechtsbetrekking) {
             prefix = "RB";
-            query = "select count(rb_code) as Id from Rechtsbetrekking";
-        } else if(object instanceof Rechtssubject){
+            query = "select count(rb_code) as Id from rechtsbetrekking";
+        } else if (object instanceof Rechtssubject) {
             prefix = "RS";
-            query = "select count(rs_code) as Id from Rechtssubject";
+            query = "select count(rs_code) as Id from rechtssubject";
         }
 
         try {
@@ -47,7 +45,10 @@ public class CustomIdGenerator implements IdentifierGenerator {
                 String generateId = prefix + new Integer(id).toString();
                 return generateId;
             }
-        } catch(SQLException e){
+            resultSet.close();
+            statement.close();
+            con.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
