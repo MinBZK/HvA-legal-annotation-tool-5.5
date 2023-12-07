@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration
 public class SecurityConfiguration {
     private final RSAKeyProperties keys;
-    // private final Map<JWK, Bucket> cache = new ConcurrentHashMap<>();
+    private final Map<JWK, Bucket> cache = new ConcurrentHashMap<>();
 
     // Constructor injection of RSAKeyProperties to fetch keys for JWT token encoding/decoding
     public SecurityConfiguration(RSAKeyProperties keys) {
