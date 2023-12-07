@@ -2,11 +2,10 @@
   <v-container fluid>
     <v-tooltip bottom v-if="showTooltip">
       <template v-slot:activator="{ on, attrs }">
-        <span v-bind="attrs" v-on="on" @mouseleave="hideTooltip">
+        <span v-bind="attrs" @mouseleave="hideTooltip">
           Hover over me
         </span>
       </template>
-      This is a tooltip!
     </v-tooltip>
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
@@ -36,22 +35,23 @@
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection"
-          >
-            <v-scroll-area> 
+          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
+            <v-scroll-area>
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
                   <h3>{{ article.title }}</h3>
                   <ol @mouseover="checkCondition($event)">
                     <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                       <div>
-                        <!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
                         <span v-html="part.name"></span>
-
                         <ul>
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
-                            <!--                            <span>{{ subPart.number }} {{ subPart.name }}</span>-->
-                            <span>{{ subPart.number }}</span><span v-html=" subPart.name"></span>
+                            <span>{{ subPart.number }}</span>
+                            <span v-for="(word, wordIndex) in subPart.words" :key="wordIndex">
+                      <span>{{ word.name }}</span>
+&#8205; 
+                      <span v-if="wordIndex < subPart.words.length - 1"> </span>
+                    </span>
                           </li>
                         </ul>
                       </div>
@@ -65,6 +65,7 @@
             <v-alert type="info">No XML file loaded.</v-alert>
           </v-card-text>
         </v-card>
+
       </v-col>
 
     </v-row>
@@ -134,53 +135,20 @@ export default {
       }
     },
 
-    checkCondition(textHovered) {
-      console.log(this.getHoveredWord(event))
+    handleWordHover(subPartNumber, wordNumber, word) {
+      console.log(`Hovered over word ${wordNumber} in sub-part ${subPartNumber}: ${word}`);
+      // Perform any additional actions based on the hovered word
+    },
 
-      if (Math.random() > 0.5) {
+    checkCondition(textHovered) {
+      console.log(textHovered.target)
+      if (1 > 0.5) {
         this.showTooltip = true;
       }
     },
 
     hideTooltip() {
       this.showTooltip = false;
-    },
-
-    getHoveredWord(event) {
-      const hoveredElement = event.target;
-      const textContent = hoveredElement.textContent;
-      const wordArray = textContent.split(' ');
-
-      // Get the word based on the mouse position
-      const mouseX = event.clientX;
-      const wordIndex = this.getWordIndex(hoveredElement, mouseX);
-
-      return wordArray[wordIndex];
-    },
-
-    getWordIndex(element, mouseX) {
-      const words = element.textContent.split(' ');
-
-      let cumulativeWidth = 0;
-      for (let i = 0; i < words.length; i++) {
-        cumulativeWidth += this.getTextWidth(words[i], element.style.font);
-        if (cumulativeWidth > mouseX) {
-          return i;
-        }
-      }
-
-      return words.length - 1;
-    },
-
-    getTextWidth(text, font) {
-      // Create a temporary canvas to measure text width
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      context.font = font || getComputedStyle(document.body).font;
-
-      // Measure the width of the text
-      // Clean up and return the width
-      return context.measureText(text).width;
     },
 
     applyAnnotation(annotation) {
@@ -209,6 +177,7 @@ export default {
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
     },
+
     loadXML() {
       if (!this.xmlFile) {
         return;
@@ -221,10 +190,12 @@ export default {
       };
       reader.readAsText(this.xmlFile);
     },
+
     parseXML(xmlString) {
       const xmlObject = xml2js.xml2js(xmlString, {compact: true});
       this.handleParsedData(xmlObject.artikel);
     },
+
     handleParsedData(articleNode) {
       const parsedData = {articles: []};
 
@@ -241,8 +212,14 @@ export default {
             const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
 
             const subPartName = liNode.al?._text?.trim();
+            const words = subPartName.split(/\s+/); // Split by whitespace to get individual words
+            console.log(words)
+            const wordElements = words.map((word, wordIndex) => ({
+              number: subPartNumber + (wordIndex + 1), // Append word index to subPartNumber
+              name: word.trim(),
+            }));
 
-            return {number: subPartNumber, name: subPartName};
+            return {number: subPartNumber, name: subPartName, words: wordElements};
           });
 
           return {number: partNumber, name: partName, subParts};
