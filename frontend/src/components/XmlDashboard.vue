@@ -39,15 +39,15 @@
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
-                              @mouseover="handleWordHover($event, word.name)"
+                              @mouseover="handleWordHover(word.name)"
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
 
-                                   <v-tooltip bottom v-if="showTooltip && word.name === hoveredWord"
-                                              activator="parent"
-                                              location="top"
-                                   >
+                           <v-tooltip bottom v-if="showTooltip"
+                                      activator="parent"
+                                      location="top"
+                           >
                                      {{ matchedWord.definition }}
                         </v-tooltip>
 
@@ -56,13 +56,13 @@
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                             <span>{{ subPart.number }}</span>
                             <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover($event, word.name)"
+                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word.name)"
                             >
-                              <span>{{ word.name }}</span>
-                              &#8205;
+                              {{ word.name }}
+
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
 
-                               <v-tooltip bottom v-if="showTooltip && word.name === hoveredWord"
+                               <v-tooltip bottom v-if="showTooltip"
                                           activator="parent"
                                           location="top"
                                >
@@ -149,26 +149,25 @@ export default {
   methods: {
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
+
       if (this.selectedText) {
         this.isVisible = true;
       }
     },
 
-    handleWordHover(event, word) {
-      this.hoveredWord = word;
+    handleWordHover(word) {
+      this.hoveredWord = this.removeDotsAndSymbols(word);
       this.matchedWord = this.findMatchingDefinition(this.hoveredWord);
 
-      console.log(this.hoveredWord)
-      console.log(this.matchedWord)
-      console.log(JSON.stringify(store().definitions))
-
       if (this.matchedWord !== undefined) {
+        console.log("HERE")
         this.showTooltip = true;
       }
     },
 
     findMatchingDefinition(hoveredText) {
-      return store().definitions.find(definition => definition.text === hoveredText);
+      return store().definitions.find(
+        definition => definition.text === hoveredText);
     },
 
     hideTooltip() {
@@ -264,6 +263,11 @@ export default {
 
       this.parsedData = parsedData;
     },
+
+    removeDotsAndSymbols(word) {
+      // Remove special symbols
+      return word.replace(/[.,]/gi, '');
+    }
   },
 };
 </script>

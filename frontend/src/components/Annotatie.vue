@@ -129,14 +129,11 @@ export default {
 
     removeDotsAndSymbols(word) {
       // Remove special symbols
-      const cleanedWord = word.replace(/[^\w\s]/gi, '');
-
+      const cleanedWord = word.replace(/[.,]/gi, '');
       // Remove leading and trailing spaces
       return cleanedWord.trim();
     }
-
   },
-
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
