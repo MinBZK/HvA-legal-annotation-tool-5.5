@@ -23,7 +23,7 @@ import jakarta.persistence.Table;
 public class User implements UserDetails{
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="user_id")
     private int userId;
 
@@ -48,12 +48,10 @@ public class User implements UserDetails{
     private Set<Role> authorities;
 
     public User() {
-        super();
         authorities = new HashSet<>();
     }
 
     public User(int userId, String username, String password, String email, String firstname, String lastname, Set<Role> authorities) {
-        super();
         this.userId = userId;
         this.username = username;
         this.password = password;

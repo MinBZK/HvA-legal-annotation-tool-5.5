@@ -1,22 +1,13 @@
 package com.linkextractor.backend.dto;
 
-import com.linkextractor.backend.models.User;
-
+/**
+ * Data Transfer Object (DTO) representing a login response containing a JWT token.
+ */
 public class LoginResponseDTO {
-    private User user;
     private String jwt;
 
-    public LoginResponseDTO(User user, String jwt){
-        this.user = user;
+    public LoginResponseDTO(String jwt){
         this.jwt = jwt;
-    }
-
-    public User getUser(){
-        return this.user;
-    }
-
-    public void setUser(User user){
-        this.user = user;
     }
 
     public String getJwt(){

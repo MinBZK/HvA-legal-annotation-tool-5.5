@@ -13,8 +13,11 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service responsible for generating JWT (JSON Web Token).
+ */
 @Service
-public class TokenService {
+public class JWTService {
 
     @Autowired
     private JwtEncoder jwtEncoder;
@@ -22,6 +25,12 @@ public class TokenService {
     @Autowired
     private JwtDecoder jwtDecoder;
 
+    /**
+     * Generates a JWT based on the provided Authentication object.
+     *
+     * @param auth The Authentication object containing user details and authorities.
+     * @return A string representing the generated JWT.
+     */
     public String generateJwt(Authentication auth) {
 
         Instant now = Instant.now();

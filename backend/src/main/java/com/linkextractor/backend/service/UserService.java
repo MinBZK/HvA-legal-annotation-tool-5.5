@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.linkextractor.backend.respositories.UserRepository;
 
+/**
+ * Service class that implements the UserDetailsService interface to provide user-related functionalities.
+ */
 @Service
 public class UserService implements UserDetailsService {
 
@@ -18,11 +21,17 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+
+    /**
+     * Retrieves a UserDetails object based on the username.
+     *
+     * @param username The username for which UserDetails are requested.
+     * @return UserDetails object associated with the provided username.
+     * @throws UsernameNotFoundException if the user is not found in the repository.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        System.out.println("In the user details service");
-
+        System.out.println("Check!");
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
     }
 }

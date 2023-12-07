@@ -1,5 +1,8 @@
 package com.linkextractor.backend.dto;
 
+/**
+ * Data Transfer Object (DTO) representing user registration information.
+ */
 public class RegistrationDTO {
 
     private String firstname;
