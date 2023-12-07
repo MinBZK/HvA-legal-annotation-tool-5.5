@@ -37,6 +37,13 @@
             </v-col>
           </v-row>
         </v-form>
+
+        <br>
+
+        <!-- Display registration status and message -->
+        <v-alert v-if="registrationStatus" :type="registrationStatusColor" outlined>
+          {{ registrationMessage }}
+        </v-alert>
       </v-card-text>
     </v-card>
   </v-container>
@@ -52,12 +59,18 @@ export default {
       lastName: '',
       email: '',
       password: '',
-      username: ''
+      username: '',
+      registrationStatus: '', // 'success' or 'error'
+      registrationMessage: ''
     };
+  },
+  computed: {
+    registrationStatusColor() {
+      return this.registrationStatus === 'success' ? 'success' : 'error';
+    }
   },
   methods: {
     registerUser() {
-      // Send the registration data to the backend API
       const userData = {
         firstName: this.firstName,
         lastName: this.lastName,
@@ -66,15 +79,16 @@ export default {
         username: this.username
       };
 
-      console.log(userData);
-
-      // Replace 'YOUR_BACKEND_API_URL' with the actual URL of your backend API
-      axios.post('YOUR_BACKEND_API_URL/register', userData)
+      axios.post('http://localhost:8085/auth/register', userData)
         .then(response => {
+          this.registrationStatus = 'success';
+          this.registrationMessage = 'Registratie is gelukt';
           console.log('Registration successful', response.data);
           // You can redirect the user or perform any other actions on successful registration
         })
         .catch(error => {
+          this.registrationStatus = 'error';
+          this.registrationMessage = 'Email of gebruikersnaam al in gebruik';
           console.error('Registration failed', error);
           // Handle registration error (show a message to the user, etc.)
         });
