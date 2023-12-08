@@ -1,6 +1,5 @@
 package com.linkextractor.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,12 +14,13 @@ import com.linkextractor.backend.respositories.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
-    @Autowired
-    private UserRepository userRepository;
-
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+    }
 
     /**
      * Retrieves a UserDetails object based on the username.
@@ -31,7 +31,6 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Check!");
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
     }
 }

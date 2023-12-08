@@ -41,19 +41,21 @@ import java.util.List;
 @Configuration
 public class SecurityConfiguration {
 
-    private final RSAKeyProperties keys;
-
+    // Constants for endpoint URLs
     private static final String AUTH_ENDPOINT = "/auth/**";
     private static final String ADMIN_ENDPOINT = "/admin/**";
     private static final String USER_ENDPOINT = "/user/**";
 
+    private final RSAKeyProperties keys;
+
+    // Constructor injection for RSAKeyProperties
     public SecurityConfiguration(RSAKeyProperties keys) {
         this.keys = keys;
     }
 
 
     /**
-     * Defines the password encoder bean to be used for encoding passwords.
+     * Defines the password encoder bean to encode passwords using BCrypt.
      *
      * @return BCryptPasswordEncoder instance for password encoding
      */
@@ -79,6 +81,7 @@ public class SecurityConfiguration {
 
     /**
      * Configures the security filter chain to define security rules for different endpoints.
+     * Specifies endpoint permissions, JWT token validation, and session management.
      *
      * @param http HttpSecurity instance for configuring security
      * @return SecurityFilterChain instance defining security rules
@@ -94,16 +97,24 @@ public class SecurityConfiguration {
                     auth.requestMatchers(ADMIN_ENDPOINT).hasRole(Roles.ADMIN.name()); // Require ADMIN role for /admin/**
                     auth.requestMatchers(USER_ENDPOINT).hasAnyRole(Roles.ADMIN.name(), Roles.USER.name()); // Require ADMIN or USER roles for /user/**
                     auth.anyRequest().authenticated(); // Require authentication for any other request
-                }).oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))) // Configure JWT token validation
+                })
+                // Configures JWT token validation for OAuth2 resource server
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                // Configures stateless sessions for improved security
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        return http.build(); // Build the SecurityFilterChain
+        return http.build(); // Builds the SecurityFilterChain
     }
 
 
-    // WARNING: This approach might not be considered the best practice for CORS configuration.
+    /**
+     * Configures CORS globally allowing requests from all origins, methods, and headers.
+     * Note: This approach might not be considered best for CORS configuration (Need to change this).
+     *
+     * @return CorsConfigurationSource instance for CORS configuration
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration(); // Create CORS configuration instance
@@ -118,24 +129,30 @@ public class SecurityConfiguration {
 
     /**
      * Defines the JWT Decoder bean to decode JWT tokens.
+     * It uses a provided public key for decoding JWT tokens.
      *
      * @return JwtDecoder instance for decoding JWT tokens
      */
     @Bean
     public JwtDecoder jwtDecoder() {
+        // Create a JwtDecoder instance using NimbusJwtDecoder with the provided public key
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
 
 
     /**
      * Defines the JWT Encoder bean to encode JWT tokens.
+     * It utilizes provided public and private keys for encoding JWT tokens.
      *
      * @return JwtEncoder instance for encoding JWT tokens
      */
     @Bean
     public JwtEncoder jwtEncoder() {
+        // Create a JWK (JSON Web Key) using provided public and private keys
         JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
+        // Create a JWKSource with the created JWK
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        // Create a JwtEncoder using NimbusJwtEncoder with the JWKSource
         return new NimbusJwtEncoder(jwks);
     }
 
@@ -147,7 +164,9 @@ public class SecurityConfiguration {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        // Specifies the key in JWT payload containing role information
         jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        // Prefixes roles with "ROLE_" as required by Spring Security
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);

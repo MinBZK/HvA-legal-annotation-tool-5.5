@@ -18,6 +18,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+/**
+ * Entity representing a user in the application.
+ * Implements UserDetails to integrate with Spring Security for user authentication and authorization.
+ */
 @Entity
 @Table(name="user")
 public class User implements UserDetails{
@@ -61,6 +65,8 @@ public class User implements UserDetails{
         this.authorities = authorities;
     }
 
+    // Getters and Setters
+
     public int getUserId() {
         return this.userId;
     }
@@ -98,7 +104,32 @@ public class User implements UserDetails{
         this.username = username;
     }
 
-    /* If you want account locking capabilities create variables and ways to set them for the methods below */
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    // Account expiration, locking, and credentials expiration methods
+    // These methods can be implemented for account-related functionality if required
     @Override
     public boolean isAccountNonExpired() {
         return true;

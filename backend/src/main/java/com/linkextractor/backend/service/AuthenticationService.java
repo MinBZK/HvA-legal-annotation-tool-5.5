@@ -29,20 +29,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JWTService jwtService;
+    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTService jwtService) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+    }
 
     /**
      * Registers a new user based on the provided registration information.
@@ -74,24 +73,27 @@ public class AuthenticationService {
     }
 
     /**
-     * Logs in a user based on the provided login information.
+     * Authenticates a user based on the provided login information.
      *
      * @param loginDTO The LoginDTO containing user login details.
-     * @return The LoginResponseDTO with user details and authentication token.
-     * @throws InvalidLoginException if login details are invalid.
+     * @return The LoginResponseDTO with user details and authentication token upon successful authentication.
+     * @throws InvalidLoginException if authentication fails with invalid login details.
      */
     public LoginResponseDTO loginUser(LoginDTO loginDTO) {
-        Authentication auth = authenticationManager.
-                authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+        try {
+            // Authenticate user credentials using AuthenticationManager
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword())
+            );
 
-        if (auth.isAuthenticated()) {
             // Generate a JWT token for the authenticated user
             String token = jwtService.generateJwt(auth);
 
-            // Return a LoginResponseDTO containing only the generated JWT token
+            // Return LoginResponseDTO with the generated JWT token (or relevant user details)
             return new LoginResponseDTO(token);
-        }
-        else {
+
+        } catch (AuthenticationException e) {
+            // Throw an InvalidLoginException for failed authentication due to invalid login details
             throw new InvalidLoginException("Invalid Login Details");
         }
     }

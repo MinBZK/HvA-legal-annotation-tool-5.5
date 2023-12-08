@@ -9,6 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Entity representing a role in the application.
+ * Implements GrantedAuthority to integrate with Spring Security for role-based authorization.
+ */
 @Entity
 @Table(name="role")
 public class Role implements GrantedAuthority {
@@ -32,6 +36,7 @@ public class Role implements GrantedAuthority {
         this.authority = authority;
     }
 
+    // Getters and Setters
     @Override
     public String getAuthority() {
         return this.authority;
