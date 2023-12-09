@@ -14,41 +14,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.linkextractor.backend.models.Brondefinitie;
-import com.linkextractor.backend.respositories.BrondefinitieRepository;
+import com.linkextractor.backend.models.XMLBron;
+import com.linkextractor.backend.respositories.XMLBronRepository;
 
 @RestController
-@RequestMapping("/brondefinitie")
-public class BrondefinitieController {
-    private BrondefinitieRepository brondefinitieRepository;
+@RequestMapping("/XMLBron")
+public class XMLBronController {
+    private XMLBronRepository xmlBronRepository;
 
     @Autowired
-    public BrondefinitieController(BrondefinitieRepository brondefinitieRepository) {
-        this.brondefinitieRepository = brondefinitieRepository;
+    public XMLBronController(XMLBronRepository xmlBronRepository) {
+        this.xmlBronRepository = xmlBronRepository;
     }
 
     @GetMapping
-    private @ResponseBody Iterable<Brondefinitie> getBrondefinities(){
-        return brondefinitieRepository.findAll();
+    private @ResponseBody Iterable<XMLBron> getXMLBronnen(){
+        return xmlBronRepository.findAll();
     }
 
 
     @PostMapping
-    private ResponseEntity<Brondefinitie> createBrondefinitie(@RequestBody Brondefinitie brondefinitie){
+    private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron){
 
-        Brondefinitie toBeSavedBrondefinitie = brondefinitieRepository.save(brondefinitie);
+        XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(toBeSavedBrondefinitie.getBrondefinitie_id()).toUri();
+                .buildAndExpand(toBeSavedXmlBron.getXmlbron_id()).toUri();
 
 
         return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/{id}")
-    private void deleteById(@PathVariable String rs_code){
+    private void deleteById(@PathVariable int xmlbron_id){
         
     }
 }

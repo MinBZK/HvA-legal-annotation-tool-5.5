@@ -26,6 +26,9 @@ public class Rechtsfeit {
     @Column(name = "plaats_aanduiding")
     private String plaats_aanduiding;
 
+    @Column(name = "rf_definitie", nullable = true)
+    private String rf_definitie;
+
     @OneToMany(mappedBy = "rechtsfeit_vw")
     private ArrayList<Voorwaarde> voorwaardes;
 

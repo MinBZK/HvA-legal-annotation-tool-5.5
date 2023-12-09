@@ -18,6 +18,9 @@ public class Voorwaarde {
     @Column(name = "voldaan")
     private Boolean voldaan;
 
+    @Column(name = "vw_definitie",nullable = true)
+    private String vw_definitie;
+
     @ManyToOne
     @JoinColumn(name = "rs_code")
     private Rechtssubject rechtssubject_vw;
