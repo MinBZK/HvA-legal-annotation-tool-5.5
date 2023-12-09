@@ -155,10 +155,40 @@ export default {
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
+      if (this.selectedText) {
+        const wordNumber = this.findWordNumber(this.selectedText);
+        console.log(`Selected Text: ${this.selectedText}, Word Number: ${wordNumber}`);
+        this.isVisible = true;
+      }
+
 
       if (this.selectedText) {
         this.isVisible = true;
       }
+    },
+
+    findWordNumber(selectedText) {
+      let foundNumber = null;
+
+      this.parsedData.articles.forEach((article) => {
+        article.parts.forEach((part) => {
+          part.partWords.forEach((word) => {
+            if (word.name === selectedText) {
+              foundNumber = word.number;
+            }
+          });
+
+          part.subParts.forEach((subPart) => {
+            subPart.subPartWords.forEach((word) => {
+              if (word.name === selectedText) {
+                foundNumber = word.number;
+              }
+            });
+          });
+        });
+      });
+
+      return foundNumber;
     },
 
     handleWordHover(word) {
@@ -166,7 +196,6 @@ export default {
       this.matchedWord = this.findMatchingDefinition(this.hoveredWord);
 
       if (this.matchedWord !== undefined) {
-        console.log("HERE")
         this.showTooltip = true;
       }
     },
@@ -226,8 +255,7 @@ export default {
       this.handleParsedData(xmlObject.artikel);
     },
 
-    handleParsedData(articleNode)
-    {
+    handleParsedData(articleNode) {
       const parsedData = {articles: []};
 
       let wordIndex = 0; // Internal counter for word index
@@ -273,7 +301,7 @@ export default {
       console.log(parsedData)
       this.parsedData = parsedData;
     }
-,
+    ,
 
 
     removeDotsAndSymbols(word) {
