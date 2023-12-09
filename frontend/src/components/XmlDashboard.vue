@@ -149,6 +149,8 @@ export default {
   },
   methods: {
     loadDefinitions() {
+      console.log(import.meta.env)
+      store().getDefinitions();
     },
 
     handleSelection() {
@@ -224,8 +226,11 @@ export default {
       this.handleParsedData(xmlObject.artikel);
     },
 
-    handleParsedData(articleNode) {
+    handleParsedData(articleNode)
+    {
       const parsedData = {articles: []};
+
+      let wordIndex = 0; // Internal counter for word index
 
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
@@ -237,22 +242,21 @@ export default {
           const partName = lidNode.al?._text?.trim();
 
           const partNameWords = partName.split(/\s+/); // Split by whitespace to get individual words
-          const partNameWordsElements = partNameWords.map((word, wordIndex) => ({
-            number: partNumber + (wordIndex + 1), // Append word index to partNumber
+          const partNameWordsElements = partNameWords.map((word) => ({
+            number: ++wordIndex, // Increment wordIndex for each word
             name: word.trim(),
           }));
 
           const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
-            const subPartNumberNode = $(liNode).find('li.nr').first();
+            $(liNode).find('li.nr').first();
             const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
 
             const subPartName = liNode.al?._text?.trim();
             const subPartWords = subPartName.split(/\s+/); // Split by whitespace to get individual words
-            const subPartWordElements = subPartWords.map((word, wordIndex) => ({
-              number: subPartNumber + (wordIndex + 1), // Append word index to subPartNumber
+            const subPartWordElements = subPartWords.map((word) => ({
+              number: ++wordIndex, // Increment wordIndex for each word
               name: word.trim(),
             }));
-
 
             return {
               number: subPartNumber,
@@ -266,9 +270,11 @@ export default {
 
         parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
       }
-
+      console.log(parsedData)
       this.parsedData = parsedData;
-    },
+    }
+,
+
 
     removeDotsAndSymbols(word) {
       // Remove special symbols

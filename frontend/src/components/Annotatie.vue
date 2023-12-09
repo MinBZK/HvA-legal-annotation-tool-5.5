@@ -119,6 +119,7 @@ export default {
         };
 
         store().definitions.push(newDefinition);
+        store().postDefinition(newDefinition);
 
         this.$emit('annotation-saved', {
           text: selectedText,
