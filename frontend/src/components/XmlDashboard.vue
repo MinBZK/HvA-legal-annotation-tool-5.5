@@ -136,6 +136,7 @@ export default {
       showTooltip: false,
       hoveredWord: "",
       matchedWord: "",
+      articleTitle: "",
     };
   },
   computed: {
@@ -147,6 +148,9 @@ export default {
     },
   },
   methods: {
+    loadDefinitions() {
+    },
+
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
 
@@ -212,6 +216,7 @@ export default {
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
+      this.loadDefinitions();
     },
 
     parseXML(xmlString) {
@@ -225,6 +230,7 @@ export default {
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
         const articleTitle = articleNode.kop?._text?.trim();
+        this.articleTitle = articleTitle;
 
         const parts = (articleNode.lid || []).map((lidNode) => {
           const partNumber = lidNode.lidnr?._text?.trim();
@@ -269,6 +275,7 @@ export default {
       return word.replace(/[.,]/gi, '');
     }
   },
+
 };
 </script>
 
