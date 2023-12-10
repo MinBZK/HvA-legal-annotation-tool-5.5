@@ -8,7 +8,7 @@ export const store = defineStore('app', {
     definitions: [],
     loadedXMLIdentifier: "",
     user: {logged: true, permissions: ""},
-    tokenJWT: "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImlhdCI6MTcwMjIzNjgwNCwicm9sZXMiOiJVU0VSIn0.xNgOmjPVcD_6iP1IpFE4kG-YI4mJefdDCIkOT7EIKt1ga01XgQS6NuGXQDvgtVzR-2nrOoD-0DBCtdBAwKlXKXDwt6dQ4qIAY5K84aBT-cC6sBNTQUYL03U84RH4OvVmlGAFXZUJIERLMoHlfV5yWGAyxTVKT15AXfjKa5wUr_IbQs-DSsdcFOqsWhFxTE8m618N2YG52faz_tX-41WRCcEfS6UjD2CzGJfeCSIH8crnF1K0ItqGTl0l53uCZp3tCYuMh3XqeRlS4UcyetGPYonJcQAR5lhmACGCdyWl2xucIop-i_FVgkeuMRPUyqD90cWB2b_wxPLJSRpPs29tmQ"
+    tokenJWT: "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI1MDE1MSwiaWF0IjoxNzAyMjQ5MjUxLCJyb2xlcyI6IlVTRVIifQ.Hpt1CLnt7fRXOFjhtzL8cHOhLErTav0LFZJzNXp1qt7lYOy5sJK0sOLOsLfkZA-X8g2Tw3EKcvI2R8MjB1gKrKZlxs-oGNGjKxmjwVUnL1TxV8QSjNvkLlcxXD2ushuHU2oQeF8hGg9pYKOikTzNLxMC7OhXKytMHx9XZRazg_eypavdpIct5OLlE4H_U6cMJppxaizp2rTMD1ezCgmgp9ccSs31HZS6VrI09Q_P0FdwcDLYlr3ymiJKGP2L4VnLd5IUxaUWetd_minsW2wYOrGzX4t37ZMlV0DSmHuwIsMeXKwXTgoLvpLIsnjovIxq9XVyW8JtL7QcfUO4G9VIcA"
   }),
 
   actions: {
@@ -75,6 +75,10 @@ export const store = defineStore('app', {
       }
     },
 
+    async getXMLBron(artikelNaam) {
+      return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
+    },
+
     async getDefinitions() {
       let response = await this.genericGetRequests("define");
       this.definitions = response.data;
@@ -84,8 +88,8 @@ export const store = defineStore('app', {
       this.responseCode = await this.genericPostRequest("define/addDefinition", body);
     },
 
-    async postNewXML(body) {
-      this.responseCode = await this.genericPostRequest("bronDefinitie/add", body);
+    async postNewXMLBron(body) {
+      this.responseCode = await this.genericPostRequest("XMLBron/api/v1/", body);
     },
 
   },

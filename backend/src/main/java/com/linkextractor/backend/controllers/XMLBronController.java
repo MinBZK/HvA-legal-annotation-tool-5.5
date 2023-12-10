@@ -1,41 +1,45 @@
 package com.linkextractor.backend.controllers;
 
-import java.net.URI;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.linkextractor.backend.models.XMLBron;
 import com.linkextractor.backend.respositories.XMLBronRepository;
+import com.linkextractor.backend.service.XMLBronService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/XMLBron")
 public class XMLBronController {
     private XMLBronRepository xmlBronRepository;
+    private XMLBronService xmlBronService;
 
     @Autowired
-    public XMLBronController(XMLBronRepository xmlBronRepository) {
+    public XMLBronController(XMLBronRepository xmlBronRepository, XMLBronService xmlBronService) {
         this.xmlBronRepository = xmlBronRepository;
+        this.xmlBronService = xmlBronService;
     }
 
     @GetMapping("/api/v1/")
-    private @ResponseBody Iterable<XMLBron> getXMLBronnen(){
+    private @ResponseBody
+    Iterable<XMLBron> getXMLBronnen() {
         return xmlBronRepository.findAll();
     }
 
+    @GetMapping("/byName/{artikelNaam}")
+    public ResponseEntity<XMLBron> getXMLBronByArtikelNaam(@PathVariable String artikelNaam) {
+        XMLBron xmlBron = xmlBronRepository.findByArtikelNaam(artikelNaam);
+        if (xmlBron != null) {
+            return ResponseEntity.ok(xmlBron);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PostMapping("/api/v1/")
-    private ResponseEntity<XMLBron> createXMLBron(@RequestHeader(value ="X-api-key") String apiKey, @RequestBody XMLBron xmlBron){
+    private ResponseEntity<XMLBron> createXMLBron(@RequestHeader(value = "X-api-key") String apiKey, @RequestBody XMLBron xmlBron) {
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder
@@ -48,7 +52,7 @@ public class XMLBronController {
     }
 
     @DeleteMapping("/{id}")
-    private void deleteById(@PathVariable int xmlbron_id){
-        
+    private void deleteById(@PathVariable int xmlbron_id) {
+
     }
 }

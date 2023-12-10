@@ -67,7 +67,7 @@
                                           activator="parent"
                                           location="top"
                                >
-                                     {{ matchedWord.definition }}
+                                     {{ matchedWord.definitie }}
                         </v-tooltip>
 
                             </span>
@@ -153,6 +153,7 @@ export default {
   },
   methods: {
     loadDefinitions() {
+      store().getXMLBron(this.articleTitle);
       store().getDefinitions();
     },
 
@@ -166,18 +167,18 @@ export default {
     handleWordHover(word) {
       this.hoveredWordObject = word;
       this.hoveredWord = this.removeDotsAndSymbols(word.name);
-      this.matchedWord = this.findMatchingDefinition(this.hoveredWord);
-
+      this.matchedWord = this.findMatchingIndexes(word.number);
       if (this.matchedWord !== undefined) {
         this.showTooltip = true;
       }
     },
 
-    findMatchingDefinition(hoveredText) {
+    findMatchingIndexes(number) {
       let definitions = this.convertProxyObjects(store().definitions);
 
       return definitions.find(
-        definition => definition.woord === hoveredText
+        definition =>
+          (number >= definition.positie_start && number <= definition.positie_end)
       );
     },
 
@@ -238,6 +239,7 @@ export default {
       this.handleParsedData(xmlObject.artikel);
     },
 
+    // TODO Method should be split up in separate smaller methods
     handleParsedData(articleNode) {
       const parsedData = {articles: []};
       let wordIndex = -1; // Internal counter for word index
