@@ -18,17 +18,30 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+/**
+ * Entity representing a user in the application.
+ * Implements UserDetails to integrate with Spring Security for user authentication and authorization.
+ */
 @Entity
 @Table(name="user")
 public class User implements UserDetails{
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="user_id")
     private int userId;
+
     @Column(unique=true)
     private String username;
+
     private String password;
+
+    @Column(unique = true)
+    private String email;
+
+    private String firstname;
+
+    private String lastname;
 
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
@@ -39,24 +52,26 @@ public class User implements UserDetails{
     private Set<Role> authorities;
 
     public User() {
-        super();
         authorities = new HashSet<>();
     }
 
-
-    public User(int userId, String username, String password, Set<Role> authorities) {
-        super();
+    public User(int userId, String username, String password, String email, String firstname, String lastname, Set<Role> authorities) {
         this.userId = userId;
         this.username = username;
         this.password = password;
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.authorities = authorities;
     }
+
+    // Getters and Setters
 
     public int getUserId() {
         return this.userId;
     }
 
-    public void setId(Integer userId) {
+    public void setId(int userId) {
         this.userId = userId;
     }
 
@@ -89,7 +104,32 @@ public class User implements UserDetails{
         this.username = username;
     }
 
-    /* If you want account locking capabilities create variables and ways to set them for the methods below */
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    // Account expiration, locking, and credentials expiration methods
+    // These methods can be implemented for account-related functionality if required
     @Override
     public boolean isAccountNonExpired() {
         return true;

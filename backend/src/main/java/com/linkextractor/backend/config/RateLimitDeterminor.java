@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.jwk.JWK;
 
@@ -13,7 +12,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BandwidthBuilder;
 import io.github.bucket4j.Bucket;
 
-@Component
+
 public class RateLimitDeterminor {
     private final int USER_ROLE_RATE = 1;
     private final int JURIST_ROLE_RATE = 1;

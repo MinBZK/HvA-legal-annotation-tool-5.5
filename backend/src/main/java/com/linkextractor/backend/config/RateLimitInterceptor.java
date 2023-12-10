@@ -6,6 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public class RateLimitInterceptor implements HandlerInterceptor{
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
     private RateLimitDeterminor rateLimitDeterminor;
 import jakarta.servlet.http.HttpServletRequest;
 
