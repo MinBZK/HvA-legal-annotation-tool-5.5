@@ -84,6 +84,10 @@ export const store = defineStore('app', {
         this.responseCode = await this.genericPostRequest("define/addDefinition", body);
       },
 
+      async postNewXML(body) {
+        this.responseCode = await this.genericPostRequest("bronDefinitie/add", body);
+      },
+
     },
   })
 ;
