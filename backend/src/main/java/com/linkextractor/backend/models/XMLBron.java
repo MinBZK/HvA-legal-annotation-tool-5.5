@@ -39,11 +39,25 @@ public class XMLBron {
     @OneToOne(mappedBy = "xmlbron")
     private Rechtssubject rechtssubject;
 
-    public XMLBron() {
-        super();
-        definities = new HashSet<>();
-        rechtssubject = new Rechtssubject();
+
+    public XMLBron(int xmlbron_id, String artikel_naam, String link){
+        this.xmlbron_id = xmlbron_id;
+        this.artikel_naam = artikel_naam;
+        this.link = link;
     }
+
+    public XMLBron(){
+
+    }
+
+    
+
+    // public XMLBron() {
+    //     super();
+    //     definities = new HashSet<>();
+    //     rechtssubject = new Rechtssubject();
+    // }
+
 
     public int getXmlbron_id() {
         return xmlbron_id;

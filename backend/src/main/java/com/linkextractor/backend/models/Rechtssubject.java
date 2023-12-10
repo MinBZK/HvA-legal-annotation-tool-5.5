@@ -46,7 +46,7 @@ public class Rechtssubject {
     @OneToMany(mappedBy = "rechtssubject_vw")
     private ArrayList<Voorwaarde> voorwaardes;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name="xmlbron_rechtssubject_id", referencedColumnName = "xmlbron_id")
     private XMLBron xmlbron;
     

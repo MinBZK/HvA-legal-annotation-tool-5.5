@@ -1,5 +1,6 @@
 package com.linkextractor.backend.config;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,34 +29,29 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.BandwidthBuilder;
 import io.github.bucket4j.Bucket;
 
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
+@EnableCaching
 public class SecurityConfiguration {
     private final RSAKeyProperties keys;
-    private final Map<JWK, Bucket> cache = new ConcurrentHashMap<>();
 
     // Constructor injection of RSAKeyProperties to fetch keys for JWT token encoding/decoding
     public SecurityConfiguration(RSAKeyProperties keys) {
         this.keys = keys;
     }
-
-    // public Bucket resolveBucket(JWK token){
-    //     return cache.computeIfAbsent(token, this::newBucket);
-    // }
-
-    // public Bucket newBucket(JWK token){
-
-    // }
 
     // Bean for PasswordEncoder to encrypt and verify passwords
     @Bean

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,15 +28,14 @@ public class XMLBronController {
         this.xmlBronRepository = xmlBronRepository;
     }
 
-    @GetMapping
+    @GetMapping("/api/v1/")
     private @ResponseBody Iterable<XMLBron> getXMLBronnen(){
         return xmlBronRepository.findAll();
     }
 
 
-    @PostMapping
-    private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron){
-
+    @PostMapping("/api/v1/")
+    private ResponseEntity<XMLBron> createXMLBron(@RequestHeader(value ="X-api-key") String apiKey, @RequestBody XMLBron xmlBron){
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder
