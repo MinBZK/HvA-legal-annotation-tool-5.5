@@ -101,7 +101,7 @@ public class SecurityConfiguration {
                 // Configures JWT token validation for OAuth2 resource server
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
-                // Configures stateless sessions for improved security
+                // Configures stateless sessions for improved security (This means it re-authenticates the user on every request.)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
