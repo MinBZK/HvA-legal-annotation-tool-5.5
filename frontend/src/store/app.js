@@ -8,7 +8,8 @@ export const store = defineStore('app', {
     definitions: [],
     loadedXMLIdentifier: "",
     user: {logged: true, permissions: ""},
-    tokenJWT: "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI1MDE1MSwiaWF0IjoxNzAyMjQ5MjUxLCJyb2xlcyI6IlVTRVIifQ.Hpt1CLnt7fRXOFjhtzL8cHOhLErTav0LFZJzNXp1qt7lYOy5sJK0sOLOsLfkZA-X8g2Tw3EKcvI2R8MjB1gKrKZlxs-oGNGjKxmjwVUnL1TxV8QSjNvkLlcxXD2ushuHU2oQeF8hGg9pYKOikTzNLxMC7OhXKytMHx9XZRazg_eypavdpIct5OLlE4H_U6cMJppxaizp2rTMD1ezCgmgp9ccSs31HZS6VrI09Q_P0FdwcDLYlr3ymiJKGP2L4VnLd5IUxaUWetd_minsW2wYOrGzX4t37ZMlV0DSmHuwIsMeXKwXTgoLvpLIsnjovIxq9XVyW8JtL7QcfUO4G9VIcA"
+    tokenJWT:
+      "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI1MjE2NiwiaWF0IjoxNzAyMjUxMjY2LCJyb2xlcyI6IlVTRVIifQ.rl4bvqS2wMpeTLxb5kBeD0_Bbl5LhSzW_wsNOx8QVFJU58UCAv-TivE-zcqubbftdmnNpwgfFkFFrAStWF_5R9XttmAs88Rs6dTTusMR1vYNGAHs1RyMgajqKrZPKO2AgerEZrxUoyuiiviFVCya0KteR3BxoaluXs6BmW0ulgQOWunLrG7q7XmWa5TpizQg6a9yNwDm7iJOYMbzeBUKKim41KcoWrcXUrQ12OQviTuWqu-jb_CJaBu8udCuVRz8KRBQpyrU_rCj_k4DiXVCkCqkfgPpz8BxmOkv1YWKNuB6yqqdCWTPCgKqvz_VtTtSv87K4fuw9rxilpEGdIfIQQ"
   }),
 
   actions: {

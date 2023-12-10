@@ -152,9 +152,27 @@ export default {
     },
   },
   methods: {
-    loadDefinitions() {
-      store().getXMLBron(this.articleTitle);
-      store().getDefinitions();
+    // TODO add proper error handling
+    async loadDefinitions() {
+      let response = await store().getXMLBron(this.articleTitle);
+
+      let xmlBron = {
+        artikel_naam: this.articleTitle,
+        link: "http://example.com/xml",
+        definities: []
+      }
+
+      if (response === 404) {
+        await store().postNewXMLBron(xmlBron);
+      }
+
+      try {
+        const definitions = await store().getDefinitions();
+        console.log('Definitions:', definitions);
+
+      } catch (definitionsError) {
+        console.error('Error getting definitions:', definitionsError);
+      }
     },
 
     handleSelection() {
@@ -231,7 +249,6 @@ export default {
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
-      this.loadDefinitions();
     },
 
     parseXML(xmlString) {
@@ -250,6 +267,7 @@ export default {
         const articleTitle = articleNode.kop?._text?.trim();
         this.articleTitle = articleTitle;
         store().loadedXMLIdentifier = articleTitle;
+
 
         const parts = (articleNode.lid || []).map((lidNode) => {
           const partNumber = lidNode.lidnr?._text?.trim();
@@ -292,6 +310,7 @@ export default {
       }
       this.allWordsInXML = allWords;
       this.parsedData = parsedData;
+      this.loadDefinitions();
     },
 
     removeDotsAndSymbols(word) {
