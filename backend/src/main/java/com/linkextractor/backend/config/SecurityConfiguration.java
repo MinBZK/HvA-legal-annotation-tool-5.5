@@ -1,6 +1,10 @@
 package com.linkextractor.backend.config;
 
+<<<<<<< HEAD
 import com.linkextractor.backend.models.enums.Roles;
+=======
+import org.springframework.cache.annotation.EnableCaching;
+>>>>>>> authAndSecurity
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,24 +32,40 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.BandwidthBuilder;
+import io.github.bucket4j.Bucket;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+<<<<<<< HEAD
+=======
+import java.time.Duration;
+import java.util.Arrays;
+>>>>>>> authAndSecurity
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Configuration class responsible for managing security configurations,
  * including authentication, authorization, and CORS policies.
  */
 @Configuration
+@EnableCaching
 public class SecurityConfiguration {
+<<<<<<< HEAD
 
     // Constants for endpoint URLs
     private static final String AUTH_ENDPOINT = "/auth/**";
     private static final String ADMIN_ENDPOINT = "/admin/**";
     private static final String USER_ENDPOINT = "/user/**";
 
+=======
+>>>>>>> authAndSecurity
     private final RSAKeyProperties keys;
 
     // Constructor injection for RSAKeyProperties

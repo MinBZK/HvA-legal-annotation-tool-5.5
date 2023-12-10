@@ -15,6 +15,9 @@ public class Variabele {
     @Column(name = "var_naam")
     private String var_naam;
 
+    @Column(name = "var_definitie",nullable = true)
+    private String var_definitie;
+
     @ManyToOne
     @JoinColumn(name = "ar_id", nullable = false)
     private Afleidingsregel afleidingsregel_var;

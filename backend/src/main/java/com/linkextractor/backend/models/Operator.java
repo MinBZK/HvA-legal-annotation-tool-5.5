@@ -18,6 +18,9 @@ public class Operator {
     @Column(name = "op_type")
     private String op_type;
 
+    @Column(name = "op_definitie",nullable = true)
+    private String op_definitie;
+
     @ManyToOne
     @JoinColumn(name = "ar_id", nullable = false)
     private Afleidingsregel afleidingsregel_op;

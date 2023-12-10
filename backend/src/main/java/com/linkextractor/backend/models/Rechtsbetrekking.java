@@ -25,6 +25,9 @@ public class Rechtsbetrekking{
     @Column(name = "rb_naam")
     private String rb_naam;
 
+    @Column(name = "rb_definitie", nullable = true)
+    private String rb_definitie;
+
     @Column(name = "hoofdsoort")
     private Hoofdsoort hoofdsoort;
 

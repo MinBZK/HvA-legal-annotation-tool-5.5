@@ -15,11 +15,15 @@ public class Afleidingsregel {
     @Column(name = "ar_naam")
     private String ar_naam;
 
+    @Column(name = "ar_definitie", nullable = true)
+    private String ar_definitie;
+
     @OneToMany(mappedBy = "afleidingsregel_var")
     private ArrayList<Variabele> variabelen;
 
     @OneToMany(mappedBy = "afleidingsregel_op")
     private ArrayList<Operator> operators;
+
 
     public Afleidingsregel(int ar_id, String ar_naam) {
         this.ar_id = ar_id;

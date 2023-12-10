@@ -9,46 +9,46 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.linkextractor.backend.models.Brondefinitie;
-import com.linkextractor.backend.respositories.BrondefinitieRepository;
+import com.linkextractor.backend.models.XMLBron;
+import com.linkextractor.backend.respositories.XMLBronRepository;
 
 @RestController
-@RequestMapping("/brondefinitie")
-public class BrondefinitieController {
-    private BrondefinitieRepository brondefinitieRepository;
+@RequestMapping("/XMLBron")
+public class XMLBronController {
+    private XMLBronRepository xmlBronRepository;
 
     @Autowired
-    public BrondefinitieController(BrondefinitieRepository brondefinitieRepository) {
-        this.brondefinitieRepository = brondefinitieRepository;
+    public XMLBronController(XMLBronRepository xmlBronRepository) {
+        this.xmlBronRepository = xmlBronRepository;
     }
 
-    @GetMapping
-    private @ResponseBody Iterable<Brondefinitie> getBrondefinities(){
-        return brondefinitieRepository.findAll();
+    @GetMapping("/api/v1/")
+    private @ResponseBody Iterable<XMLBron> getXMLBronnen(){
+        return xmlBronRepository.findAll();
     }
 
 
-    @PostMapping
-    private ResponseEntity<Brondefinitie> createBrondefinitie(@RequestBody Brondefinitie brondefinitie){
-
-        Brondefinitie toBeSavedBrondefinitie = brondefinitieRepository.save(brondefinitie);
+    @PostMapping("/api/v1/")
+    private ResponseEntity<XMLBron> createXMLBron(@RequestHeader(value ="X-api-key") String apiKey, @RequestBody XMLBron xmlBron){
+        XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(toBeSavedBrondefinitie.getBrondefinitie_id()).toUri();
+                .buildAndExpand(toBeSavedXmlBron.getXmlbron_id()).toUri();
 
 
         return ResponseEntity.created(location).build();
     }
 
     @DeleteMapping("/{id}")
-    private void deleteById(@PathVariable String rs_code){
+    private void deleteById(@PathVariable int xmlbron_id){
         
     }
 }

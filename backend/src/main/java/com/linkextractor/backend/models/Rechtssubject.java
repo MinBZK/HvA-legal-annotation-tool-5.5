@@ -30,6 +30,9 @@ public class Rechtssubject {
     @Column(name = "specalisatie")
     private boolean specalisatie;
 
+    @Column(name = "rs_definitie",nullable = true)
+    private String rs_definitie;
+
     @ManyToOne
     private Rechtssubject rechtssubject;
 
@@ -43,6 +46,10 @@ public class Rechtssubject {
     @OneToMany(mappedBy = "rechtssubject_vw")
     private ArrayList<Voorwaarde> voorwaardes;
 
+    @OneToOne
+    @JoinColumn(name="xmlbron_rechtssubject_id", referencedColumnName = "xmlbron_id")
+    private XMLBron xmlbron;
+    
     public Rechtssubject(String rs_code, String rs_naam, boolean specalisatie) {
         this.rs_code = rs_code;
         this.rs_naam = rs_naam;

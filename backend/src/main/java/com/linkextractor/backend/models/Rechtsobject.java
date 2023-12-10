@@ -23,6 +23,9 @@ public class Rechtsobject {
     @Column(name = "specalisatie")
     private boolean specalisatie;
 
+    @Column(name = "ro_definitie",nullable = true)
+    private String ro_definitie;
+
     @ManyToOne
     private Rechtsobject rechtsobject;
 
