@@ -2,7 +2,8 @@
   <v-container fluid>
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
-        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
+        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
+                         :hoveredWordObject="this.hoveredWordObject"
                          @close="isVisible=false"
                          @annotation-saved="applyAnnotation">
         </AnnotatieDialog>
@@ -29,7 +30,7 @@
         <v-card>
           <v-card-title>XML Content</v-card-title>
           <v-card-text v-if="parsedData.articles.length > 0">
-            <v-scroll-area @mouseup="handleSelection">
+            <v-scroll-area @mouseup="handleSelection()">
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
                   <h3>{{ article.title }}</h3>
@@ -39,7 +40,7 @@
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
-                              @mouseover="handleWordHover(word.name)"
+                              @mouseover="handleWordHover(word)"
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
@@ -56,7 +57,7 @@
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                             <span>{{ subPart.number }}</span>
                             <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word.name)"
+                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
                             >
                               {{ word.name }}
 
@@ -137,6 +138,8 @@ export default {
       hoveredWord: "",
       matchedWord: "",
       articleTitle: "",
+      hoveredWordObject: "",
+      allWordsInXML: "",
     };
   },
   computed: {
@@ -149,50 +152,19 @@ export default {
   },
   methods: {
     loadDefinitions() {
-      console.log(import.meta.env)
       store().getDefinitions();
     },
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
       if (this.selectedText) {
-        const wordNumber = this.findWordNumber(this.selectedText);
-        console.log(`Selected Text: ${this.selectedText}, Word Number: ${wordNumber}`);
         this.isVisible = true;
       }
-
-
-      if (this.selectedText) {
-        this.isVisible = true;
-      }
-    },
-
-    findWordNumber(selectedText) {
-      let foundNumber = null;
-
-      this.parsedData.articles.forEach((article) => {
-        article.parts.forEach((part) => {
-          part.partWords.forEach((word) => {
-            if (word.name === selectedText) {
-              foundNumber = word.number;
-            }
-          });
-
-          part.subParts.forEach((subPart) => {
-            subPart.subPartWords.forEach((word) => {
-              if (word.name === selectedText) {
-                foundNumber = word.number;
-              }
-            });
-          });
-        });
-      });
-
-      return foundNumber;
     },
 
     handleWordHover(word) {
-      this.hoveredWord = this.removeDotsAndSymbols(word);
+      this.hoveredWordObject = word;
+      this.hoveredWord = this.removeDotsAndSymbols(word.name);
       this.matchedWord = this.findMatchingDefinition(this.hoveredWord);
 
       if (this.matchedWord !== undefined) {
@@ -257,8 +229,8 @@ export default {
 
     handleParsedData(articleNode) {
       const parsedData = {articles: []};
-
-      let wordIndex = 0; // Internal counter for word index
+      let wordIndex = -1; // Internal counter for word index
+      let allWords = []; // Array to store all words
 
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
@@ -275,6 +247,9 @@ export default {
             name: word.trim(),
           }));
 
+          // Add partNameWordsElements to the allWords array
+          allWords = allWords.concat(partNameWordsElements);
+
           const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
             $(liNode).find('li.nr').first();
             const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
@@ -285,6 +260,9 @@ export default {
               number: ++wordIndex, // Increment wordIndex for each word
               name: word.trim(),
             }));
+
+            // Add subPartWordElements to the allWords array
+            allWords = allWords.concat(subPartWordElements);
 
             return {
               number: subPartNumber,
@@ -298,11 +276,9 @@ export default {
 
         parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
       }
-      console.log(parsedData)
+      this.allWordsInXML = allWords;
       this.parsedData = parsedData;
-    }
-    ,
-
+    },
 
     removeDotsAndSymbols(word) {
       // Remove special symbols

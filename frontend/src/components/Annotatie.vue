@@ -58,10 +58,22 @@ export default {
       type: Boolean,
       required: true,
     },
+
     selectedText: {
       type: String,
       required: true
+    },
+
+    allWordsInXML: {
+      type: Object,
+      required: true
+    },
+
+    hoveredWordObject: {
+      type: Object,
+      required: true
     }
+
   },
   data() {
     return {
@@ -87,6 +99,7 @@ export default {
         {label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)'},
         {label: 'Brondefinitie', color: 'rgb(246, 246, 246)'},
       ],
+      matchedWordsWithIndexes: "",
     }
   },
   methods: {
@@ -133,11 +146,69 @@ export default {
       const cleanedWord = word.replace(/[.,]/gi, '');
       // Remove leading and trailing spaces
       return cleanedWord.trim();
-    }
+    },
+
+    findNumbersForTextStartingFrom(wordsArray, targetText, hoveredWord) {
+      // Split the target text into an array of target words
+      let targetWords = targetText.split(/\s+/);
+
+      // Initialize an array to store the result data
+      let resultData = [];
+
+      // Get the starting number from the hovered word
+      let startNumber = hoveredWord.number;
+
+      // Calculate the target words size
+      let targetWordsSize = targetWords.length;
+
+      // Find the index in the array to start the search
+      let startIndex = wordsArray.findIndex((word) => word.number === startNumber);
+
+      // Check if the starting number is not found in the array
+      if (startIndex === -1) {
+        console.log(`Word with number ${startNumber} not found in the array.`);
+        return resultData;
+      }
+
+      // Iterate up the array
+      for (let i = startIndex; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
+        // Check if the name of the word is in the target words
+        if (targetWords.includes(wordsArray[i].name)) {
+          // Add the word to the result data at the beginning
+          resultData.unshift(wordsArray[i]);
+        }
+        // Check if enough words are found, and if so, break out of the loop
+        if (resultData.length === targetWordsSize) {
+          break;
+        }
+      }
+
+      if (resultData.length === targetWordsSize) {
+        return resultData;
+      }
+
+      // Iterate down the array
+      for (let i = startIndex; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
+        // Check if the name of the word is in the target words
+        if (targetWords.includes(wordsArray[i].name)) {
+          // Add the word to the result data at the end
+          resultData.push(wordsArray[i]);
+        }
+        // Check if enough words are found, and if so, break out of the loop
+        if (resultData.length === targetWordsSize * 2) {
+          break;
+        }
+      }
+
+      // Return the result data containing the matching words
+      return resultData;
+    },
   },
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
+    this.matchedWordsWithIndexes = this.findNumbersForTextStartingFrom(this.allWordsInXML, this.selectedText, this.hoveredWordObject);
+    console.log(this.matchedWordsWithIndexes)
   },
 
   watch: {
@@ -145,7 +216,8 @@ export default {
       this.checkMatchingDefinitions(newValue);
     },
   },
-};
+}
+;
 </script>
 
 <style scoped>
