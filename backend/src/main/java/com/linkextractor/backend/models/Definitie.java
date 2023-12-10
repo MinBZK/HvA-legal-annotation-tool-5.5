@@ -49,8 +49,8 @@ public class Definitie {
         return definitie;
     }
 
-    public void setDefinitie(String definite) {
-        this.definitie = definite;
+    public void setDefinitie(String definitie) {
+        this.definitie = definitie;
     }
 
     public int getPositie_start() {

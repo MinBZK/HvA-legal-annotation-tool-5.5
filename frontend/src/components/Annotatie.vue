@@ -135,10 +135,9 @@ export default {
 
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
-        console.log(newDefinition.definition)
 
         let definition = {
-          definite: newDefinition.definition,
+          definitie: newDefinition.definition,
           positie_start: positie_start,
           positie_end: positie_end,
           woord: newDefinition.text

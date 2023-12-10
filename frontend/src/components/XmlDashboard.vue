@@ -124,6 +124,7 @@ import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
 import {store} from "@/store/app";
+import {isProxy, toRaw} from 'vue';
 
 export default {
   components: {AnnotatieDialog},
@@ -173,12 +174,22 @@ export default {
     },
 
     findMatchingDefinition(hoveredText) {
-      return store().definitions.find(
-        definition => definition.text === hoveredText);
+      let definitions = this.convertProxyObjects(store().definitions);
+
+      return definitions.find(
+        definition => definition.woord === hoveredText
+      );
     },
 
     hideTooltip() {
       this.showTooltip = false;
+    },
+
+    convertProxyObjects(objects) {
+      if (isProxy(objects)) {
+        objects = toRaw(objects)
+      }
+      return objects
     },
 
     applyAnnotation(annotation) {

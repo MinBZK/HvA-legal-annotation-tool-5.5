@@ -20,7 +20,6 @@ instance.interceptors.response.use((response) => {
       // Check if renewal request is already in progress
       if (!isRefreshing) {
         isRefreshing = true;
-        console.log(store().tokenJWT)
         try {
           let response = await axiosAuth(
             {

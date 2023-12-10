@@ -90,6 +90,4 @@ public class XMLBron {
     public void setDefinities(Set<Definitie> definities) {
         this.definities = definities;
     }
-
-    
 }
