@@ -6,8 +6,9 @@ import axiosInterceptor from "@/axios-request/axios-interceptor";
 export const store = defineStore('app', {
     state: () => ({
       definitions: [],
+      loadedXMLIdentifier: "",
       user: {logged: true, permissions: ""},
-      tokenJWT: "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZXNzIiwiaWF0IjoxNzAyMTE5OTU2LCJyb2xlcyI6IlVTRVIifQ.RLnatQ4Ss-Z1wUCRSgomXtXR2SPoo5sNNcpQicEpjyA3k9neyagzdtQNkqonOH-D1vMSr5o0XmpcjaSLcebDQyiqPWq5txWZTjxZ98oFC8xosHf0GIF2cF3n0NhyXN6IAxvtvi6K1K8AycwCd5I7IlH0DlxLxJDyJTQohhfpLjwLQJIDpVeEtwtYUDOMtFhNtinyZLQ4kA7ykJTrPVDDkTbndYVJl9XKiSA90YEXvm7d501-C7Aej7kChIAs1AvoMcO_u0OCx4Ill561GrVR7B_nKcp69twWfzruM7wSf75t_b2wbyS9_cat7mt_cxNTVesHpyp2aUu44Ie1o5CWFg",
+      tokenJWT: "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImlhdCI6MTcwMjIzNjgwNCwicm9sZXMiOiJVU0VSIn0.xNgOmjPVcD_6iP1IpFE4kG-YI4mJefdDCIkOT7EIKt1ga01XgQS6NuGXQDvgtVzR-2nrOoD-0DBCtdBAwKlXKXDwt6dQ4qIAY5K84aBT-cC6sBNTQUYL03U84RH4OvVmlGAFXZUJIERLMoHlfV5yWGAyxTVKT15AXfjKa5wUr_IbQs-DSsdcFOqsWhFxTE8m618N2YG52faz_tX-41WRCcEfS6UjD2CzGJfeCSIH8crnF1K0ItqGTl0l53uCZp3tCYuMh3XqeRlS4UcyetGPYonJcQAR5lhmACGCdyWl2xucIop-i_FVgkeuMRPUyqD90cWB2b_wxPLJSRpPs29tmQ"
     }),
 
     actions: {

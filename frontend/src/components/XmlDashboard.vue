@@ -236,6 +236,7 @@ export default {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
         const articleTitle = articleNode.kop?._text?.trim();
         this.articleTitle = articleTitle;
+        store().loadedXMLIdentifier = articleTitle;
 
         const parts = (articleNode.lid || []).map((lidNode) => {
           const partNumber = lidNode.lidnr?._text?.trim();

@@ -1,16 +1,10 @@
 package com.linkextractor.backend.models;
 
-import java.util.Set;
-
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Definitie {
@@ -23,7 +17,7 @@ public class Definitie {
     private String woord;
 
     @Column(name = "definitie")
-    private String definite;
+    private String definitie;
     
     @Column(name = "positie_start")
     private int positie_start;
@@ -51,12 +45,12 @@ public class Definitie {
         this.woord = woord;
     }
 
-    public String getDefinite() {
-        return definite;
+    public String getDefinitie() {
+        return definitie;
     }
 
-    public void setDefinite(String definite) {
-        this.definite = definite;
+    public void setDefinitie(String definite) {
+        this.definitie = definite;
     }
 
     public int getPositie_start() {

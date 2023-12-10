@@ -132,7 +132,19 @@ export default {
         };
 
         store().definitions.push(newDefinition);
-        store().postDefinition(newDefinition);
+
+        let positie_start = this.matchedWordsWithIndexes[0].number;
+        let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+        console.log(newDefinition.definition)
+
+        let definition = {
+          definite: newDefinition.definition,
+          positie_start: positie_start,
+          positie_end: positie_end,
+          woord: newDefinition.text
+        }
+
+        store().postDefinition(definition);
 
         this.$emit('annotation-saved', {
           text: selectedText,
@@ -208,7 +220,6 @@ export default {
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
     this.matchedWordsWithIndexes = this.findNumbersForTextStartingFrom(this.allWordsInXML, this.selectedText, this.hoveredWordObject);
-    console.log(this.matchedWordsWithIndexes)
   },
 
   watch: {
