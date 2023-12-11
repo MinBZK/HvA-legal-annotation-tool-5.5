@@ -39,7 +39,7 @@ public class XMLBronController {
     }
 
     @PostMapping("/api/v1/")
-    private ResponseEntity<XMLBron> createXMLBron(@RequestHeader(value = "X-api-key") String apiKey, @RequestBody XMLBron xmlBron) {
+    private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron) {
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder

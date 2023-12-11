@@ -9,8 +9,9 @@ export const store = defineStore('app', {
     loadedXMLIdentifier: "",
     user: {logged: true, permissions: ""},
     tokenJWT:
-      "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI1MjE2NiwiaWF0IjoxNzAyMjUxMjY2LCJyb2xlcyI6IlVTRVIifQ.rl4bvqS2wMpeTLxb5kBeD0_Bbl5LhSzW_wsNOx8QVFJU58UCAv-TivE-zcqubbftdmnNpwgfFkFFrAStWF_5R9XttmAs88Rs6dTTusMR1vYNGAHs1RyMgajqKrZPKO2AgerEZrxUoyuiiviFVCya0KteR3BxoaluXs6BmW0ulgQOWunLrG7q7XmWa5TpizQg6a9yNwDm7iJOYMbzeBUKKim41KcoWrcXUrQ12OQviTuWqu-jb_CJaBu8udCuVRz8KRBQpyrU_rCj_k4DiXVCkCqkfgPpz8BxmOkv1YWKNuB6yqqdCWTPCgKqvz_VtTtSv87K4fuw9rxilpEGdIfIQQ"
-  }),
+      "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI4OTM4NCwiaWF0IjoxNzAyMjg4NDg0LCJyb2xlcyI6IlVTRVIifQ.f_hnGE1YgidAF66u2iwTNpU-ZZG0-WmbMOJoOiSdaHtuWibWQikxuyZYkQsrBMa98t-wwhJEp0qJuNTmkEbCWKBrXcRqTgo8NK8rZJuEO8LX8sHmSjev9lfJH07it5Nrkm15eqZlY43nPqd7scZ-UysgpkPADmGEHI45veg_L0bRgpPTEs7pMJZtl3uQNw76H-Wp7IcZ9W9w1RPV_Eo0ARL1e74fTEjMS8X9ArNXxm0UALmlHwEmnKjgg7bt6WWFj-ue4Jk3E7wk6xJMpzOwHwqhmOPn4ocKe751KB6E-QDd3UVCQ5YjqicRssPbVRvpW47rdT3pP0-CPi4x-THxXA"
+
+        }),
 
   actions: {
     async genericGetRequests(url) {

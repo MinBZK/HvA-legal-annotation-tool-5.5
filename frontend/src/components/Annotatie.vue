@@ -144,6 +144,7 @@ export default {
         }
 
         store().postDefinition(definition);
+        store().getDefinitions();
 
         this.$emit('annotation-saved', {
           text: selectedText,
