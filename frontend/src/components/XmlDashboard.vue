@@ -2,7 +2,8 @@
   <v-container fluid>
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
-        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText"
+        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
+                         :hoveredWordObject="this.hoveredWordObject"
                          @close="isVisible=false"
                          @annotation-saved="applyAnnotation">
         </AnnotatieDialog>
@@ -28,21 +29,48 @@
       <v-col col="6">
         <v-card>
           <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0" @mouseup="handleSelection">
-            <v-scroll-area>
+          <v-card-text v-if="parsedData.articles.length > 0">
+            <v-scroll-area @mouseup="handleSelection()">
               <div class="formatted-xml">
                 <div v-for="article in parsedData.articles" :key="article.number">
                   <h3>{{ article.title }}</h3>
                   <ol>
                     <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                       <div>
-                        <!--                        <span>{{ part.number }}. {{ part.name }}</span>-->
-                        <span v-html="part.name"></span>
+                        <span @mouseleave="hideTooltip"
+                              v-for="(word, wordIndex) in part.partWords"
+                              :key="wordIndex"
+                              @mouseover="handleWordHover(word)"
+                        >
+                          {{ word.name }}
+                          <span v-if="wordIndex < part.partWords.length - 1"> </span>
 
+                           <v-tooltip bottom v-if="showTooltip"
+                                      activator="parent"
+                                      location="top"
+                           >
+                                     {{ matchedWord.definitie }}
+                        </v-tooltip>
+
+                        </span>
                         <ul>
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
-<!--                            <span>{{ subPart.number }} {{ subPart.name }}</span>-->
-                            <span>{{subPart.number}}</span><span v-html=" subPart.name"></span>
+                            <span>{{ subPart.number }}</span>
+                            <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                            >
+                              {{ word.name }}
+
+                              <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
+
+                               <v-tooltip bottom v-if="showTooltip"
+                                          activator="parent"
+                                          location="top"
+                               >
+                                     {{ matchedWord.definitie }}
+                        </v-tooltip>
+
+                            </span>
                           </li>
                         </ul>
                       </div>
@@ -57,7 +85,6 @@
           </v-card-text>
         </v-card>
       </v-col>
-
     </v-row>
   </v-container>
 </template>
@@ -96,6 +123,8 @@ import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
+import {store} from "@/store/app";
+import {isProxy, toRaw} from 'vue';
 
 export default {
   components: {AnnotatieDialog},
@@ -106,6 +135,12 @@ export default {
       xmlFile: null,
       xmlContent: null,
       parsedData: {articles: []},
+      showTooltip: false,
+      hoveredWord: "",
+      matchedWord: "",
+      articleTitle: "",
+      hoveredWordObject: "",
+      allWordsInXML: "",
     };
   },
   computed: {
@@ -117,6 +152,29 @@ export default {
     },
   },
   methods: {
+    // TODO add proper error handling
+    async loadDefinitions() {
+      let response = await store().getXMLBron(this.articleTitle);
+
+      let xmlBron = {
+        artikel_naam: this.articleTitle,
+        link: "http://example.com/xml",
+        definities: []
+      }
+
+      if (response === 404) {
+        await store().postNewXMLBron(xmlBron);
+      }
+
+      try {
+        const definitions = await store().getDefinitions();
+        console.log('Definitions:', definitions);
+
+      } catch (definitionsError) {
+        console.error('Error getting definitions:', definitionsError);
+      }
+    },
+
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
       if (this.selectedText) {
@@ -124,8 +182,37 @@ export default {
       }
     },
 
+    handleWordHover(word) {
+      this.hoveredWordObject = word;
+      this.hoveredWord = this.removeDotsAndSymbols(word.name);
+      this.matchedWord = this.findMatchingIndexes(word.number);
+      if (this.matchedWord !== undefined) {
+        this.showTooltip = true;
+      }
+    },
+
+    findMatchingIndexes(number) {
+      let definitions = this.convertProxyObjects(store().definitions);
+
+      return definitions.find(
+        definition =>
+          (number >= definition.positie_start && number <= definition.positie_end)
+      );
+    },
+
+    hideTooltip() {
+      this.showTooltip = false;
+    },
+
+    convertProxyObjects(objects) {
+      if (isProxy(objects)) {
+        objects = toRaw(objects)
+      }
+      return objects
+    },
+
     applyAnnotation(annotation) {
-      let { text, color } = annotation;
+      let {text, color} = annotation;
       const regex = new RegExp(this.RegExp(text), 'g');
       const replacement = `<span style="background-color: ${color};">${text}</span>`;
 
@@ -150,6 +237,7 @@ export default {
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
     },
+
     loadXML() {
       if (!this.xmlFile) {
         return;
@@ -162,40 +250,78 @@ export default {
       };
       reader.readAsText(this.xmlFile);
     },
+
     parseXML(xmlString) {
       const xmlObject = xml2js.xml2js(xmlString, {compact: true});
       this.handleParsedData(xmlObject.artikel);
     },
+
+    // TODO Method should be split up in separate smaller methods
     handleParsedData(articleNode) {
       const parsedData = {articles: []};
+      let wordIndex = -1; // Internal counter for word index
+      let allWords = []; // Array to store all words
 
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
         const articleTitle = articleNode.kop?._text?.trim();
+        this.articleTitle = articleTitle;
+        store().loadedXMLIdentifier = articleTitle;
+
 
         const parts = (articleNode.lid || []).map((lidNode) => {
           const partNumber = lidNode.lidnr?._text?.trim();
           const partName = lidNode.al?._text?.trim();
 
+          const partNameWords = partName.split(/\s+/); // Split by whitespace to get individual words
+          const partNameWordsElements = partNameWords.map((word) => ({
+            number: ++wordIndex, // Increment wordIndex for each word
+            name: word.trim(),
+          }));
+
+          // Add partNameWordsElements to the allWords array
+          allWords = allWords.concat(partNameWordsElements);
+
           const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
-            const subPartNumberNode = $(liNode).find('li.nr').first();
+            $(liNode).find('li.nr').first();
             const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
 
             const subPartName = liNode.al?._text?.trim();
+            const subPartWords = subPartName.split(/\s+/); // Split by whitespace to get individual words
+            const subPartWordElements = subPartWords.map((word) => ({
+              number: ++wordIndex, // Increment wordIndex for each word
+              name: word.trim(),
+            }));
 
-            return {number: subPartNumber, name: subPartName};
+            // Add subPartWordElements to the allWords array
+            allWords = allWords.concat(subPartWordElements);
+
+            return {
+              number: subPartNumber,
+              name: subPartName,
+              subPartWords: subPartWordElements,
+            };
           });
 
-          return {number: partNumber, name: partName, subParts};
+          return {number: partNumber, name: partName, partWords: partNameWordsElements, subParts};
         });
 
         parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
       }
-
+      this.allWordsInXML = allWords;
       this.parsedData = parsedData;
+      this.loadDefinitions();
     },
+
+    removeDotsAndSymbols(word) {
+      // Remove special symbols
+      return word.replace(/[.,]/gi, '');
+    }
   },
+
 };
 </script>
+
+
 
 
