@@ -49,7 +49,7 @@
                                       activator="parent"
                                       location="top"
                            >
-                                     {{ matchedWord.definition }}
+                                     {{ matchedWord.definitie }}
                         </v-tooltip>
 
                         </span>
