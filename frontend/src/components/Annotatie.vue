@@ -109,6 +109,7 @@ export default {
 
     saveDialog() {
       this.saveDefinition();
+      this.saveLabel();
       this.$emit('close');
     },
 
@@ -150,6 +151,20 @@ export default {
           text: selectedText,
           color: this.selectedColor
         });
+      }
+    },
+    saveLabel(){
+      // Find the label object based on the selectedColor
+      const selectedLabelObject = this.colorOptions.find(option => option.color === this.selectedColor);
+
+      if (selectedLabelObject) {
+        // Log the label and its corresponding color
+        console.log('Selected Label:', selectedLabelObject.label);
+        console.log('Selected Color:', selectedLabelObject.color);
+
+        // You can perform additional actions related to the selected label here
+      } else {
+        console.warn('Label not found for the selected color:', this.selectedColor);
       }
     },
 
