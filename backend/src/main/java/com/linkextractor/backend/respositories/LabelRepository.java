@@ -1,18 +1,19 @@
 package com.linkextractor.backend.respositories;
 
 import com.linkextractor.backend.models.Definitie;
+import com.linkextractor.backend.models.Label;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface LabelRepository extends JpaRepository<Definitie, Long> {
+public interface LabelRepository extends JpaRepository<Label, Long> {
 
-    List<Definitie> findAll();
+    List<Label> findAll();
 
-    Optional<Definitie> findById(int definitionId);
+    Optional<Label> findById(int definitionId);
 
-    Definitie save(Definitie definitie);
+    Label save(Label label);
 
-    void deleteById(int definitionId);
+    void deleteById(int labelId);
 }

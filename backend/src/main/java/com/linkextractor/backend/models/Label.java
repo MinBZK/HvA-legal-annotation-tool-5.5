@@ -1,22 +1,20 @@
 package com.linkextractor.backend.models;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+@Entity
 public class Label {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "definitie_id")
+    @Column(name = "label_id")
     private int id;
 
     @Column(name = "woord")
     private String woord;
 
-    @Column(name = "definitie")
+    @Column(name = "label")
     private String label;
 
     @Column(name = "positie_start")
