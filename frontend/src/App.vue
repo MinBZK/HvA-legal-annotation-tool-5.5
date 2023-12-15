@@ -8,15 +8,15 @@
 
 <template>
   <div>
-<!--    <xml-loader />-->
-    <xml-dashboard />
+    <router-view></router-view>
   </div>
 </template>
 <script>
 
 import XmlLoader from "./components/XmlLoader.vue";
 import XmlDashboard from "@/components/XmlDashboard";
+
 export default {
-  components: {XmlLoader, XmlDashboard}
+  components: {XmlLoader, XmlDashboard }
 }
 </script>

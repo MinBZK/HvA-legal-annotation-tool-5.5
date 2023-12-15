@@ -7,10 +7,8 @@ export const store = defineStore('app', {
   state: () => ({
     definitions: [],
     loadedXMLIdentifier: "",
-    user: {logged: true, permissions: ""},
-    tokenJWT:
-      "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiZW1yZSIsImV4cCI6MTcwMjI4OTM4NCwiaWF0IjoxNzAyMjg4NDg0LCJyb2xlcyI6IlVTRVIifQ.f_hnGE1YgidAF66u2iwTNpU-ZZG0-WmbMOJoOiSdaHtuWibWQikxuyZYkQsrBMa98t-wwhJEp0qJuNTmkEbCWKBrXcRqTgo8NK8rZJuEO8LX8sHmSjev9lfJH07it5Nrkm15eqZlY43nPqd7scZ-UysgpkPADmGEHI45veg_L0bRgpPTEs7pMJZtl3uQNw76H-Wp7IcZ9W9w1RPV_Eo0ARL1e74fTEjMS8X9ArNXxm0UALmlHwEmnKjgg7bt6WWFj-ue4Jk3E7wk6xJMpzOwHwqhmOPn4ocKe751KB6E-QDd3UVCQ5YjqicRssPbVRvpW47rdT3pP0-CPi4x-THxXA"
-
+    user: {loggedIn: false, permissions: ""},
+    tokenJWT: ""
         }),
 
   actions: {
