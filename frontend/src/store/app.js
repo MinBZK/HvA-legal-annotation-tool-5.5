@@ -6,6 +6,7 @@ import axiosInterceptor from "@/axios-request/axios-interceptor";
 export const store = defineStore('app', {
   state: () => ({
     definitions: [],
+    labels: [],
     loadedXMLIdentifier: "",
     user: {logged: true, permissions: ""},
     tokenJWT:
@@ -86,8 +87,17 @@ export const store = defineStore('app', {
       this.definitions = response.data;
     },
 
+    async getLabels() {
+      let response = await this.genericGetRequests("label");
+      this.definitions = response.data;
+    },
+
     async postDefinition(body) {
       this.responseCode = await this.genericPostRequest("define/addDefinition", body);
+    },
+
+    async postLabel(body) {
+      this.responseCode = await this.genericPostRequest("label/addLabel", body);
     },
 
     async postNewXMLBron(body) {

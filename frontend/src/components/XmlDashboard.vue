@@ -212,6 +212,7 @@ export default {
     },
 
     applyAnnotation(annotation) {
+        console.log("applyAnnotation", annotation)
       let {text, color} = annotation;
       const regex = new RegExp(this.RegExp(text), 'g');
       const replacement = `<span style="background-color: ${color};">${text}</span>`;
@@ -219,10 +220,12 @@ export default {
       this.parsedData.articles.forEach(article => {
         article.parts.forEach(part => {
           if (part.name) {
+              console.log("replace part", part)
             part.name = part.name.replace(regex, replacement);
           }
           part.subParts.forEach(subPart => {
             if (subPart.name) {
+                console.log("replace subpart", subPart)
               subPart.name = subPart.name.replace(regex, replacement);
             }
           });
