@@ -37,6 +37,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.6",
     "@babel/preset-env": "^7.23.6",
+    "@testing-library/vue": "^8.0.1",
     "@vitejs/plugin-vue": "^4.5.1",
     "@vue/test-utils": "^2.4.3",
     "@vue/vue3-jest": "^29.2.6",
@@ -45,6 +46,7 @@
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.3.0",
     "jest": "^29.7.0",
+    "jest-axios-mock": "^1.0.0",
     "sass": "^1.60.0",
     "unplugin-fonts": "^1.0.3",
     "vite": "^4.2.0",
