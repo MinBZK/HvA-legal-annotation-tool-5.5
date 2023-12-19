@@ -8,15 +8,16 @@
 
 <template>
   <div>
-<!--    <xml-loader />-->
-    <xml-dashboard />
+
+    <register />
   </div>
 </template>
 <script>
 
 import XmlLoader from "./components/XmlLoader.vue";
 import XmlDashboard from "@/components/XmlDashboard";
+import Register from "@/components/Register.vue";
 export default {
-  components: {XmlLoader, XmlDashboard}
+  components: {XmlLoader, XmlDashboard, Register}
 }
 </script>
