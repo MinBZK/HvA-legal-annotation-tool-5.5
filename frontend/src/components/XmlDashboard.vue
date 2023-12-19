@@ -131,7 +131,7 @@
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
-import AnnotatieDialog from "@/components/Annotatie";
+import AnnotatieDialog from "./Annotatie";
 import { store } from "@/store/app";
 import { isProxy, toRaw } from 'vue';
 
