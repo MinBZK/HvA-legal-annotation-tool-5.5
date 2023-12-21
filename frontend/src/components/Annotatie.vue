@@ -99,7 +99,7 @@ export default {
         {label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)'},
         {label: 'Brondefinitie', color: 'rgb(246, 246, 246)'},
       ],
-      matchedWordsWithIndexes: "",
+      matchedWordsWithIndexes: [],
     }
   },
   methods: {
@@ -112,11 +112,20 @@ export default {
       this.$emit('close');
     },
 
-    checkMatchingDefinitions(text) {
-      const matchingDefinition = store().definitions.find(definition => definition.text === text);
+    checkMatchingDefinitions(words) {
+      this.handleSelectedWord();
 
-      if (matchingDefinition) {
-        this.definition = matchingDefinition.definition;
+      let matchingDefinition = store().definitions.find(definition => definition.woord === words);
+
+      if (matchingDefinition === undefined) {
+        return;
+      }
+
+      let startMatch = matchingDefinition.positie_start === this.matchedWordsWithIndexes[0].number;
+      let endMatch = matchingDefinition.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
+      if (matchingDefinition && startMatch && endMatch) {
+        this.definition = matchingDefinition.definitie;
         this.selectedColor = matchingDefinition.selectedColor;
       }
     },
@@ -204,7 +213,7 @@ export default {
         }
       }
 
-      if (resultData.length === targetWordsSize) {
+      if (targetWordsSize !== 1 && resultData.length === targetWordsSize) {
         return resultData;
       }
 
@@ -216,20 +225,22 @@ export default {
           resultData.push(wordsArray[i]);
         }
         // Check if enough words are found, and if so, break out of the loop
-        if (resultData.length === targetWordsSize * 2) {
+        if (targetWordsSize !== 1 && resultData.length === targetWordsSize * 2) {
           break;
         }
       }
-
       // Return the result data containing the matching words
       return resultData;
     },
 
+    handleSelectedWord() {
+      this.matchedWordsWithIndexes = this.findNumbersForTextStartingFrom(this.allWordsInXML, this.selectedText, this.hoveredWordObject);
+    }
   },
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
-    this.matchedWordsWithIndexes = this.findNumbersForTextStartingFrom(this.allWordsInXML, this.selectedText, this.hoveredWordObject);
+    this.handleSelectedWord();
   },
 
   watch: {
