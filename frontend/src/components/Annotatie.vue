@@ -160,6 +160,15 @@ export default {
       return cleanedWord.trim();
     },
 
+    /**
+     * Finds a specified number of words related to a target text starting from a given hovered word.
+     *
+     * @param {Array} wordsArray - An array of objects representing words, each containing a 'number' and 'word'.
+     * @param {string} targetText - The text used to identify target words.
+     * @param {Object} hoveredWord - The word object from which the search should start, containing at least 'number' and 'word'.
+     * @returns {Array} - An array of words related to the target text, including and around the hovered word.
+     *                    The length of the array will be the size of the target words.
+     */
     findNumbersForTextStartingFrom(wordsArray, targetText, hoveredWord) {
       // Split the target text into an array of target words
       let targetWords = targetText.split(/\s+/);
@@ -215,6 +224,7 @@ export default {
       // Return the result data containing the matching words
       return resultData;
     },
+
   },
 
   mounted() {
