@@ -3,6 +3,8 @@ package com.linkextractor.backend.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class Label {
 
@@ -23,6 +25,16 @@ public class Label {
     @Column(name = "positie_end")
     private int positie_end;
 
+    @Column(name = "datum")
+    private LocalDate datum;
+
+    public LocalDate getDatum() {
+        return datum;
+    }
+
+    public void setDatum(LocalDate datum) {
+        this.datum = datum;
+    }
 
     public int getId() {
         return id;
