@@ -150,6 +150,7 @@ export default {
       }
       return '';
     },
+
   },
   methods: {
     // TODO add proper error handling
@@ -268,7 +269,6 @@ export default {
         this.articleTitle = articleTitle;
         store().loadedXMLIdentifier = articleTitle;
 
-
         const parts = (articleNode.lid || []).map((lidNode) => {
           const partNumber = lidNode.lidnr?._text?.trim();
           const partName = lidNode.al?._text?.trim();
@@ -318,6 +318,11 @@ export default {
       return word.replace(/[.,]/gi, '');
     }
   },
+
+  mounted() {
+    console.log("HIER")
+    console.log(store().tokenJWT);
+  }
 
 };
 </script>

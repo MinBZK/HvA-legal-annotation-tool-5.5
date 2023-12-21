@@ -8,8 +8,10 @@
           </v-card-title>
           <v-card-text>
             <v-form @submit.prevent="loginUser">
-              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="usernameErrors" class="mb-4"></v-text-field>
-              <v-text-field v-model="password" label="Wachtwoord" type="password" outlined required :error-messages="passwordErrors" class="mb-4"></v-text-field>
+              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="usernameErrors"
+                            class="mb-4"></v-text-field>
+              <v-text-field v-model="password" label="Wachtwoord" type="password" outlined required
+                            :error-messages="passwordErrors" class="mb-4"></v-text-field>
               <v-btn type="submit" color="primary" class="white--text" block v-if="!loading">Inloggen</v-btn>
               <v-progress-circular v-else :size="24" :width="2" color="primary" indeterminate></v-progress-circular>
               <v-row class="mt-4">
@@ -31,7 +33,7 @@
 
 <script>
 import axios from 'axios';
-import { store } from "@/store/app";
+import {store} from "@/store/app";
 
 export default {
   data() {
@@ -62,7 +64,7 @@ export default {
       }
 
       this.loading = true;
-      const userData = { username: this.username, password: this.password };
+      const userData = {username: this.username, password: this.password};
 
       axios.post('http://localhost:8085/auth/login', userData)
         .then(response => {
@@ -84,7 +86,8 @@ export default {
       store().tokenJWT = data.jwt;
       store().user.loggedIn = true;
       localStorage.setItem("isLoggedIn", JSON.stringify(true));
-      this.$router.push({ path: '/dashboard' });
+      localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+      this.$router.push({path: '/dashboard'});
     },
 
     clearSuccessMessage() {

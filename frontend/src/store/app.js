@@ -8,8 +8,8 @@ export const store = defineStore('app', {
     definitions: [],
     loadedXMLIdentifier: "",
     user: {loggedIn: false, permissions: ""},
-    tokenJWT: ""
-        }),
+    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
+  }),
 
   actions: {
     async genericGetRequests(url) {

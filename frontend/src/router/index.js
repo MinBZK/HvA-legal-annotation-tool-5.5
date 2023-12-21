@@ -12,7 +12,11 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/components/XmlDashboard.vue'),
-    meta: { requiresAuth: true } // Add a meta field to indicate authentication requirement
+    meta: {requiresAuth: true} // Add a meta field to indicate authentication requirement
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/dashboard',
   },
 ]
 
@@ -30,7 +34,6 @@ router.beforeEach((to, from, next) => {
 
   if (storedLoggedIn !== null && loggedIn !== JSON.parse(storedLoggedIn)) {
     store().user.loggedIn = JSON.parse(storedLoggedIn);
-    console.log(store().user.loggedIn);
   }
 
   // Check if the route requires authentication
