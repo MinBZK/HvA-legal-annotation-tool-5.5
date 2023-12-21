@@ -4,18 +4,19 @@ import {store} from "@/store/app";
 
 const routes = [
   {
-    path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
-    children: [
-      {
-        path: '',
-        name: 'Home',
-        // route level code-splitting
-        // this generates a separate chunk (Home-[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import('@/views/Home.vue'),
-      },
-    ],
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/components/Login.vue'),
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('@/components/XmlDashboard.vue'),
+    meta: {requiresAuth: true} // Add a meta field to indicate authentication requirement
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/dashboard',
   },
 ]
 
@@ -28,17 +29,24 @@ router.beforeEach((to, from, next) => {
   let loggedIn = store().user.loggedIn;
   let authorisationLevel = store().user.permissions
 
-  if (to.path === '/login' && loggedIn) {
-    next(from.path);
+  // Check local storage for loggedIn status and update the store
+  const storedLoggedIn = window.localStorage.getItem("isLoggedIn");
+
+  if (storedLoggedIn !== null && loggedIn !== JSON.parse(storedLoggedIn)) {
+    store().user.loggedIn = JSON.parse(storedLoggedIn);
   }
 
-  let accessiblePages = ['/login'];
-  let authRequired = !accessiblePages.includes(to.path);
+  // Check if the route requires authentication
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-  if (authRequired && !loggedIn) {
+  if (requiresAuth && !loggedIn) {
+    // If authentication is required and the user is not logged in, redirect to the login page
     next('/login');
+  } else if (to.path === '/login' && loggedIn) {
+    // If trying to access the login page while already logged in, redirect to the dashboard
+    next('/dashboard');
   } else {
-    next();
+    next(); // Continue navigation
   }
 });
 

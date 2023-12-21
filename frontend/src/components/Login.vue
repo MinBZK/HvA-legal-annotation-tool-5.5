@@ -8,16 +8,12 @@
           </v-card-title>
           <v-card-text>
             <v-form @submit.prevent="loginUser">
-              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="usernameErrors" class="mb-4"></v-text-field>
-              <v-text-field v-model="password" label="Wachtwoord" type="password" outlined required :error-messages="passwordErrors" class="mb-4"></v-text-field>
+              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="usernameErrors"
+                            class="mb-4"></v-text-field>
+              <v-text-field v-model="password" label="Wachtwoord" type="password" outlined required
+                            :error-messages="passwordErrors" class="mb-4"></v-text-field>
               <v-btn type="submit" color="primary" class="white--text" block v-if="!loading">Inloggen</v-btn>
-              <v-progress-circular
-                v-else
-                :size="24"
-                :width="2"
-                color="primary"
-                indeterminate
-              ></v-progress-circular>
+              <v-progress-circular v-else :size="24" :width="2" color="primary" indeterminate></v-progress-circular>
               <v-row class="mt-4">
                 <!-- Wachtwoord vergeten en Registreren knoppen -->
               </v-row>
@@ -37,6 +33,7 @@
 
 <script>
 import axios from 'axios';
+import {store} from "@/store/app";
 
 export default {
   data() {
@@ -53,60 +50,59 @@ export default {
     };
   },
   methods: {
+    validateForm() {
+      this.usernameErrors = !this.username ? ['Gebruikersnaam is verplicht.'] : [];
+      this.passwordErrors = !this.password ? ['Wachtwoord is verplicht.'] : [];
+      return !this.username || !this.password;
+    },
+
     loginUser() {
-      this.usernameErrors = [];
-      this.passwordErrors = [];
       this.loginError = false;
 
-      if (!this.username) {
-        this.usernameErrors.push('Gebruikersnaam is verplicht.');
-      }
-
-      if (!this.password) {
-        this.passwordErrors.push('Wachtwoord is verplicht.');
-      }
-
-      if (!this.username || !this.password) {
+      if (this.validateForm()) {
         return;
       }
 
       this.loading = true;
-      const userData = {
-        username: this.username,
-        password: this.password
-      };
+      const userData = {username: this.username, password: this.password};
 
       axios.post('http://localhost:8085/auth/login', userData)
         .then(response => {
           this.loading = false;
-          console.log('Login successful', response.data);
-          this.loginSuccess = true; // Update loginSuccess na een succesvolle inlogpoging
+          this.loginSuccess = true;
           this.loginSuccesMessage = 'Inloggen succesvol!';
           this.clearSuccessMessage();
-          // Je kunt de gebruiker doorsturen of andere acties uitvoeren bij succesvol inloggen
+          this.handleLoginSuccess(response.data);
         })
         .catch(error => {
           this.loading = false;
           this.loginError = true;
           this.loginErrorMessage = 'Ongeldige gebruikersnaam of wachtwoord';
           console.error('Login failed', error);
-          // Afhandeling van inlogfouten (bericht aan de gebruiker tonen, enz.)
         });
     },
+
+    handleLoginSuccess(data) {
+      store().tokenJWT = data.jwt;
+      store().user.loggedIn = true;
+      localStorage.setItem("isLoggedIn", JSON.stringify(true));
+      localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+      this.$router.push({path: '/dashboard'});
+    },
+
     clearSuccessMessage() {
       setTimeout(() => {
         this.loginSuccess = false;
         this.loginSuccesMessage = '';
-      }, 5000); // Clear after 5 seconds (adjust as needed)
+      }, 5000);
     },
 
     recoverPassword() {
-      // Voer hier de logica uit voor wachtwoordherstel
-      // bijvoorbeeld: redirect naar wachtwoordherstelpagina of toon een modaal venster voor wachtwoordherstel
+      // Handle password recovery logic
     },
+
     goToRegisterPage() {
-      // Voer hier de logica uit om naar de registratiepagina te navigeren
-      // bijvoorbeeld: gebruik router.push() of window.location.href = '/registreren'
+      // Handle registration page navigation logic
     }
   }
 };

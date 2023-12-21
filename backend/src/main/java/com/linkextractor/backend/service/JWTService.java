@@ -45,7 +45,7 @@ public class JWTService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self") // Set issuer of the token
                 .issuedAt(now) // Set token issuance timestamp
-                .expiresAt(now.plus(15, ChronoUnit.MINUTES)) // Set token expiration timestamp
+                .expiresAt(now.plus(30, ChronoUnit.MINUTES)) // Set token expiration timestamp
                 .subject(auth.getName()) // Set subject (typically user's identifier)
                 .claim("roles", scope) // Set user roles in token claims
                 .build();
