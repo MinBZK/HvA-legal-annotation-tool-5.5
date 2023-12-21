@@ -41,6 +41,7 @@
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
                               @mouseover="handleWordHover(word)"
+                              :style="{ backgroundColor: getColor2(word) }"
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
@@ -57,8 +58,10 @@
                           <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                             <span>{{ subPart.number }}</span>
                             <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)" :style="{ backgroundColor: getColor() }"
+
                             >
+
                               {{ word.name }}
 
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
@@ -174,6 +177,14 @@ export default {
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
       }
+
+        try {
+            const labels = await store().getLabels();
+            console.log('labels:', labels);
+
+        } catch (labelsError) {
+            console.error('Error getting labels:', labelsError);
+        }
     },
 
     handleSelection() {
@@ -316,7 +327,14 @@ export default {
     removeDotsAndSymbols(word) {
       // Remove special symbols
       return word.replace(/[.,]/gi, '');
-    }
+    },
+      getColor(){
+        return "blue";
+      },
+      getColor2(word){
+        console.log(word);
+        return "red";
+      }
   },
 
   mounted() {

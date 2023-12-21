@@ -81,6 +81,7 @@ export default {
       tab: null,
       definition: "",
       selectedColor: "",
+      label: "",
       colorOptions: [
         {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
@@ -130,6 +131,27 @@ export default {
         this.selectedColor = matchingDefinition.selectedColor;
       }
     },
+
+      checkMatchingLabels(words) {
+          this.handleSelectedWord();
+
+          let matchingLabel = store().labels.find(label => label.woord === words);
+
+
+          if (matchingLabel === undefined) {
+              return;
+          }
+
+          let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
+          let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
+          console.log("Matching label:", matchingLabel);
+
+          if (matchingLabel && startMatch && endMatch) {
+              this.label = matchingLabel.label;
+              this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
+          }
+      },
 
     saveDefinition() {
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
@@ -291,12 +313,14 @@ export default {
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
+    this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
   },
 
   watch: {
     selectedText(newValue) {
       this.checkMatchingDefinitions(newValue);
+      this.checkMatchingLabels(newValue);
     },
   },
 }
