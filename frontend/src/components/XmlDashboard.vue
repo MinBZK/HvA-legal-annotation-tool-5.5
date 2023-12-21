@@ -320,8 +320,6 @@ export default {
   },
 
   mounted() {
-    console.log("HIER")
-    console.log(store().tokenJWT);
   }
 
 };

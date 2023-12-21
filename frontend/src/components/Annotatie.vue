@@ -112,11 +112,11 @@ export default {
       this.$emit('close');
     },
 
-    checkMatchingDefinitions(text) {
-      const matchingDefinition = store().definitions.find(definition => definition.text === text);
+    checkMatchingDefinitions(woord) {
+      const matchingDefinition = store().definitions.find(definition => definition.woord === woord);
 
       if (matchingDefinition) {
-        this.definition = matchingDefinition.definition;
+        this.definition = matchingDefinition.definitie;
         this.selectedColor = matchingDefinition.selectedColor;
       }
     },
