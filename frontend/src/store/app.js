@@ -23,7 +23,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -50,7 +50,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -88,7 +88,7 @@ export const store = defineStore('app', {
     async getLabels() {
       let response = await this.genericGetRequests("label");
       this.labels = response.data;
-      console.log("getLabels store", response);
+      // console.log("getLabels store", response);
     },
 
     async postDefinition(body) {
