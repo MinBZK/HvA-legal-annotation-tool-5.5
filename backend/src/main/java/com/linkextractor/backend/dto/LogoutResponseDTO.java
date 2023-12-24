@@ -1,16 +1,17 @@
 package com.linkextractor.backend.dto;
 
-/**
- * Data Transfer Object (DTO) representing a login response containing access and refresh tokens.
- */
-public class LoginResponseDTO {
+public class LogoutResponseDTO {
     private String accesToken;
 
     private String refreshToken;
 
-    public LoginResponseDTO(String accesToken, String refreshToken) {
+    public LogoutResponseDTO(String accesToken, String refreshToken) {
         this.accesToken = accesToken;
         this.refreshToken = refreshToken;
+    }
+
+    public LogoutResponseDTO(String accesToken) {
+        this.accesToken = accesToken;
     }
 
     public String getAccesToken() {
