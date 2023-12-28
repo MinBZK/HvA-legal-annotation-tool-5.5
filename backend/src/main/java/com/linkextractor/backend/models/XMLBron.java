@@ -29,12 +29,14 @@ public class XMLBron {
     private String link;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
+        @JoinTable(
         name = "XMLbron_definitie_junction",
         joinColumns = {@JoinColumn(name="xmlbron_id")},
         inverseJoinColumns = {@JoinColumn(name="definitie_id")}
     )
     private Set<Definitie> definities;
+
+    private Set<User> users;
 
     @OneToOne(mappedBy = "xmlbron")
     private Rechtssubject rechtssubject;

@@ -8,7 +8,7 @@ export const store = defineStore('app', {
     definitions: [],
     labels: [],
     loadedXMLIdentifier: "",
-    user: {loggedIn: false, permissions: ""},
+    user: {loggedIn: false, permissions: "", username: JSON.parse(localStorage.getItem('username')) === undefined ? "" : JSON.parse(localStorage.getItem('username'))},
     tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
   }),
 
@@ -17,6 +17,7 @@ export const store = defineStore('app', {
       this.user.loggedIn = false;
       localStorage.setItem('isLoggedIn', JSON.stringify("false"));
       localStorage.setItem('tokenJWT', JSON.stringify(""));
+      localStorage.setItem('username', JSON.stringify(""));
     },
 
     async genericGetRequests(url) {

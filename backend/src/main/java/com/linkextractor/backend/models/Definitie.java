@@ -3,6 +3,7 @@ package com.linkextractor.backend.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 public class Definitie {
@@ -77,6 +78,4 @@ public class Definitie {
     public void setPositie_end(int positie_end) {
         this.positie_end = positie_end;
     }
-
-
 }

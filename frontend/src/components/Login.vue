@@ -87,6 +87,7 @@ export default {
       store().user.loggedIn = true;
       localStorage.setItem("isLoggedIn", JSON.stringify(true));
       localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+      localStorage.setItem("username", JSON.stringify(this.username));
       this.$router.push({path: '/dashboard'});
     },
 

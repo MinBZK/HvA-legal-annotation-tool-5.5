@@ -153,11 +153,13 @@ export default {
       }
     },
 
+    getFormattedDate() {
+      let date = new Date();
+      return date.toISOString();
+    },
+
     saveDefinition() {
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
-
-      let date = new Date();
-      let formattedDate = date.toISOString();
 
       if (selectedText) {
         let positie_start = this.matchedWordsWithIndexes[0].number;
@@ -168,7 +170,7 @@ export default {
           positie_start: positie_start,
           positie_end: positie_end,
           woord: selectedText,
-          date: formattedDate
+          date: this.getFormattedDate()
         }
 
         store().definitions.push(definition);
@@ -215,7 +217,8 @@ export default {
           label: newLabel.label,
           positie_start: positie_start,
           positie_end: positie_end,
-          woord: newLabel.text
+          woord: newLabel.text,
+          date: this.getFormattedDate()
         }
 
 
