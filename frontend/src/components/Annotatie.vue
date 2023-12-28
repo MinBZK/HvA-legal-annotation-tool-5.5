@@ -132,49 +132,46 @@ export default {
       }
     },
 
-      checkMatchingLabels(words) {
-          this.handleSelectedWord();
+    checkMatchingLabels(words) {
+      this.handleSelectedWord();
 
-          let matchingLabel = store().labels.find(label => label.woord === words);
+      let matchingLabel = store().labels.find(label => label.woord === words);
 
 
-          if (matchingLabel === undefined) {
-              return;
-          }
+      if (matchingLabel === undefined) {
+        return;
+      }
 
-          let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
-          let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
+      let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
-          console.log("Matching label:", matchingLabel);
+      console.log("Matching label:", matchingLabel);
 
-          if (matchingLabel && startMatch && endMatch) {
-              this.label = matchingLabel.label;
-              this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
-          }
-      },
+      if (matchingLabel && startMatch && endMatch) {
+        this.label = matchingLabel.label;
+        this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
+      }
+    },
 
     saveDefinition() {
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
 
+      let date = new Date();
+      let formattedDate = date.toISOString();
+
       if (selectedText) {
-        const newDefinition = {
-          text: selectedText,
-          definition: this.definition,
-          selectedColor: this.selectedColor,
-        };
-
-        store().definitions.push(newDefinition);
-
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
         let definition = {
-          definitie: newDefinition.definition,
+          definitie: this.definition,
           positie_start: positie_start,
           positie_end: positie_end,
-          woord: newDefinition.text
+          woord: selectedText,
+          date: formattedDate
         }
 
+        store().definitions.push(definition);
 
         store().postDefinition(definition);
         store().getDefinitions();
@@ -185,7 +182,7 @@ export default {
         });
       }
     },
-    saveLabel(){
+    saveLabel() {
       // Find the label object based on the selectedColor
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
       const selectedLabelObject = this.colorOptions.find(option => option.color === this.selectedColor);

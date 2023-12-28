@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class LabelController {
 
     @PostMapping("addLabel")
     public ResponseEntity<Label> saveLabel(@RequestBody Label label) {
-        label.setDatum(LocalDate.now());
+        label.setDatum(LocalDateTime.now());
         Label savedLabel = labelService.saveLabel(label);
         return new ResponseEntity<>(savedLabel, HttpStatus.CREATED);
     }

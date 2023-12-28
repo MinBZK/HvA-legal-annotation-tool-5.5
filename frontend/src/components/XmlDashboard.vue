@@ -1,8 +1,6 @@
 <template>
   <v-container fluid>
     <v-icon color="info" @click="logout" icon="mdi-alert-circle"></v-icon>
-<!--    &lt;!&ndash; Reference the child component using ref &ndash;&gt;-->
-<!--    <child-component ref="Annotatie" />-->
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
@@ -67,7 +65,7 @@
 
                             >
 
-                              {{ word.name}}
+                              {{ word.name }}
 
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
 
@@ -183,7 +181,7 @@ export default {
 
       try {
         const definitions = await store().getDefinitions();
-        console.log("loadDefinitions/ definitions: ", definitions );
+        console.log("loadDefinitions/ definitions: ", definitions);
 
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
@@ -231,29 +229,27 @@ export default {
         const labels = await store().getLabels();
         const labelsData = store().labels;
 
-        if (labelsData){
+        if (labelsData) {
 
           for (let i = 0; i < labelsData.length; i++) {
-          const label = labelsData[i];
-          if(this.allWordsInXML[label.positie_start]){
-            console.log(("true"));
-            this.applyBackgroundColor(label.positie_start);
+            const label = labelsData[i];
+            if (this.allWordsInXML[label.positie_start]) {
+              console.log(("true"));
+              this.applyBackgroundColor(label.positie_start);
 
-          }
+            }
 
           }
           //Check if the label matches the text
 
           //If yes change color.
-        } else{
+        } else {
           console.log("No labels found");
         }
 
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-
-
 
 
     },
@@ -291,7 +287,6 @@ export default {
     //
     //   return currentIndex--;
     // },
-
 
 
     handleSelection() {
@@ -439,14 +434,18 @@ export default {
     },
 
     logout() {
+      if (store().user.loggedIn === false) {
+        router.push({name: 'Login'});
+      }
 
+      store().logout();
+    },
+
+    mounted() {
+      this.id = this._uid
+    }
   },
-
-  mounted() {
-    this.id = this._uid
-  }
-
-};
+}
 </script>
 
 

@@ -2,7 +2,7 @@ package com.linkextractor.backend.models;
 
 import jakarta.persistence.*;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Definitie {
@@ -24,7 +24,7 @@ public class Definitie {
     private int positie_end;
 
     @Column(name = "datum")
-    private Date date;
+    private LocalDateTime date;
 
     public Definitie() {
         super();
@@ -50,11 +50,11 @@ public class Definitie {
         return definitie;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
