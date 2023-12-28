@@ -12,6 +12,12 @@ export const store = defineStore('app', {
   }),
 
   actions: {
+    logout() {
+      this.user.loggedIn = false;
+      localStorage.setItem('isLoggedIn', JSON.stringify("false"));
+      localStorage.setItem('tokenJWT', JSON.stringify(""));
+    },
+
     async genericGetRequests(url) {
       let responseData = "";
 
