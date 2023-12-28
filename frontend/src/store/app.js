@@ -6,6 +6,7 @@ import axiosInterceptor from "@/axios-request/axios-interceptor";
 export const store = defineStore('app', {
   state: () => ({
     definitions: [],
+    labels: [],
     loadedXMLIdentifier: "",
     user: {loggedIn: false, permissions: ""},
     tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
@@ -28,7 +29,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -55,7 +56,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -90,8 +91,18 @@ export const store = defineStore('app', {
       this.definitions = response.data;
     },
 
+    async getLabels() {
+      let response = await this.genericGetRequests("label");
+      this.labels = response.data;
+      // console.log("getLabels store", response);
+    },
+
     async postDefinition(body) {
       this.responseCode = await this.genericPostRequest("define/addDefinition", body);
+    },
+
+    async postLabel(body) {
+      this.responseCode = await this.genericPostRequest("label/addLabel", body);
     },
 
     async postNewXMLBron(body) {

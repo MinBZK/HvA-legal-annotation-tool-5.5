@@ -1,6 +1,8 @@
 <template>
   <v-container fluid>
     <v-icon color="info" @click="logout" icon="mdi-alert-circle"></v-icon>
+<!--    &lt;!&ndash; Reference the child component using ref &ndash;&gt;-->
+<!--    <child-component ref="Annotatie" />-->
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
@@ -42,6 +44,8 @@
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
                               @mouseover="handleWordHover(word)"
+                              :id="'word-' + id"
+
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
@@ -59,8 +63,11 @@
                             <span>{{ subPart.number }}</span>
                             <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
                                   @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                                  :id="'word-' + id"
+
                             >
-                              {{ word.name }}
+
+                              {{ word.name}}
 
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
 
@@ -124,12 +131,13 @@ import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
+import Annotatie from "@/components/Annotatie.vue";
 import {store} from "@/store/app";
 import {isProxy, toRaw} from 'vue';
 import router from '@/router';
 
 export default {
-  components: {AnnotatieDialog},
+  components: {AnnotatieDialog, Annotatie},
   data() {
     return {
       isVisible: false,
@@ -143,6 +151,10 @@ export default {
       articleTitle: "",
       hoveredWordObject: "",
       allWordsInXML: "",
+      idCounter: 0,
+      wordIdMap: {}, // Map to store generated IDs for words
+      id: null,
+      numberOfWords: 0,
     };
   },
   computed: {
@@ -171,12 +183,116 @@ export default {
 
       try {
         const definitions = await store().getDefinitions();
-        console.log('Definitions:', definitions);
+        console.log("loadDefinitions/ definitions: ", definitions );
 
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
       }
+
     },
+
+    async loadLabels() {
+      let response = await store().getXMLBron(this.articleTitle);
+
+      let xmlBron = {
+        artikel_naam: this.articleTitle,
+        link: "http://example.com/xml",
+        definities: []
+      }
+
+      if (response === 404) {
+        await store().postNewXMLBron(xmlBron);
+      }
+
+      try {
+        const labels = await store().getLabels();
+        console.log("loadLabels/ labels: " + labels);
+
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
+    },
+
+    async loadLabelsForArtickle() {
+      let response = await store().getXMLBron(this.articleTitle);
+
+
+      let xmlBron = {
+        artikel_naam: this.articleTitle,
+        link: "http://example.com/xml",
+        definities: []
+      }
+
+      if (response === 404) {
+        await store().postNewXMLBron(xmlBron);
+      }
+
+      try {
+        const labels = await store().getLabels();
+        const labelsData = store().labels;
+
+        if (labelsData){
+
+          for (let i = 0; i < labelsData.length; i++) {
+          const label = labelsData[i];
+          if(this.allWordsInXML[label.positie_start]){
+            console.log(("true"));
+            this.applyBackgroundColor(label.positie_start);
+
+          }
+
+          }
+          //Check if the label matches the text
+
+          //If yes change color.
+        } else{
+          console.log("No labels found");
+        }
+
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
+
+
+
+
+    },
+
+    applyBackgroundColor(positieStart) {
+      // Find the corresponding word element and apply the background color
+      const wordIndex = this.findWordIndexByPositieStart(positieStart);
+      if (wordIndex !== -1) {
+        const wordElement = document.getElementById(`word-${wordIndex}`);
+        if (wordElement) {
+          wordElement.style.backgroundColor = 'red';
+        }
+      }
+    },
+
+    findWordIndexByPositieStart(positieStart) {
+      // Implement a function to find the word index based on positie_start
+      // Modify this according to your actual data structure
+      // Example: assuming this.parsedData.articles[0].parts[0].partWords is the array of words
+      const wordsArray = this.parsedData.articles[0].parts[0].partWords;
+      for (let i = 0; i < wordsArray.length; i++) {
+        if (wordsArray[i].positie_start === positieStart) {
+          return i;
+        }
+      }
+      return 4; // Return -1 if not found
+    },
+
+    // generateId(word) {
+    //
+    //   if(word === this.allWordsInXML)
+    //
+    //   const currentIndex = this.allWordsInXML.length;
+    //   this.idCounter++;
+    //
+    //   return currentIndex--;
+    // },
+
+
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -313,6 +429,8 @@ export default {
       this.allWordsInXML = allWords;
       this.parsedData = parsedData;
       this.loadDefinitions();
+      this.loadLabels();
+      this.loadLabelsForArtickle();
     },
 
     removeDotsAndSymbols(word) {
@@ -321,16 +439,11 @@ export default {
     },
 
     logout() {
-      if (store().user.loggedIn === false) {
-        router.push({name: 'Login'});
-      }
-
-      store().logout();
-    },
 
   },
 
   mounted() {
+    this.id = this._uid
   }
 
 };

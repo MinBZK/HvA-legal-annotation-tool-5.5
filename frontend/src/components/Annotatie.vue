@@ -81,6 +81,7 @@ export default {
       tab: null,
       definition: "",
       selectedColor: "",
+      label: "",
       colorOptions: [
         {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
@@ -109,6 +110,7 @@ export default {
 
     saveDialog() {
       this.saveDefinition();
+      this.saveLabel();
       this.$emit('close');
     },
 
@@ -129,6 +131,27 @@ export default {
         this.selectedColor = matchingDefinition.selectedColor;
       }
     },
+
+      checkMatchingLabels(words) {
+          this.handleSelectedWord();
+
+          let matchingLabel = store().labels.find(label => label.woord === words);
+
+
+          if (matchingLabel === undefined) {
+              return;
+          }
+
+          let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
+          let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
+          console.log("Matching label:", matchingLabel);
+
+          if (matchingLabel && startMatch && endMatch) {
+              this.label = matchingLabel.label;
+              this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
+          }
+      },
 
     saveDefinition() {
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
@@ -152,6 +175,7 @@ export default {
           woord: newDefinition.text
         }
 
+
         store().postDefinition(definition);
         store().getDefinitions();
 
@@ -161,7 +185,56 @@ export default {
         });
       }
     },
+    saveLabel(){
+      // Find the label object based on the selectedColor
+      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      const selectedLabelObject = this.colorOptions.find(option => option.color === this.selectedColor);
 
+      if (selectedLabelObject) {
+
+        const newLabel = {
+          label: selectedLabelObject.label,
+          text: selectedText,
+          selectedColor: this.selectedColor,
+        };
+
+        // Create a span element to wrap the selected text with the chosen color
+        const span = document.createElement('span');
+        span.style.backgroundColor = this.selectedColor;
+        span.textContent = selectedText;
+
+        // Replace the selected text with the highlighted span
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(span);
+
+        store().labels.push(newLabel);
+
+        let positie_start = this.matchedWordsWithIndexes[0].number;
+        let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
+        let label = {
+          label: newLabel.label,
+          positie_start: positie_start,
+          positie_end: positie_end,
+          woord: newLabel.text
+        }
+
+
+        store().postLabel(label);
+        store().getLabels();
+
+        this.$emit('annotation-saved', {
+          text: selectedText,
+          color: this.selectedColor
+        });
+
+
+      } else {
+        console.warn('Label not found for the selected color:', this.selectedColor);
+      }
+    },
     removeDotsAndSymbols(word) {
       // Remove special symbols
       const cleanedWord = word.replace(/[.,]/gi, '');
@@ -240,12 +313,14 @@ export default {
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
+    this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
   },
 
   watch: {
     selectedText(newValue) {
       this.checkMatchingDefinitions(newValue);
+      this.checkMatchingLabels(newValue);
     },
   },
 }
