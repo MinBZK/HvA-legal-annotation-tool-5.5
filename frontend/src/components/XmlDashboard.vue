@@ -1,5 +1,6 @@
 <template>
   <v-container fluid>
+    <v-icon color="info" @click="logout" icon="mdi-alert-circle"></v-icon>
     <v-row>
       <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
         <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
@@ -125,6 +126,7 @@ import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
 import {store} from "@/store/app";
 import {isProxy, toRaw} from 'vue';
+import router from '@/router';
 
 export default {
   components: {AnnotatieDialog},
@@ -316,7 +318,16 @@ export default {
     removeDotsAndSymbols(word) {
       // Remove special symbols
       return word.replace(/[.,]/gi, '');
-    }
+    },
+
+    logout() {
+      if (store().user.loggedIn === false) {
+        router.push({name: 'Login'});
+      }
+
+      store().logout();
+    },
+
   },
 
   mounted() {

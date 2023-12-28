@@ -17,6 +17,11 @@ import XmlLoader from "./components/XmlLoader.vue";
 import XmlDashboard from "@/components/XmlDashboard";
 
 export default {
-  components: {XmlLoader, XmlDashboard }
+  components: {XmlLoader, XmlDashboard},
+  data() {
+    return {};
+  },
+  methods: {}
 }
+
 </script>
