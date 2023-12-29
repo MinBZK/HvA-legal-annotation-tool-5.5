@@ -1,5 +1,6 @@
 package com.linkextractor.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,8 +16,9 @@ public class XMLBron {
     @Column(name = "artikel_naam")
     private String artikel_naam;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "xmlbron_date")
-    private LocalDate date;
+    private LocalDate xmlbron_date;
 
     @Column(name = "link")
     private String link;
@@ -40,11 +42,11 @@ public class XMLBron {
     }
 
     public LocalDate getDate() {
-        return date;
+        return xmlbron_date;
     }
 
     public void setDate(LocalDate date) {
-        this.date = date;
+        this.xmlbron_date = date;
     }
 
     public int getXmlbron_id() {
@@ -61,5 +63,17 @@ public class XMLBron {
 
     public void setArtikel_naam(String artikel_naam) {
         this.artikel_naam = artikel_naam;
+    }
+
+    @Override
+    public String toString() {
+        return "XMLBron{" +
+                "xmlbron_id=" + xmlbron_id +
+                ", artikel_naam='" + artikel_naam + '\'' +
+                ", xmlbron_date=" + xmlbron_date +
+                ", link='" + link + '\'' +
+                ", rechtssubject=" + rechtssubject +
+                ", userDefinitionXMLTables=" + userDefinitionXMLTables +
+                '}';
     }
 }

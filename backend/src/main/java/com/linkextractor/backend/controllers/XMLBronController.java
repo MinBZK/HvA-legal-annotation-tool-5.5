@@ -42,6 +42,8 @@ public class XMLBronController {
     private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron) {
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
+        System.out.println(xmlBron.toString());
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

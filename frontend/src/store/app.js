@@ -8,6 +8,8 @@ export const store = defineStore('app', {
     definitions: [],
     labels: [],
     loadedXMLIdentifier: "",
+    XMLBwbrCode: "",
+    loadedXMLDate: "",
     user: {
       loggedIn: false,
       permissions: "",

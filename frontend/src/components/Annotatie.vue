@@ -117,7 +117,9 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      let matchingDefinition = store().definitions.find(definition => definition.woord === words);
+      let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
+
+      matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
       if (matchingDefinition === undefined) {
         return;
@@ -162,6 +164,8 @@ export default {
      * Saves a definition and emits an event with the annotation information.
      */
     saveDefinition() {
+      console.log(this.selectedText)
+      console.log(this.hoveredWordObject)
       let selectedText = this.removeDotsAndSymbols(this.selectedText);
 
       if (selectedText) {
@@ -203,10 +207,10 @@ export default {
      * @param {string} xmlBronName - The XML identifier.
      * @param {string} username - The username.
      */
-    saveAndFetchDefinitions(definition, xmlBronName, username) {
-      store().definitions.push(definition);
-      store().postDefinition(definition, xmlBronName, username);
-      store().getDefinitions(xmlBronId, username);
+    async saveAndFetchDefinitions(definition, xmlBronName, username) {
+      await store().definitions.push(definition);
+      await store().postDefinition(definition, xmlBronName, username);
+      await store().getDefinitions(xmlBronName, username);
     },
 
     saveLabel() {
