@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +28,12 @@ public class DefinitionController {
         return new ResponseEntity<>(definitions, HttpStatus.OK);
     }
 
-    @GetMapping("getDefinitions/{xmlBronName}/{username}")
+    @GetMapping("getDefinitions/{xmlBronName}/{username}/{xmlbronDate}")
     public ResponseEntity<List<Definitie>> getDefinitionsByUsernameAndXMLBron(@PathVariable String xmlBronName,
-                                                                              @PathVariable String username) {
-        List<Definitie> definitions = definitionService.getDefinitionsByUsernameAndXMLBron(username, xmlBronName);
+                                                                              @PathVariable String username,
+                                                                              @PathVariable LocalDate xmlbronDate) {
+
+        List<Definitie> definitions = definitionService.getDefinitionsByUsernameAndXMLBron(username, xmlBronName, xmlbronDate);
 
         return new ResponseEntity<>(definitions, HttpStatus.OK);
     }
@@ -43,11 +46,12 @@ public class DefinitionController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("addDefinition/{xmlBronName}/{username}")
+    @PostMapping("addDefinition/{xmlBronName}/{username}/{xmlbronDate}")
     public ResponseEntity<Definitie> saveDefinition(@RequestBody Definitie definitie,
                                                     @PathVariable String xmlBronName,
-                                                    @PathVariable String username) {
-        Definitie savedDefinition = definitionService.saveDefinitionAndAssociateWithXMLBron(definitie, xmlBronName, username);
+                                                    @PathVariable String username,
+                                                    @PathVariable LocalDate xmlbronDate) {
+        Definitie savedDefinition = definitionService.saveDefinitionAndAssociateWithXMLBron(definitie, xmlBronName, username, xmlbronDate);
 
         return new ResponseEntity<>(savedDefinition, HttpStatus.CREATED);
     }

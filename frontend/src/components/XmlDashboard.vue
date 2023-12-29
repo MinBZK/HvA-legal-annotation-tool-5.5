@@ -169,12 +169,14 @@ export default {
       try {
         let xmlBronId = store().loadedXMLIdentifier;
         let username = JSON.parse(localStorage.getItem('username'));
-        await store().getDefinitions(xmlBronId, username);
+        let xmlbronDate = store().loadedXMLDate;
+
+
+        await store().getDefinitions(xmlBronId, username, xmlbronDate);
 
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
       }
-
     },
 
     async loadLabels() {
@@ -196,7 +198,6 @@ export default {
           for (let i = 0; i < labelsData.length; i++) {
             const label = labelsData[i];
             if (this.allWordsInXML[label.positie_start]) {
-              console.log(("true"));
               this.applyBackgroundColor(label.positie_start);
             }
           }
@@ -254,10 +255,11 @@ export default {
       }
     },
 
-    handleWordHover(word) {
+    async handleWordHover(word) {
       this.hoveredWordObject = word;
       this.hoveredWord = this.removeDotsAndSymbols(word.name);
-      this.matchedWord = this.findMatchingIndexes(word.number);
+      this.matchedWord = await this.findMatchingIndexes(word.number);
+
       if (this.matchedWord !== undefined) {
         this.showTooltip = true;
       }
@@ -265,6 +267,10 @@ export default {
 
     async findMatchingIndexes(number) {
       let definitions = await store().definitions;
+
+      if (definitions === undefined || definitions.length === 0) {
+        return
+      }
 
       definitions = definitions.filter(
         definition =>
@@ -401,7 +407,9 @@ export default {
     },
 
     async checkIfXMLBronExists() {
-      let response = await store().getXMLBron(this.articleTitle);
+      let xmlbronDate = store().loadedXMLDate;
+
+      let response = await store().getXMLBron(this.articleTitle, xmlbronDate);
       let baseUrl = "https://wetten.overheid.nl";
       let urlBWBR = store().XMLBwbrCode
 
@@ -409,7 +417,7 @@ export default {
         artikel_naam: this.articleTitle,
         link: `${baseUrl}/${urlBWBR}`,
         definities: [],
-        xmlbron_date: store().loadedXMLDate,
+        xmlbron_date: xmlbronDate,
       }
 
       if (response === 404) {

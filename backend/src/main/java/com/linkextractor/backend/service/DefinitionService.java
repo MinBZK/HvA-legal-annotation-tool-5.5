@@ -12,6 +12,7 @@ import com.linkextractor.backend.respositories.XMLBronRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,9 +36,9 @@ public class DefinitionService {
         return definitieRepository.findAll();
     }
 
-    public List<Definitie> getDefinitionsByUsernameAndXMLBron(String username, String xmlBronNaam) {
+    public List<Definitie> getDefinitionsByUsernameAndXMLBron(String username, String xmlBronNaam, LocalDate xmlbronDate) {
         // Step 1: Retrieve the XMLBron
-        XMLBron xmlbron = xmlBronRepository.findByArtikelNaam(xmlBronNaam);
+        XMLBron xmlbron = xmlBronRepository.findByArtikelNaamAndDate(xmlBronNaam, xmlbronDate);
 
         // Step 2: Retrieve the user
         User user = userRepository.findUserByUsername(username);
@@ -59,12 +60,12 @@ public class DefinitionService {
         return definitieRepository.save(definitie);
     }
 
-    public Definitie saveDefinitionAndAssociateWithXMLBron(Definitie definitie, String xmlBronNaam, String username) {
+    public Definitie saveDefinitionAndAssociateWithXMLBron(Definitie definitie, String xmlBronNaam, String username, LocalDate xmlbronDate) {
         // Step 1: Save the Definitie
         Definitie savedDefinitie = definitieRepository.save(definitie);
 
         // Step 2: Retrieve the XMLBron
-        XMLBron xmlBron = xmlBronRepository.findByArtikelNaam(xmlBronNaam);
+        XMLBron xmlBron = xmlBronRepository.findByArtikelNaamAndDate(xmlBronNaam, xmlbronDate);
 
         // Step 3: Retrieve the user
         User user = userRepository.findUserByUsername(username);

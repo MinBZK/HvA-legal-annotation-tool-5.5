@@ -117,6 +117,10 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
+      if (store().definitions === undefined) {
+        return
+      }
+
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
 
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
@@ -208,9 +212,10 @@ export default {
      * @param {string} username - The username.
      */
     async saveAndFetchDefinitions(definition, xmlBronName, username) {
-      await store().definitions.push(definition);
-      await store().postDefinition(definition, xmlBronName, username);
-      await store().getDefinitions(xmlBronName, username);
+      let xmlbronDate = store().loadedXMLDate;
+
+      await store().postDefinition(definition, xmlBronName, username, xmlbronDate);
+      await store().getDefinitions(xmlBronName, username, xmlbronDate);
     },
 
     saveLabel() {

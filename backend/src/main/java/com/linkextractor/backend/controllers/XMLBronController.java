@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/XMLBron")
@@ -31,6 +32,18 @@ public class XMLBronController {
     @GetMapping("/byName/{artikelNaam}")
     public ResponseEntity<XMLBron> getXMLBronByArtikelNaam(@PathVariable String artikelNaam) {
         XMLBron xmlBron = xmlBronRepository.findByArtikelNaam(artikelNaam);
+
+        if (xmlBron != null) {
+            return ResponseEntity.ok(xmlBron);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/byName/{artikelNaam}/{xmlbronDate}")
+    public ResponseEntity<XMLBron> getXMLBronByArtikelNaam(@PathVariable String artikelNaam, @PathVariable LocalDate xmlbronDate) {
+        XMLBron xmlBron = xmlBronRepository.findByArtikelNaamAndDate(artikelNaam, xmlbronDate);
+
         if (xmlBron != null) {
             return ResponseEntity.ok(xmlBron);
         } else {
@@ -41,8 +54,6 @@ public class XMLBronController {
     @PostMapping("/api/v1/")
     private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron) {
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
-
-        System.out.println(xmlBron.toString());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

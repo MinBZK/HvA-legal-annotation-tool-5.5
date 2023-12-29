@@ -91,13 +91,13 @@ export const store = defineStore('app', {
       }
     },
 
-    async getXMLBron(artikelNaam) {
-      return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
+    async getXMLBron(artikelNaam, xmlbronDate) {
+      return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}/${xmlbronDate}`);
     },
 
-    async getDefinitions(xmlBronName, username) {
+    async getDefinitions(xmlBronName, username, xmlbronDate) {
       let url = "define/getDefinitions";
-      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}`);
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
     },
 
@@ -106,9 +106,9 @@ export const store = defineStore('app', {
       this.labels = response.data;
     },
 
-    async postDefinition(body, xmlBronName, username) {
+    async postDefinition(body, xmlBronName, username, xmlbronDate) {
       let url = "define/addDefinition";
-      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}`, body);
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
     },
 
     async postLabel(body) {
