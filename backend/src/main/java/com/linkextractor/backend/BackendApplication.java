@@ -7,6 +7,7 @@ import com.linkextractor.backend.models.enums.Roles;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -16,6 +17,7 @@ import com.linkextractor.backend.respositories.RoleRepository;
 import com.linkextractor.backend.respositories.UserRepository;
 
 @SpringBootApplication
+@EntityScan(basePackages = "com.linkextractor.backend.models")
 public class BackendApplication {
 
 	public static void main(String[] args) {

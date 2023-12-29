@@ -158,32 +158,57 @@ export default {
       return date.toISOString();
     },
 
+    /**
+     * Saves a definition and emits an event with the annotation information.
+     */
     saveDefinition() {
-      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      let selectedText = this.removeDotsAndSymbols(this.selectedText);
 
       if (selectedText) {
-        let positie_start = this.matchedWordsWithIndexes[0].number;
-        let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+        let {positie_start, positie_end} = this.calculatePositionIndexes();
 
         let definition = {
           definitie: this.definition,
-          positie_start: positie_start,
-          positie_end: positie_end,
+          positie_start,
+          positie_end,
           woord: selectedText,
-          date: this.getFormattedDate()
-        }
+          date: this.getFormattedDate(),
+        };
 
-        store().definitions.push(definition);
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
 
-        store().postDefinition(definition);
-        store().getDefinitions();
+        this.saveAndFetchDefinitions(definition, xmlBronId, username);
 
         this.$emit('annotation-saved', {
           text: selectedText,
-          color: this.selectedColor
+          color: this.selectedColor,
         });
       }
     },
+
+    /**
+     * Calculates the start and end positions based on matched words with indexes.
+     * @returns {Object} An object with positie_start and positie_end properties.
+     */
+    calculatePositionIndexes() {
+      let positie_start = this.matchedWordsWithIndexes[0].number;
+      let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      return {positie_start, positie_end};
+    },
+
+    /**
+     * Saves the definition, posts it, and fetches updated definitions.
+     * @param {Object} definition - The definition to be saved.
+     * @param {string} xmlBronName - The XML identifier.
+     * @param {string} username - The username.
+     */
+    saveAndFetchDefinitions(definition, xmlBronName, username) {
+      store().definitions.push(definition);
+      store().postDefinition(definition, xmlBronName, username);
+      store().getDefinitions(xmlBronId, username);
+    },
+
     saveLabel() {
       // Find the label object based on the selectedColor
       const selectedText = this.removeDotsAndSymbols(this.selectedText);

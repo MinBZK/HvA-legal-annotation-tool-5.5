@@ -180,9 +180,10 @@ export default {
       }
 
       try {
-        const definitions = await store().getDefinitions();
-        console.log("loadDefinitions/ definitions: ", definitions);
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
 
+        const definitions = await store().getDefinitions(xmlBronId, username);
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
       }
@@ -211,9 +212,8 @@ export default {
       }
     },
 
-    async loadLabelsForArtickle() {
+    async loadLabelsForArticle() {
       let response = await store().getXMLBron(this.articleTitle);
-
 
       let xmlBron = {
         artikel_naam: this.articleTitle,
@@ -425,7 +425,7 @@ export default {
       this.parsedData = parsedData;
       this.loadDefinitions();
       this.loadLabels();
-      this.loadLabelsForArtickle();
+      this.loadLabelsForArticle();
     },
 
     removeDotsAndSymbols(word) {

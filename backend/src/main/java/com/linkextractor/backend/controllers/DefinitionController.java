@@ -23,25 +23,39 @@ public class DefinitionController {
     @GetMapping("")
     public ResponseEntity<List<Definitie>> getAllDefinitions() {
         List<Definitie> definitions = definitionService.getAllDefinitions();
+
+        return new ResponseEntity<>(definitions, HttpStatus.OK);
+    }
+
+    @GetMapping("getDefinitions/{xmlBronName}/{username}")
+    public ResponseEntity<List<Definitie>> getDefinitionsByUsernameAndXMLBron(@PathVariable String xmlBronName,
+                                                                              @PathVariable String username) {
+        List<Definitie> definitions = definitionService.getDefinitionsByUsernameAndXMLBron(username, xmlBronName);
+
         return new ResponseEntity<>(definitions, HttpStatus.OK);
     }
 
     @GetMapping("{definitionId}")
     public ResponseEntity<Definitie> getDefinitionById(@PathVariable int definitionId) {
         Optional<Definitie> definition = definitionService.getDefinitionById(definitionId);
+
         return definition.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("addDefinition")
-    public ResponseEntity<Definitie> saveDefinition(@RequestBody Definitie definitie) {
-        Definitie savedDefinition = definitionService.saveDefinition(definitie);
+    @PostMapping("addDefinition/{xmlBronName}/{username}")
+    public ResponseEntity<Definitie> saveDefinition(@RequestBody Definitie definitie,
+                                                    @PathVariable String xmlBronName,
+                                                    @PathVariable String username) {
+        Definitie savedDefinition = definitionService.saveDefinitionAndAssociateWithXMLBron(definitie, xmlBronName, username);
+
         return new ResponseEntity<>(savedDefinition, HttpStatus.CREATED);
     }
 
     @DeleteMapping("{definitionId}")
     public ResponseEntity<Void> deleteDefinitionById(@PathVariable int definitionId) {
         definitionService.deleteDefinitionById(definitionId);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

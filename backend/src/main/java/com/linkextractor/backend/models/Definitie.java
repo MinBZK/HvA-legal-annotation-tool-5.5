@@ -27,6 +27,9 @@ public class Definitie {
     @Column(name = "datum")
     private LocalDateTime date;
 
+    @OneToMany(mappedBy = "definitie")
+    private Set<UserDefinitionXMLTable> linkingTables;
+
     public Definitie() {
         super();
     }

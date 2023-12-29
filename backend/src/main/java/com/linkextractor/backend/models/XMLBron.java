@@ -1,19 +1,8 @@
 package com.linkextractor.backend.models;
 
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import java.util.Set;
 
 @Entity
 public class XMLBron {
@@ -28,38 +17,21 @@ public class XMLBron {
     @Column(name = "link")
     private String link;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-        @JoinTable(
-        name = "XMLbron_definitie_junction",
-        joinColumns = {@JoinColumn(name="xmlbron_id")},
-        inverseJoinColumns = {@JoinColumn(name="definitie_id")}
-    )
-    private Set<Definitie> definities;
-
-    private Set<User> users;
-
     @OneToOne(mappedBy = "xmlbron")
     private Rechtssubject rechtssubject;
 
+    @OneToMany(mappedBy = "xmlbron")
+    private Set<UserDefinitionXMLTable> userDefinitionXMLTables;
 
-    public XMLBron(int xmlbron_id, String artikel_naam, String link){
+    public XMLBron(int xmlbron_id, String artikel_naam, String link) {
         this.xmlbron_id = xmlbron_id;
         this.artikel_naam = artikel_naam;
         this.link = link;
     }
 
-    public XMLBron(){
+    public XMLBron() {
 
     }
-
-    
-
-    // public XMLBron() {
-    //     super();
-    //     definities = new HashSet<>();
-    //     rechtssubject = new Rechtssubject();
-    // }
-
 
     public int getXmlbron_id() {
         return xmlbron_id;
@@ -83,13 +55,5 @@ public class XMLBron {
 
     public void setLink(String link) {
         this.link = link;
-    }
-
-    public Set<Definitie> getDefinities() {
-        return definities;
-    }
-
-    public void setDefinities(Set<Definitie> definities) {
-        this.definities = definities;
     }
 }

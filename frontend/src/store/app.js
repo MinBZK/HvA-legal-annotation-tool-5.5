@@ -8,8 +8,14 @@ export const store = defineStore('app', {
     definitions: [],
     labels: [],
     loadedXMLIdentifier: "",
-    user: {loggedIn: false, permissions: "", username: JSON.parse(localStorage.getItem('username')) === undefined ? "" : JSON.parse(localStorage.getItem('username'))},
-    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
+    user: {
+      loggedIn: false,
+      permissions: "",
+      username: JSON.parse(localStorage.getItem('username'))
+      === undefined ? "" : JSON.parse(localStorage.getItem('username'))
+    },
+    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT'))
+    === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
   }),
 
   actions: {
@@ -87,19 +93,20 @@ export const store = defineStore('app', {
       return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
     },
 
-    async getDefinitions() {
-      let response = await this.genericGetRequests("define");
+    async getDefinitions(xmlBronName, username) {
+      let url = "define/getDefinitions";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}`);
       this.definitions = response.data;
     },
 
     async getLabels() {
       let response = await this.genericGetRequests("label");
       this.labels = response.data;
-      // console.log("getLabels store", response);
     },
 
-    async postDefinition(body) {
-      this.responseCode = await this.genericPostRequest("define/addDefinition", body);
+    async postDefinition(body, xmlBronName, username) {
+      let url = "define/addDefinition";
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}`, body);
     },
 
     async postLabel(body) {
