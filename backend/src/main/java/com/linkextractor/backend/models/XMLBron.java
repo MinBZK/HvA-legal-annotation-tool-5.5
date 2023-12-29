@@ -2,6 +2,7 @@ package com.linkextractor.backend.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -14,6 +15,9 @@ public class XMLBron {
     @Column(name = "artikel_naam")
     private String artikel_naam;
 
+    @Column(name = "xmlbron_date")
+    private LocalDate date;
+
     @Column(name = "link")
     private String link;
 
@@ -23,14 +27,24 @@ public class XMLBron {
     @OneToMany(mappedBy = "xmlbron")
     private Set<UserDefinitionXMLTable> userDefinitionXMLTables;
 
-    public XMLBron(int xmlbron_id, String artikel_naam, String link) {
-        this.xmlbron_id = xmlbron_id;
-        this.artikel_naam = artikel_naam;
+    public XMLBron() {
+
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
         this.link = link;
     }
 
-    public XMLBron() {
+    public LocalDate getDate() {
+        return date;
+    }
 
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public int getXmlbron_id() {
@@ -47,13 +61,5 @@ public class XMLBron {
 
     public void setArtikel_naam(String artikel_naam) {
         this.artikel_naam = artikel_naam;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 }
