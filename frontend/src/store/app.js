@@ -6,6 +6,7 @@ import axiosInterceptor from "@/axios-request/axios-interceptor";
 export const store = defineStore('app', {
   state: () => ({
     definitions: [],
+    xmlbronnen: [],
     loadedXMLIdentifier: "",
     user: {loggedIn: false, permissions: ""},
     tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
@@ -85,6 +86,10 @@ export const store = defineStore('app', {
       return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
     },
 
+    async getXMLbronnenByName(){
+      return await this.genericGetRequests('XMLBron/byName');
+    },
+    
     async getDefinitions() {
       let response = await this.genericGetRequests("define");
       this.definitions = response.data;
