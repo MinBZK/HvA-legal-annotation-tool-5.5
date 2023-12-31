@@ -13,7 +13,6 @@ import com.linkextractor.backend.models.User;
 import com.linkextractor.backend.respositories.RoleRepository;
 import com.linkextractor.backend.respositories.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

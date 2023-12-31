@@ -81,6 +81,7 @@ export default {
       tab: null,
       definition: "",
       selectedColor: "",
+      label: "",
       colorOptions: [
         {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
@@ -109,13 +110,20 @@ export default {
 
     saveDialog() {
       this.saveDefinition();
+      this.saveLabel();
       this.$emit('close');
     },
 
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      let matchingDefinition = store().definitions.find(definition => definition.woord === words);
+      if (store().definitions === undefined) {
+        return
+      }
+
+      let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
+
+      matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
       if (matchingDefinition === undefined) {
         return;
@@ -130,38 +138,137 @@ export default {
       }
     },
 
+    checkMatchingLabels(words) {
+      this.handleSelectedWord();
+
+      let matchingLabel = store().labels.find(label => label.woord === words);
+
+
+      if (matchingLabel === undefined) {
+        return;
+      }
+
+      let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
+      let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
+      console.log("Matching label:", matchingLabel);
+
+      if (matchingLabel && startMatch && endMatch) {
+        this.label = matchingLabel.label;
+        this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
+      }
+    },
+
+    getFormattedDate() {
+      let date = new Date();
+      return date.toISOString();
+    },
+
+    /**
+     * Saves a definition and emits an event with the annotation information.
+     */
     saveDefinition() {
-      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      console.log(this.selectedText)
+      console.log(this.hoveredWordObject)
+      let selectedText = this.removeDotsAndSymbols(this.selectedText);
 
       if (selectedText) {
-        const newDefinition = {
+        let {positie_start, positie_end} = this.calculatePositionIndexes();
+
+        let definition = {
+          definitie: this.definition,
+          positie_start,
+          positie_end,
+          woord: selectedText,
+          date: this.getFormattedDate(),
+        };
+
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
+
+        this.saveAndFetchDefinitions(definition, xmlBronId, username);
+
+        this.$emit('annotation-saved', {
           text: selectedText,
-          definition: this.definition,
+          color: this.selectedColor,
+        });
+      }
+    },
+
+    /**
+     * Calculates the start and end positions based on matched words with indexes.
+     * @returns {Object} An object with positie_start and positie_end properties.
+     */
+    calculatePositionIndexes() {
+      let positie_start = this.matchedWordsWithIndexes[0].number;
+      let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      return {positie_start, positie_end};
+    },
+
+    /**
+     * Saves the definition, posts it, and fetches updated definitions.
+     * @param {Object} definition - The definition to be saved.
+     * @param {string} xmlBronName - The XML identifier.
+     * @param {string} username - The username.
+     */
+    async saveAndFetchDefinitions(definition, xmlBronName, username) {
+      let xmlbronDate = store().loadedXMLDate;
+
+      await store().postDefinition(definition, xmlBronName, username, xmlbronDate);
+      await store().getDefinitions(xmlBronName, username, xmlbronDate);
+    },
+
+    saveLabel() {
+      // Find the label object based on the selectedColor
+      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      const selectedLabelObject = this.colorOptions.find(option => option.color === this.selectedColor);
+
+      if (selectedLabelObject) {
+
+        const newLabel = {
+          label: selectedLabelObject.label,
+          text: selectedText,
           selectedColor: this.selectedColor,
         };
 
-        store().definitions.push(newDefinition);
+        // Create a span element to wrap the selected text with the chosen color
+        const span = document.createElement('span');
+        span.style.backgroundColor = this.selectedColor;
+        span.textContent = selectedText;
+
+        // Replace the selected text with the highlighted span
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(span);
+
+        store().labels.push(newLabel);
 
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
-        let definition = {
-          definitie: newDefinition.definition,
+        let label = {
+          label: newLabel.label,
           positie_start: positie_start,
           positie_end: positie_end,
-          woord: newDefinition.text
+          woord: newLabel.text,
+          date: this.getFormattedDate()
         }
 
-        store().postDefinition(definition);
-        store().getDefinitions();
+
+        store().postLabel(label);
+        store().getLabels();
 
         this.$emit('annotation-saved', {
           text: selectedText,
           color: this.selectedColor
         });
+
+
+      } else {
+        console.warn('Label not found for the selected color:', this.selectedColor);
       }
     },
-
     removeDotsAndSymbols(word) {
       // Remove special symbols
       const cleanedWord = word.replace(/[.,]/gi, '');
@@ -240,12 +347,14 @@ export default {
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
+    this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
   },
 
   watch: {
     selectedText(newValue) {
       this.checkMatchingDefinitions(newValue);
+      this.checkMatchingLabels(newValue);
     },
   },
 }
