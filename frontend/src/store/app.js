@@ -96,8 +96,10 @@ export const store = defineStore('app', {
       return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}/${xmlbronDate}`);
     },
 
-    async getXMLbronnenByName(){
-      return await this.genericGetRequests('XMLBron/byName');
+    async getXMLbronnenByName(artikelNaam){
+      let response = await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
+      console.log(response)
+      this.xmlbronnen = response.data
     },
     
     async getDefinitions(xmlBronName, username, xmlbronDate) {

@@ -20,6 +20,9 @@ public interface XMLBronRepository extends CrudRepository<XMLBron, Integer> {
     @Query("SELECT x FROM XMLBron x WHERE x.artikel_naam = :artikelNaam AND x.xmlbron_date = :xmlbronDate")
     XMLBron findByArtikelNaamAndDate(@Param("artikelNaam") String artikelNaam, @Param("xmlbronDate") LocalDate xmlbronDate);
 
+    @Query("SELECT x FROM XMLBron x WHERE x.artikel_naam = :artikelNaam")
+    List<XMLBron> findByArticlesNameAndDate(@Param("artikelNaam") String artikelNaam);
+
     XMLBron save(XMLBron xmlbron);
 
     void deleteById(int xmlbron_id);

@@ -28,7 +28,8 @@
         </v-card>
       </v-col>
       <v-col col="6">
-        <v-card>
+        <XMLbronTimeLine :timelineData="timelineData"></XMLbronTimeLine>
+         <v-card>
           <v-card-title>XML Content</v-card-title>
           <v-card-text v-if="parsedData.articles.length > 0">
             <v-scroll-area @mouseup="handleSelection()">
@@ -130,13 +131,19 @@ import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
 import Annotatie from "@/components/Annotatie.vue";
+import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
 import {store} from "@/store/app";
 import router from '@/router';
 
 export default {
-  components: {AnnotatieDialog, Annotatie},
+  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine},
   data() {
     return {
+      timelineData:[
+            {id: 1, name: "Mock data title 1", date: '2023-01-01'},
+            {id: 2, name: "Mock data title 2", date: '2023-01-02'},
+            {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+        ],
       isVisible: false,
       selectedText: "",
       xmlFile: null,

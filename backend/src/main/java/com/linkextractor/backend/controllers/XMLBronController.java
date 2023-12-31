@@ -29,6 +29,11 @@ public class XMLBronController {
         return xmlBronRepository.findAll();
     }
 
+    @GetMapping("/byName/v1/{articleName}")
+    private @ResponseBody Iterable<XMLBron> getXMLBronnenByArticleName(@PathVariable String articleName){
+        return xmlBronRepository.findByArticlesNameAndDate(articleName);
+    }
+
     @GetMapping("/byName/{artikelNaam}")
     public ResponseEntity<XMLBron> getXMLBronByArtikelNaam(@PathVariable String artikelNaam) {
         XMLBron xmlBron = xmlBronRepository.findByArtikelNaam(artikelNaam);
