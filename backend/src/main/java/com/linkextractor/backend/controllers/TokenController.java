@@ -2,7 +2,6 @@ package com.linkextractor.backend.controllers;
 
 import com.linkextractor.backend.dto.TokenRefreshRequestDTO;
 import com.linkextractor.backend.dto.TokenRefreshResponseDTO;
-import com.linkextractor.backend.service.AuthenticationService;
 import com.linkextractor.backend.service.TokenService;
 import com.linkextractor.backend.service.TokenBlackListService;
 import org.springframework.http.ResponseEntity;
