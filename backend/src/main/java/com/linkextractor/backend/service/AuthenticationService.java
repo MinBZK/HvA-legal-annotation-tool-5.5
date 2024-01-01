@@ -85,6 +85,8 @@ public class AuthenticationService {
                     new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
             );
 
+            String username = loginRequestDTO.getUsername();
+
             // Generate JWT token for the authenticated user
             String token = tokenService.generateAccessToken(auth);
 
@@ -92,7 +94,7 @@ public class AuthenticationService {
             String refreshToken = tokenService.generateRefreshToken(loginRequestDTO.getUsername());
 
             // Return LoginResponseDTO with the generated JWT token (or relevant user details)
-            return new LoginResponseDTO(token, refreshToken);
+            return new LoginResponseDTO(username, token, refreshToken);
 
         } catch (AuthenticationException e) {
             // Throw an InvalidLoginException for failed authentication due to invalid login details
