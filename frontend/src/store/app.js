@@ -7,7 +7,7 @@ export const store = defineStore('app', {
   state: () => ({
     definitions: [],
     loadedXMLIdentifier: "",
-    user: {loggedIn: false, permissions: ""},
+    user: {username: "", loggedIn: false, permissions: "",},
     tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
   }),
 
@@ -96,6 +96,15 @@ export const store = defineStore('app', {
 
     async postNewXMLBron(body) {
       this.responseCode = await this.genericPostRequest("XMLBron/api/v1/", body);
+    },
+
+    async login(body) {
+      try {
+        const response = await axios.post("http://localhost:8085/auth/login", body);
+        return response;
+      } catch (error) {
+        throw error; // Re-throw the error to handle it in the component
+      }
     },
 
   },

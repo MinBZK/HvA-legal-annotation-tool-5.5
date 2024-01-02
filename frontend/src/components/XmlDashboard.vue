@@ -1,42 +1,67 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
-        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
-                         :hoveredWordObject="this.hoveredWordObject"
-                         @close="isVisible=false"
-                         @annotation-saved="applyAnnotation">
-        </AnnotatieDialog>
-      </v-dialog>
-      <v-col col="6">
-        <v-card>
-          <v-card-title>Load XML File</v-card-title>
-          <v-card-text>
-            <v-file-input
-              label="Select XML File"
-              accept=".xml"
-              @change="handleFileChange"
-            ></v-file-input>
-            <v-btn
-              color="primary"
-              @click="loadXML"
-              :disabled="!xmlFile"
-            >Load XML
-            </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col col="6">
-        <v-card>
-          <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0">
-            <v-scroll-area @mouseup="handleSelection()">
-              <div class="formatted-xml">
-                <div v-for="article in parsedData.articles" :key="article.number">
-                  <h3>{{ article.title }}</h3>
-                  <ol>
-                    <li v-for="(part, partIndex) in article.parts" :key="partIndex">
-                      <div>
+  <v-app>
+    <!-- Header & Sidebar content -->
+    <app-header-sidebar></app-header-sidebar>
+
+    <!-- Anotatie Dialog content -->
+    <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
+      <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
+                       :hoveredWordObject="this.hoveredWordObject"
+                       @close="isVisible=false"
+                       @annotation-saved="applyAnnotation">
+      </AnnotatieDialog>
+    </v-dialog>
+
+    <!-- Main content -->
+    <v-main>
+      <v-container fluid>
+        <!-- Widgets -->
+        <v-row>
+          <!-- Import/export widget -->
+          <v-col cols="12" md="4">
+            <v-card class="elevation-3">
+              <v-card-title class="headline">XML-bestanden Beheren</v-card-title>
+              <!-- Import/export section -->
+              <v-card-text>
+                <v-card>
+                  <v-card-title>XML Laden</v-card-title>
+                  <v-card-text>
+                    <v-file-input
+                      label="Selecteer XML-bestand"
+                      accept=".xml"
+                      @change="handleFileChange"
+                    ></v-file-input>
+                    <v-btn
+                      color="primary"
+                      variant="elevated"
+                      @click="loadXML"
+                      :disabled="!xmlFile"
+                    >XML Laden
+                    </v-btn>
+                  </v-card-text>
+                </v-card>
+                <!-- Xml Export content -->
+                <XmlDownloader
+                  :xmlContent="xmlContent"
+                ></XmlDownloader>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <!-- Showcase widget -->
+          <v-col cols="12" md="8">
+            <v-card class="elevation-3">
+              <v-card-title class="headline">XML-bestandsinhoud Weergeven</v-card-title>
+              <!-- Showcase content -->
+              <v-card>
+                <v-card-text v-if="parsedData.articles.length > 0">
+                  <v-scroll-area @mouseup="handleSelection()">
+                    <div class="formatted-xml">
+                      <div v-for="article in parsedData.articles" :key="article.number">
+                        <h3>{{ article.title }}</h3>
+                        <ol>
+                          <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                            <div>
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
@@ -53,12 +78,12 @@
                         </v-tooltip>
 
                         </span>
-                        <ul>
-                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
-                            <span>{{ subPart.number }}</span>
-                            <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
-                            >
+                              <ul>
+                                <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
+                                  <span>{{ subPart.number }}</span>
+                                  <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                        @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                                  >
                               {{ word.name }}
 
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
@@ -71,26 +96,38 @@
                         </v-tooltip>
 
                             </span>
+                                </li>
+                              </ul>
+                            </div>
                           </li>
-                        </ul>
+                        </ol>
                       </div>
-                    </li>
-                  </ol>
-                </div>
-              </div>
-            </v-scroll-area>
-          </v-card-text>
-          <v-card-text v-else>
-            <v-alert type="info">No XML file loaded.</v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+                    </div>
+                  </v-scroll-area>
+                </v-card-text>
+                <v-card-text v-else>
+                  <v-alert type="info">Geen XML-bestand geladen.</v-alert>
+                </v-card-text>
+              </v-card>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-
 <style scoped>
+
+/* Add custom margin classes */
+.mb-3 {
+  margin-bottom: 1rem; /* You can adjust this value as needed */
+}
+
+.mt-3 {
+  margin-top: 1rem; /* You can adjust this value as needed */
+}
+
 .formatted-xml {
   margin: 0; /* Remove default margin */
   line-height: 1.5; /* Adjust line height for better readability */
@@ -117,17 +154,18 @@
 }
 </style>
 
-
 <script>
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
-import AnnotatieDialog from "@/components/Annotatie";
 import {store} from "@/store/app";
 import {isProxy, toRaw} from 'vue';
+import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
+import AnnotatieDialog from "@/components/Annotatie";
+import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
-  components: {AnnotatieDialog},
+  components: {AppHeaderSidebar, AnnotatieDialog, XmlDownloader} ,
   data() {
     return {
       isVisible: false,
@@ -316,15 +354,23 @@ export default {
     removeDotsAndSymbols(word) {
       // Remove special symbols
       return word.replace(/[.,]/gi, '');
-    }
-  },
+    },
 
+    getUserFromXML(xmlContent) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+
+      // Get the root element of the XML document
+      const rootElement = xmlDoc.documentElement;
+
+      // Get the username attribute from the root element
+      const username = rootElement.getAttribute('username');
+
+      // Return the username value or null if the attribute doesn't exist
+      return username ? username : null;
+    },
+  },
   mounted() {
   }
-
 };
 </script>
-
-
-
-
