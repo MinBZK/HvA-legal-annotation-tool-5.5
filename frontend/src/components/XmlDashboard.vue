@@ -150,6 +150,24 @@ export default {
       numberOfWords: 0,
       wordColours: [],
       labels: {},
+      colourOptions: [
+        {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
+        {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
+        {label: 'Rechtsobject', colour: 'rgb(152, 190, 241)'},
+        {label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)'},
+        {label: 'Voorwaarde', colour: 'rgb(145, 232, 211)'},
+        {label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)'},
+        {label: 'Variabele', colour: 'rgb(255, 217, 93)'},
+        {label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)'},
+        {label: 'Parameter', colour: 'rgb(255, 180, 180)'},
+        {label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)'},
+        {label: 'Operator', colour: 'rgb(193, 235, 225)'},
+        {label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)'},
+        {label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)'},
+        {label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)'},
+        {label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)'},
+        {label: 'Brondefinitie', colour: 'rgb(246, 246, 246)'},
+      ],
     };
   },
   computed: {
@@ -179,56 +197,18 @@ export default {
       labels.forEach(label => {
         let startPosition = label.positie_start;
         let textLength = (label.positie_end - label.positie_start) + 1;
+        let matchinglabel = this.colourOptions.find(option => option.label === label.label);
+
+
         for (let i = 0; i < textLength; i++) {
-          this.wordColours[startPosition + i] = "red";
+          this.wordColours[startPosition + i] = matchinglabel.colour;
         }
       })
     },
 
     async loadLabelsForArticle() {
-      try {
-        let labels = await store().getLabels();
-        this.insertLabelColours(labels);
-
-        if (labels) {
-          for (let i = 0; i < labels.length; i++) {
-            const label = labels[i];
-            if (this.allWordsInXML[label.positie_start]) {
-              this.applyBackgroundColor(label.positie_start);
-            }
-          }
-          //Check if the label matches the text
-          //If yes change color.
-        } else {
-          console.log("No labels found");
-        }
-      } catch (labelsError) {
-        console.error('Error getting labels:', labelsError);
-      }
-    },
-
-    applyBackgroundColor(positieStart) {
-      // Find the corresponding word element and apply the background color
-      let wordIndex = this.findWordIndexByPositieStart(positieStart);
-      if (wordIndex !== -1) {
-        let wordElement = document.getElementById(`word-${wordIndex}`);
-        if (wordElement) {
-          wordElement.style.backgroundColor = 'red';
-        }
-      }
-    },
-
-    findWordIndexByPositieStart(positieStart) {
-      // Implement a function to find the word index based on positie_start
-      // Modify this according to your actual data structure
-      // Example: assuming this.parsedData.articles[0].parts[0].partWords is the array of words
-      const wordsArray = this.parsedData.articles[0].parts[0].partWords;
-      for (let i = 0; i < wordsArray.length; i++) {
-        if (wordsArray[i].positie_start === positieStart) {
-          return i;
-        }
-      }
-      return 4; // Return -1 if not found
+      this.labels = await store().getLabels();
+      this.insertLabelColours(this.labels);
     },
 
     handleSelection() {
@@ -267,23 +247,8 @@ export default {
       this.showTooltip = false;
     },
 
-    applyAnnotation(annotation) {
-      let {text, color} = annotation;
-      const regex = new RegExp(this.RegExp(text), 'g');
-      const replacement = `<span style="background-color: ${color};">${text}</span>`;
-
-      this.parsedData.articles.forEach(article => {
-        article.parts.forEach(part => {
-          if (part.name) {
-            part.name = part.name.replace(regex, replacement);
-          }
-          part.subParts.forEach(subPart => {
-            if (subPart.name) {
-              subPart.name = subPart.name.replace(regex, replacement);
-            }
-          });
-        });
-      });
+    applyAnnotation() {
+      this.loadAssociatedData();
     },
 
     RegExp(string) {
@@ -396,14 +361,14 @@ export default {
       let baseUrl = "https://wetten.overheid.nl";
       let urlBWBR = store().XMLBwbrCode
 
-      let xmlBron = {
-        artikel_naam: this.articleTitle,
-        link: `${baseUrl}/${urlBWBR}`,
-        definities: [],
-        xmlbron_date: xmlbronDate,
-      }
-
       if (response === 404) {
+        let xmlBron = {
+          artikel_naam: this.articleTitle,
+          link: `${baseUrl}/${urlBWBR}`,
+          definities: [],
+          xmlbron_date: xmlbronDate,
+        }
+
         await store().postNewXMLBron(xmlBron);
       } else {
         this.loadAssociatedData();

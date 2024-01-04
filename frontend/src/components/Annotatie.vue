@@ -19,7 +19,8 @@
           </v-window-item>
 
           <v-window-item value="two">
-            <v-select label="Label" :items="colorOptions" item-title="label" item-value="color" v-model="selectedColor">
+            <v-select label="Label" :items="colourOptions" item-title="label" item-value="color"
+                      v-model="selectedColour">
               <template v-slot:item="{ props, item }">
                 <v-list-item v-bind="props">
                   <v-chip
@@ -80,9 +81,10 @@ export default {
       tab: null,
       definition: "",
       olderDefinitions: "",
-      selectedColor: "",
+      selectedColour: "",
       label: "",
-      colorOptions: [
+      matchedWordsWithIndexes: [],
+      colourOptions: [
         {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
         {label: 'Rechtsobject', color: 'rgb(152, 190, 241)'},
@@ -100,7 +102,8 @@ export default {
         {label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)'},
         {label: 'Brondefinitie', color: 'rgb(246, 246, 246)'},
       ],
-      matchedWordsWithIndexes: [],
+      startMatch: undefined,
+      endMatch: undefined,
     }
   },
   methods: {
@@ -117,7 +120,7 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      if (store().definitions === undefined) {
+      if (!store().definitions) {
         return
       }
 
@@ -125,37 +128,35 @@ export default {
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
-      if (matchingDefinition === undefined) {
+      if (!matchingDefinition) {
         return;
       }
 
-      let startMatch = matchingDefinition.positie_start === this.matchedWordsWithIndexes[0].number;
-      let endMatch = matchingDefinition.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      this.findStarEndMatch(matchingDefinition);
 
-      if (matchingDefinition && startMatch && endMatch) {
+      if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
-        this.selectedColor = matchingDefinition.selectedColor;
+        this.selectedColour = matchingDefinition.selectedColor;
       }
+    },
+
+    findStarEndMatch(match) {
+      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
+      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
     },
 
     checkMatchingLabels(words) {
       this.handleSelectedWord();
-
       let matchingLabel = store().labels.find(label => label.woord === words);
 
-
-      if (matchingLabel === undefined) {
+      if (!matchingLabel) {
         return;
       }
 
-      let startMatch = matchingLabel.positie_start === this.matchedWordsWithIndexes[0].number;
-      let endMatch = matchingLabel.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      this.findStarEndMatch(matchingLabel);
 
-      console.log("Matching label:", matchingLabel);
-
-      if (matchingLabel && startMatch && endMatch) {
+      if (this.startMatch && this.endMatch) {
         this.label = matchingLabel.label;
-        this.selectedColor = this.colorOptions.find(item => item.label === matchingLabel.label);
       }
     },
 
@@ -190,7 +191,7 @@ export default {
 
         this.$emit('annotation-saved', {
           text: selectedText,
-          color: this.selectedColor,
+          color: this.selectedColour,
         });
       }
     },
@@ -200,6 +201,7 @@ export default {
      * @returns {Object} An object with positie_start and positie_end properties.
      */
     calculatePositionIndexes() {
+      console.log(this.matchedWordsWithIndexes)
       let positie_start = this.matchedWordsWithIndexes[0].number;
       let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
       return {positie_start, positie_end};
@@ -221,19 +223,19 @@ export default {
     saveLabel() {
       // Find the label object based on the selectedColor
       const selectedText = this.removeDotsAndSymbols(this.selectedText);
-      const selectedLabelObject = this.colorOptions.find(option => option.color === this.selectedColor);
+      const selectedLabelObject = this.colourOptions.find(option => option.color === this.selectedColour);
 
       if (selectedLabelObject) {
 
         const newLabel = {
           label: selectedLabelObject.label,
           text: selectedText,
-          selectedColor: this.selectedColor,
+          selectedColor: this.selectedColour,
         };
 
         // Create a span element to wrap the selected text with the chosen color
         const span = document.createElement('span');
-        span.style.backgroundColor = this.selectedColor;
+        span.style.backgroundColor = this.selectedColour;
         span.textContent = selectedText;
 
         // Replace the selected text with the highlighted span
@@ -255,18 +257,17 @@ export default {
           date: this.getFormattedDate()
         }
 
-
         store().postLabel(label);
         store().getLabels();
 
         this.$emit('annotation-saved', {
           text: selectedText,
-          color: this.selectedColor
+          color: this.selectedColour
         });
 
 
       } else {
-        console.warn('Label not found for the selected color:', this.selectedColor);
+        console.warn('Label not found for the selected color:', this.selectedColour);
       }
     },
     removeDotsAndSymbols(word) {
