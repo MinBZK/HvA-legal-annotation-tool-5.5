@@ -1,4 +1,4 @@
-image: node:latest, maven
+image: node:latest
 
 
 stages:
@@ -67,6 +67,9 @@ build_job:
   stage: build backend
   tags:
     - hva
+  services:
+    - name: maven:latest
+      alias: maven
   script:
     - cd backend
     - mvn compile
@@ -75,12 +78,18 @@ test_job:
   stage: test backend
   tags:
     - hva
+  services:
+    - name: maven:latest
+      alias: maven
   script:
     - cd backend
     - mvn clean test
 
 deploy_backend:
   stage: deploy backend
+  services:
+    - name: maven:latest
+      alias: maven
   script:
     - apt-get update -qy
     - apt-get install -y ruby
