@@ -4,6 +4,9 @@ stages:
 #  - build
 #  - sonarqube-check
   - deploy
+  - build backend
+  - test backend
+  - deploy backend
 
 #build:
 #  stage: build
@@ -57,3 +60,32 @@ heroku_deploy:
     - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
   only:
     - main
+
+
+build_job:
+  stage: build backend
+  tags:
+    - hva
+  script:
+    - cd backend
+    - mvn compile
+
+test_job:
+  stage: test backend
+  tags:
+    - hva
+  script:
+    - cd backend
+    - mvn clean test
+
+deploy_backend:
+  stage: deploy backend
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby
+    - gem install dpl
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_BACKEND --api-key=$HEROKU_PRODUCTION_KEY
+  only:
+    - main
+  tags:
+    - hva
