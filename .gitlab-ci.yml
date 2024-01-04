@@ -67,11 +67,10 @@ build_job:
   stage: build backend
   tags:
     - hva
-  image:
-    name: node:latest
   services:
     - name: maven:latest
       alias: maven
+      entrypoint: ["tail", "-f", "/dev/null"]
   script:
     - cd backend
     - mvn compile
@@ -80,22 +79,21 @@ test_job:
   stage: test backend
   tags:
     - hva
-  image:
-    name: node:latest
   services:
     - name: maven:latest
       alias: maven
+      entrypoint: ["tail", "-f", "/dev/null"]
   script:
     - cd backend
     - mvn clean test
 
 deploy_backend:
   stage: deploy backend
-  image:
-    name: node:latest
+
   services:
     - name: maven:latest
       alias: maven
+      entrypoint: ["tail", "-f", "/dev/null"]
   script:
     - apt-get update -qy
     - apt-get install -y ruby
