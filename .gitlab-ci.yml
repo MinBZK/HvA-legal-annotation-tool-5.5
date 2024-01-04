@@ -85,9 +85,8 @@ test_job:
 
 deploy_backend:
   stage: deploy backend
-
-
   script:
+    - cd backend
     - apt-get update -qy
     - apt-get install -y ruby
     - gem install dpl
