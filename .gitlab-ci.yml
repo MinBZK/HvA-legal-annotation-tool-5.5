@@ -67,6 +67,8 @@ build_job:
   stage: build backend
   tags:
     - hva
+  image:
+    name: node:latest
   services:
     - name: maven:latest
       alias: maven
@@ -78,6 +80,8 @@ test_job:
   stage: test backend
   tags:
     - hva
+  image:
+    name: node:latest
   services:
     - name: maven:latest
       alias: maven
@@ -87,6 +91,8 @@ test_job:
 
 deploy_backend:
   stage: deploy backend
+  image:
+    name: node:latest
   services:
     - name: maven:latest
       alias: maven
