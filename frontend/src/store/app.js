@@ -104,6 +104,7 @@ export const store = defineStore('app', {
     async getLabels() {
       let response = await this.genericGetRequests("label");
       this.labels = response.data;
+      return response.data;
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {

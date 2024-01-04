@@ -41,34 +41,30 @@
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
+                              :style="{ backgroundColor: wordColours[word.number] }"
                               @mouseover="handleWordHover(word)"
                               :id="'word-' + id"
-
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
-
                            <v-tooltip bottom v-if="showTooltip"
                                       activator="parent"
                                       location="top"
                            >
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
-
                         </span>
                         <ul>
-                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
+                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex"
+                          >
                             <span>{{ subPart.number }}</span>
                             <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                  :style="{ backgroundColor: wordColours[word.number] }"
                                   @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
                                   :id="'word-' + id"
-
                             >
-
                               {{ word.name }}
-
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
-
                                <v-tooltip bottom v-if="showTooltip"
                                           activator="parent"
                                           location="top"
@@ -152,6 +148,8 @@ export default {
       wordIdMap: {}, // Map to store generated IDs for words
       id: null,
       numberOfWords: 0,
+      wordColours: [],
+      labels: {},
     };
   },
   computed: {
@@ -164,13 +162,11 @@ export default {
 
   },
   methods: {
-    // TODO add proper error handling
     async loadDefinitions() {
       try {
         let xmlBronId = store().loadedXMLIdentifier;
         let username = JSON.parse(localStorage.getItem('username'));
         let xmlbronDate = store().loadedXMLDate;
-
 
         await store().getDefinitions(xmlBronId, username, xmlbronDate);
 
@@ -179,24 +175,24 @@ export default {
       }
     },
 
-    async loadLabels() {
-      try {
-        const labels = await store().getLabels();
-        console.log("loadLabels/ labels: " + labels);
-
-      } catch (labelsError) {
-        console.error('Error getting labels:', labelsError);
-      }
+    insertLabelColours(labels) {
+      labels.forEach(label => {
+        let startPosition = label.positie_start;
+        let textLength = (label.positie_end - label.positie_start) + 1;
+        for (let i = 0; i < textLength; i++) {
+          this.wordColours[startPosition + i] = "red";
+        }
+      })
     },
 
     async loadLabelsForArticle() {
       try {
-        const labels = await store().getLabels();
-        const labelsData = store().labels;
+        let labels = await store().getLabels();
+        this.insertLabelColours(labels);
 
-        if (labelsData) {
-          for (let i = 0; i < labelsData.length; i++) {
-            const label = labelsData[i];
+        if (labels) {
+          for (let i = 0; i < labels.length; i++) {
+            const label = labels[i];
             if (this.allWordsInXML[label.positie_start]) {
               this.applyBackgroundColor(label.positie_start);
             }
@@ -209,8 +205,6 @@ export default {
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-
-
     },
 
     applyBackgroundColor(positieStart) {
@@ -236,17 +230,6 @@ export default {
       }
       return 4; // Return -1 if not found
     },
-
-    // generateId(word) {
-    //
-    //   if(word === this.allWordsInXML)
-    //
-    //   const currentIndex = this.allWordsInXML.length;
-    //   this.idCounter++;
-    //
-    //   return currentIndex--;
-    // },
-
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -429,7 +412,6 @@ export default {
 
     loadAssociatedData() {
       this.loadDefinitions();
-      this.loadLabels();
       this.loadLabelsForArticle();
     },
 
@@ -444,11 +426,12 @@ export default {
       }
       store().logout();
     },
-
-    mounted() {
-      this.id = this._uid
-    }
   },
+
+  mounted() {
+    this.id = this._uid
+  }
+
 }
 </script>
 

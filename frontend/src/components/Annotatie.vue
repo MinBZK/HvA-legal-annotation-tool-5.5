@@ -2,21 +2,20 @@
   <v-container>
     <v-card>
       <v-card-title class="headline">Annoteer tekst</v-card-title>
-
       <v-card-subtitle>{{ selectedText }}</v-card-subtitle>
-
       <v-tabs v-model="tab" background-color="primary">
         <v-tab value="one">Definitie</v-tab>
         <v-tab value="two">Labels</v-tab>
         <v-tab value="three">Relaties</v-tab>
-
       </v-tabs>
-
       <v-card-text>
         <v-window v-model="tab">
-
           <v-window-item value="one">
-            <v-text-field label="Definitie" @keyup.enter="saveDialog" v-model="definition"></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field label="Definitie" @keyup.enter="saveDialog" v-model="definition"></v-text-field>
+              </v-col>
+            </v-row>
           </v-window-item>
 
           <v-window-item value="two">
@@ -80,6 +79,7 @@ export default {
       isVis: true,
       tab: null,
       definition: "",
+      olderDefinitions: "",
       selectedColor: "",
       label: "",
       colorOptions: [
@@ -122,7 +122,7 @@ export default {
       }
 
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
-
+      this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
       if (matchingDefinition === undefined) {
