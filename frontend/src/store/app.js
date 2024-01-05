@@ -99,12 +99,14 @@ export const store = defineStore('app', {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
+      console.log("Definition", this.definitions);
     },
 
-    async getLabels() {
-      let response = await this.genericGetRequests("label");
+    async getLabels(xmlBronName, username, xmlbronDate) {
+      let url = "label/getLabels";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.labels = response.data;
-      return response.data;
+
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
@@ -112,8 +114,9 @@ export const store = defineStore('app', {
       this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
     },
 
-    async postLabel(body) {
-      this.responseCode = await this.genericPostRequest("label/addLabel", body);
+    async postLabel(body, xmlBronName, username, xmlbronDate) {
+        let url = "label/addLabel";
+        this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
     },
 
     async postNewXMLBron(body) {

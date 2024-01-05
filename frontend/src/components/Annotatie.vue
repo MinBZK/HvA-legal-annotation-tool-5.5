@@ -81,6 +81,7 @@ export default {
       tab: null,
       definition: "",
       olderDefinitions: "",
+        olderLabels: "",
       selectedColour: "",
       label: "",
       matchedWordsWithIndexes: [],
@@ -104,6 +105,7 @@ export default {
       ],
       startMatch: undefined,
       endMatch: undefined,
+
     }
   },
   methods: {
@@ -136,29 +138,40 @@ export default {
 
       if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
-        this.selectedColour = matchingDefinition.selectedColor;
+        // this.selectedColour = matchingDefinition.selectedColor;
       }
+
     },
+      checkMatchingLabels(words) {
+          this.handleSelectedWord();
+          //let matchingLabel = store().labels.find(label => label.woord === words);
+
+          if (!store().labels) {
+              return;
+          }
+
+          let matchingLabel = store().labels.filter(label => label.woord === words);
+          this.olderLabels = matchingLabel;
+          matchingLabel = matchingLabel[matchingLabel.length - 1];
+
+          this.findStarEndMatch(matchingLabel);
+
+          console.log()
+
+          if (this.startMatch && this.endMatch) {
+              this.label = matchingLabel.label;
+              this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
+
+          }
+
+      },
 
     findStarEndMatch(match) {
       this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
       this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+
     },
 
-    checkMatchingLabels(words) {
-      this.handleSelectedWord();
-      let matchingLabel = store().labels.find(label => label.woord === words);
-
-      if (!matchingLabel) {
-        return;
-      }
-
-      this.findStarEndMatch(matchingLabel);
-
-      if (this.startMatch && this.endMatch) {
-        this.label = matchingLabel.label;
-      }
-    },
 
     getFormattedDate() {
       let date = new Date();
@@ -257,8 +270,12 @@ export default {
           date: this.getFormattedDate()
         }
 
-        store().postLabel(label);
-        store().getLabels();
+        console.log(label);
+
+          let xmlBronId = store().loadedXMLIdentifier;
+          let username = JSON.parse(localStorage.getItem('username'));
+
+          this.saveAndFetchLabels(label, xmlBronId, username);
 
         this.$emit('annotation-saved', {
           text: selectedText,
@@ -270,6 +287,13 @@ export default {
         console.warn('Label not found for the selected color:', this.selectedColour);
       }
     },
+
+      async saveAndFetchLabels(label, xmlBronName, username) {
+          let xmlbronDate = store().loadedXMLDate;
+
+          await store().postLabel(label, xmlBronName, username, xmlbronDate);
+          await store().getLabels(xmlBronName, username, xmlbronDate);
+      },
     removeDotsAndSymbols(word) {
       // Remove special symbols
       const cleanedWord = word.replace(/[.,]/gi, '');
