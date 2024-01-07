@@ -1,6 +1,17 @@
 <template>
   <v-container>
     <v-card>
+
+      <v-select v-if="olderDefinitions.length !== 0" :items="olderDefinitions" item-text="displayText" item-value="id">
+        <template v-slot:item="{ item }">
+          <div>
+            <div>{{ item.woord }}</div>
+            <div>{{ item.definitie }}</div>
+            <div>{{ formatDate(item.date) }}</div>
+          </div>
+        </template>
+      </v-select>
+
       <v-card-title class="headline">Annoteer tekst</v-card-title>
       <v-card-subtitle>{{ selectedText }}</v-card-subtitle>
       <v-tabs v-model="tab" background-color="primary">
@@ -107,6 +118,14 @@ export default {
     }
   },
   methods: {
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}/${month}/${day}`;
+    },
+
     closeDialog() {
       this.$emit('close');
     },
@@ -127,6 +146,7 @@ export default {
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
+      console.log(this.olderDefinitionsArray)
 
       if (!matchingDefinition) {
         return;
