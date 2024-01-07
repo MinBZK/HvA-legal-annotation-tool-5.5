@@ -13,7 +13,8 @@
           <v-window-item value="one">
             <v-row>
               <v-col>
-                <v-text-field label="Voeg een nieuwe definitie toe" @keyup.enter="saveDialog"></v-text-field>
+                <v-text-field label="Voeg een nieuwe definitie toe" v-model="definition"
+                              @keyup.enter="saveDialog"></v-text-field>
               </v-col>
               <v-col>
                 <v-select v-if="olderDefinitions.length" :items="olderDefinitions"
@@ -101,6 +102,8 @@ export default {
       isVis: true,
       tab: null,
       definition: "",
+      definitionCopy: "",
+      labelCopy: "",
       olderDefinitions: "",
       olderLabels: "",
       selectedColour: "",
@@ -150,8 +153,14 @@ export default {
     },
 
     saveDialog() {
-      this.saveDefinition();
-      this.saveLabel();
+      if (this.definition !== "" || this.definition !== this.definition) {
+        this.saveDefinition();
+      }
+
+      if (this.selectedColour !== "" || this.selectedColour !== this.labelCopy) {
+        this.saveLabel();
+      }
+      this.$emit('annotation-saved');
       this.$emit('close');
     },
 
@@ -241,11 +250,6 @@ export default {
         let username = JSON.parse(localStorage.getItem('username'));
 
         this.saveAndFetchDefinitions(definition, xmlBronId, username);
-
-        this.$emit('annotation-saved', {
-          text: selectedText,
-          color: this.selectedColour,
-        });
       }
     },
 
@@ -303,12 +307,6 @@ export default {
         let username = JSON.parse(localStorage.getItem('username'));
 
         this.saveAndFetchLabels(label, xmlBronId, username);
-
-        this.$emit('annotation-saved', {
-          text: selectedText,
-          color: this.selectedColour
-        });
-
       } else {
         console.warn('Label not found for the selected color:', this.selectedColour);
       }
@@ -316,7 +314,6 @@ export default {
 
     async saveAndFetchLabels(label, xmlBronName, username) {
       let xmlbronDate = store().loadedXMLDate;
-
       await store().postLabel(label, xmlBronName, username, xmlbronDate);
     },
 
@@ -400,6 +397,8 @@ export default {
     this.checkMatchingDefinitions(this.selectedText);
     this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
+    this.definitionCopy = this.definition;
+    this.labelCopy = this.label.label;
   },
 
   watch: {

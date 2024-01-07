@@ -241,7 +241,6 @@ export default {
         let textLength = (label.positie_end - label.positie_start) + 1;
         let matchinglabel = this.colourOptions.find(option => option.label === label.label);
 
-
         for (let i = 0; i < textLength; i++) {
           this.wordColours[startPosition + i] = matchinglabel.colour;
         }
@@ -259,8 +258,7 @@ export default {
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-
-      await this.insertLabelColours(store().labels)
+      this.insertLabelColours(store().labels)
     },
 
     handleSelection() {
@@ -287,7 +285,6 @@ export default {
         return
       }
 
-
       definitions = definitions.filter(
         definition =>
           (number >= definition.positie_start && number <= definition.positie_end)
@@ -300,8 +297,8 @@ export default {
       this.showTooltip = false;
     },
 
-    async applyAnnotation() {
-      await this.loadLabelsForArticle();
+    applyAnnotation() {
+      this.loadLabelsForArticle();
     },
 
     RegExp(string) {
@@ -431,9 +428,9 @@ export default {
       }
     },
 
-    async loadAssociatedData() {
-      await this.loadDefinitions();
-      await this.loadLabelsForArticle();
+    loadAssociatedData() {
+      this.loadDefinitions();
+      this.loadLabelsForArticle();
     },
 
     removeDotsAndSymbols(word) {
@@ -455,6 +452,7 @@ export default {
       return username ? username : null;
     },
   },
+
   mounted() {
     this.id = this._uid
   }

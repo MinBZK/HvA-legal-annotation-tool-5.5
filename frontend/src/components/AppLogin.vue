@@ -74,7 +74,6 @@ export default {
         // Call login API asynchronously
         const response = await store().login(userData);
         // Process successful login response
-        console.log(response.data)
         this.handleLoginSuccess(response.data);
       } catch (error) {
         // Handle login error

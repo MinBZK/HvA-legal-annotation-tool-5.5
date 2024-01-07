@@ -111,13 +111,11 @@ export const store = defineStore('app', {
 
     async getXMLBronnenByNameTimeLine(artikelNaam) {
       let response = await this.genericGetRequests(`XMLBron/api/v1/timelinedata/${artikelNaam}`);
-      console.log(response.data)
       this.xmlbronnen = response.data
     },
 
     async getXMLbronnenByName(artikelNaam) {
       let response = await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
-      console.log(response)
       this.xmlbronnen = response.data
     },
 
@@ -131,8 +129,10 @@ export const store = defineStore('app', {
     async getLabels(xmlBronName, username, xmlbronDate) {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+
       this.labels = response.data;
       this.addEigenaarToLabels(username);
+      return this.labels
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
@@ -143,8 +143,9 @@ export const store = defineStore('app', {
 
     async postLabel(body, xmlBronName, username, xmlbronDate) {
       let url = "label/addLabel";
-      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
-    },
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body)
+        .then((e)=> this.getLabels(xmlBronName, username, xmlbronDate));
+      },
 
     async postNewXMLBron(body) {
       this.responseCode = await this.genericPostRequest("XMLBron/api/v1/", body);

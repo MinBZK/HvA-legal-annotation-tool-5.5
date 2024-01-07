@@ -119,7 +119,6 @@ export default {
         openModal(item) {
             this.modalOpen = true;
             this.selectedModalItem = item;
-            console.log(item)
         },
         //role check needs to be added
         showDeleteAlert(item) {
