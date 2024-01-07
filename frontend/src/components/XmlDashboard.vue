@@ -41,39 +41,24 @@
                   </v-card-text>
                 </v-card>
                 <!-- Xml Export content -->
-                <XmlDownloader
-                  :xmlContent="xmlContent"
+                <XmlDownloader v-if="xmlFile"
+                               :xmlContent="xmlContent"
                 ></XmlDownloader>
               </v-card-text>
             </v-card>
           </v-col>
-      <v-col col="6">
-        <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
-         <v-card>
-          <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0">
-            <v-scroll-area @mouseup="handleSelection()">
-              <div class="formatted-xml">
-                <div v-for="article in parsedData.articles" :key="article.number">
-                  <h3>{{ article.title }}</h3>
-                  <ol>
-                    <li v-for="(part, partIndex) in article.parts" :key="partIndex">
-                      <div>
-
-          <!-- Showcase widget -->
-          <v-col cols="12" md="8">
-            <v-card class="elevation-3">
-              <v-card-title class="headline">XML-bestandsinhoud Weergeven</v-card-title>
-              <!-- Showcase content -->
-              <v-card>
-                <v-card-text v-if="parsedData.articles.length > 0">
-                  <v-scroll-area @mouseup="handleSelection()">
-                    <div class="formatted-xml">
-                      <div v-for="article in parsedData.articles" :key="article.number">
-                        <h3>{{ article.title }}</h3>
-                        <ol>
-                          <li v-for="(part, partIndex) in article.parts" :key="partIndex">
-                            <div>
+          <v-col col="6">
+            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+            <v-card>
+              <v-card-title>XML Content</v-card-title>
+              <v-card-text v-if="parsedData.articles.length > 0">
+                <v-scroll-area @mouseup="handleSelection()">
+                  <div class="formatted-xml">
+                    <div v-for="article in parsedData.articles" :key="article.number">
+                      <h3>{{ article.title }}</h3>
+                      <ol>
+                        <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                          <div>
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
@@ -90,15 +75,15 @@
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
                         </span>
-                        <ul>
-                          >
-                            <span>{{ subPart.number }}</span>
-                                  :style="{ backgroundColor: wordColours[word.number] }"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
-                            >
-                                  :id="'word-' + id"
-                            <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex"
+                            <ul>
+                              <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex"
+                              >
+                                <span>{{ subPart.number }}</span>
+                                <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                      :style="{ backgroundColor: wordColours[word.number] }"
+                                      @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                                      :id="'word-' + id"
+                                >
                               {{ word.name }}
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
                                <v-tooltip bottom v-if="showTooltip"
@@ -109,19 +94,18 @@
                         </v-tooltip>
 
                             </span>
-                                </li>
-                              </ul>
-                            </div>
-                          </li>
-                        </ol>
-                      </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ol>
                     </div>
-                  </v-scroll-area>
-                </v-card-text>
-                <v-card-text v-else>
-                  <v-alert type="info">Geen XML-bestand geladen.</v-alert>
-                </v-card-text>
-              </v-card>
+                  </div>
+                </v-scroll-area>
+              </v-card-text>
+              <v-card-text v-else>
+                <v-alert type="info">No XML file loaded.</v-alert>
+              </v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -175,23 +159,20 @@ import AnnotatieDialog from "@/components/Annotatie";
 import Annotatie from "@/components/Annotatie.vue";
 import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
 import {store} from "@/store/app";
-import {isProxy, toRaw} from 'vue';
 import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
-import AnnotatieDialog from "@/components/Annotatie";
 import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
-  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine},
-  components: {AppHeaderSidebar, AnnotatieDialog, XmlDownloader} ,
+  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader},
   data() {
     return {
-      timelineData:[
-            {id: 1, name: "Mock data title 1", date: '2023-01-01'},
-            {id: 2, name: "Mock data title 2", date: '2023-01-02'},
-            {id: 3, name: "Mock data title 3", date: '2023-01-02'},
-            {id: 4, name: "Mock data title 3", date: '2023-01-02'},
-        ],
-      timelineDataLive:[],
+      timelineData: [
+        {id: 1, name: "Mock data title 1", date: '2023-01-01'},
+        {id: 2, name: "Mock data title 2", date: '2023-01-02'},
+        {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+        {id: 4, name: "Mock data title 3", date: '2023-01-02'},
+      ],
+      timelineDataLive: [],
       isVisible: false,
       selectedText: "",
       xmlFile: null,
@@ -269,19 +250,19 @@ export default {
       // this.labels = await store().getLabels();
       // this.insertLabelColours(this.labels);
 
-        try {
-            let xmlBronId = store().loadedXMLIdentifier;
-            let username = JSON.parse(localStorage.getItem('username'));
-            let xmlbronDate = store().loadedXMLDate;
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
+        let xmlbronDate = store().loadedXMLDate;
 
-            await store().getLabels(xmlBronId, username, xmlbronDate);
+        await store().getLabels(xmlBronId, username, xmlbronDate);
 
 
-        } catch (labelsError) {
-            console.error('Error getting labels:', labelsError);
-        }
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
 
-        this.insertLabelColours(store().labels)
+      this.insertLabelColours(store().labels)
     },
 
     handleSelection() {
@@ -307,7 +288,6 @@ export default {
       if (definitions === undefined || definitions.length === 0) {
         return
       }
-
 
 
       definitions = definitions.filter(
@@ -427,7 +407,7 @@ export default {
       if (allWords.length !== 0) {
         this.checkIfXMLBronExists();
       }
-      
+
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
       this.timelineDataLive = store().xmlbronnen;
       console.log(this.timelineDataLive)
