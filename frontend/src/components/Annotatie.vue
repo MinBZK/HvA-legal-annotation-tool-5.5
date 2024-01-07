@@ -1,17 +1,6 @@
 <template>
   <v-container>
     <v-card>
-
-      <v-select v-if="olderDefinitions.length !== 0" :items="olderDefinitions" item-text="displayText" item-value="id">
-        <template v-slot:item="{ item }">
-          <div>
-            <div>{{ item.woord }}</div>
-            <div>{{ item.definitie }}</div>
-            <div>{{ formatDate(item.date) }}</div>
-          </div>
-        </template>
-      </v-select>
-
       <v-card-title class="headline">Annoteer tekst</v-card-title>
       <v-card-subtitle>{{ selectedText }}</v-card-subtitle>
       <v-tabs v-model="tab" background-color="primary">
@@ -24,26 +13,47 @@
           <v-window-item value="one">
             <v-row>
               <v-col>
-                <v-text-field label="Definitie" @keyup.enter="saveDialog" v-model="definition"></v-text-field>
+                <v-text-field label="Voeg een nieuwe definitie toe" v-model="definition"
+                              @keyup.enter="saveDialog"></v-text-field>
+              </v-col>
+              <v-col>
+                <v-select v-if="olderDefinitions.length" :items="olderDefinitions"
+                          label="Zie oudere definities"
+                          :item-title="getDefinitionTextFields"
+                          :item-value="'definitie'"
+                >
+                </v-select>
               </v-col>
             </v-row>
           </v-window-item>
 
           <v-window-item value="two">
-            <v-select label="Label" :items="colourOptions" item-title="label" item-value="color"
-                      v-model="selectedColour">
-              <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props">
-                  <v-chip
-                    variant="flat"
-                    text-color="white"
-                    :color="item.raw.color"
-                    size="small">
-                  </v-chip>
-                </v-list-item>
-              </template>
-            </v-select>
-
+            <v-row>
+              <v-col>
+                <v-select @keyup.enter="saveDialog" label="Label" :items="colourOptions" item-title="label"
+                          item-value="color"
+                          v-model="selectedColour">
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props">
+                      <v-chip
+                        variant="flat"
+                        text-color="white"
+                        :color="item.raw.color"
+                        size="small">
+                      </v-chip>
+                    </v-list-item>
+                  </template>
+                </v-select>
+              </v-col>
+              <v-col>
+                <v-select v-if="olderLabels.length" :items="olderLabels"
+                          label="Zie oudere labels"
+                          :item-title="getLabelTextFields"
+                          :item-value="'label'"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
           </v-window-item>
 
           <v-window-item value="three"></v-window-item>
@@ -61,6 +71,7 @@
 
 <script>
 import {store} from "@/store/app";
+
 
 export default {
   name: "AnnotatieDialog",
@@ -91,6 +102,8 @@ export default {
       isVis: true,
       tab: null,
       definition: "",
+      definitionCopy: "",
+      labelCopy: "",
       olderDefinitions: "",
       olderLabels: "",
       selectedColour: "",
@@ -116,10 +129,17 @@ export default {
       ],
       startMatch: undefined,
       endMatch: undefined,
-
     }
   },
   methods: {
+    getDefinitionTextFields(item) {
+      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.eigenaar}`
+    },
+
+    getLabelTextFields(item) {
+      return `${item.label} - ${this.formatDate(item.datum)} - ${item.eigenaar}`
+    },
+
     formatDate(dateString) {
       const date = new Date(dateString);
       const year = date.getFullYear();
@@ -133,8 +153,14 @@ export default {
     },
 
     saveDialog() {
-      this.saveDefinition();
-      this.saveLabel();
+      if (this.definition !== "" || this.definition !== this.definition) {
+        this.saveDefinition();
+      }
+
+      if (this.selectedColour !== "" || this.selectedColour !== this.labelCopy) {
+        this.saveLabel();
+      }
+      this.$emit('annotation-saved');
       this.$emit('close');
     },
 
@@ -158,7 +184,6 @@ export default {
       if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
       }
-
     },
 
     checkIfValueIsUndefinedOrEmpty(variable) {
@@ -179,6 +204,7 @@ export default {
       }
 
       this.olderLabels = matchingLabel;
+
       matchingLabel = matchingLabel[matchingLabel.length - 1];
 
       this.findStartEndMatch(matchingLabel);
@@ -224,11 +250,6 @@ export default {
         let username = JSON.parse(localStorage.getItem('username'));
 
         this.saveAndFetchDefinitions(definition, xmlBronId, username);
-
-        this.$emit('annotation-saved', {
-          text: selectedText,
-          color: this.selectedColour,
-        });
       }
     },
 
@@ -260,13 +281,6 @@ export default {
       const selectedLabelObject = this.colourOptions.find(option => option.color === this.selectedColour);
 
       if (selectedLabelObject) {
-
-        const newLabel = {
-          label: selectedLabelObject.label,
-          text: selectedText,
-          selectedColor: this.selectedColour,
-        };
-
         // Create a span element to wrap the selected text with the chosen color
         const span = document.createElement('span');
         span.style.backgroundColor = this.selectedColour;
@@ -278,16 +292,14 @@ export default {
         range.deleteContents();
         range.insertNode(span);
 
-        store().labels.push(newLabel);
-
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
         let label = {
-          label: newLabel.label,
+          label: selectedLabelObject.label,
           positie_start: positie_start,
           positie_end: positie_end,
-          woord: newLabel.text,
+          woord: selectedText,
           date: this.getFormattedDate()
         }
 
@@ -295,12 +307,6 @@ export default {
         let username = JSON.parse(localStorage.getItem('username'));
 
         this.saveAndFetchLabels(label, xmlBronId, username);
-
-        this.$emit('annotation-saved', {
-          text: selectedText,
-          color: this.selectedColour
-        });
-
       } else {
         console.warn('Label not found for the selected color:', this.selectedColour);
       }
@@ -308,7 +314,6 @@ export default {
 
     async saveAndFetchLabels(label, xmlBronName, username) {
       let xmlbronDate = store().loadedXMLDate;
-
       await store().postLabel(label, xmlBronName, username, xmlbronDate);
     },
 
@@ -392,6 +397,8 @@ export default {
     this.checkMatchingDefinitions(this.selectedText);
     this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
+    this.definitionCopy = this.definition;
+    this.labelCopy = this.label.label;
   },
 
   watch: {
