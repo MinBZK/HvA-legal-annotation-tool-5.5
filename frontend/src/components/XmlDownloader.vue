@@ -34,11 +34,21 @@ export default {
       type: String,
       required: true,
     },
+    xmlFile: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       enteredFileName: this.defaultFileName,
     };
+  },
+  watch: {
+    xmlFile(newVal) {
+      // Update enteredFileName when xmlFile changes
+      this.enteredFileName = newVal.name || this.defaultFileName;
+    },
   },
   methods: {
     downloadXMLWithFileName() {
