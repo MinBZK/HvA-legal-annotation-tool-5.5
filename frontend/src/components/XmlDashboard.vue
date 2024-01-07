@@ -44,6 +44,7 @@
                 <XmlDownloader v-if="xmlFile"
                                :xmlContent="xmlContent"
                                :defaultFileName="xmlFile.name"
+                               :xml-file="xmlFile"
                 ></XmlDownloader>
               </v-card-text>
             </v-card>
