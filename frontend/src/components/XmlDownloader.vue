@@ -30,10 +30,14 @@ export default {
       type: String,
       required: true,
     },
+    defaultFileName: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      enteredFileName: '',
+      enteredFileName: this.defaultFileName,
     };
   },
   methods: {
@@ -77,9 +81,6 @@ export default {
 
       // Clean up by revoking the object URL
       URL.revokeObjectURL(url);
-
-      // Reset filename after download
-      this.enteredFileName = '';
     },
   },
 };

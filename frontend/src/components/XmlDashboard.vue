@@ -43,6 +43,7 @@
                 <!-- Xml Export content -->
                 <XmlDownloader v-if="xmlFile"
                                :xmlContent="xmlContent"
+                               :defaultFileName="xmlFile.name"
                 ></XmlDownloader>
               </v-card-text>
             </v-card>
@@ -104,7 +105,7 @@
                 </v-scroll-area>
               </v-card-text>
               <v-card-text v-else>
-                <v-alert type="info">No XML file loaded.</v-alert>
+                <v-alert type="info">Geen XML bestand geladen.</v-alert>
               </v-card-text>
             </v-card>
           </v-col>
