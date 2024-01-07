@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 public class Label {
@@ -32,6 +33,9 @@ public class Label {
     public LocalDateTime getDatum() {
         return date;
     }
+
+    @OneToMany(mappedBy = "label")
+    private Set<UserLabelXMLTable> linkingTables;
 
     public void setDatum(LocalDateTime datum) {
         this.date = datum;

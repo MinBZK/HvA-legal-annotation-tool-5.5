@@ -1,6 +1,7 @@
 package com.linkextractor.backend.controllers;
 
 
+import com.linkextractor.backend.models.Definitie;
 import com.linkextractor.backend.models.Label;
 
 import com.linkextractor.backend.service.LabelService;
@@ -31,6 +32,16 @@ public class LabelController {
         return new ResponseEntity<>(labels, HttpStatus.OK);
     }
 
+    @GetMapping("getLabels/{xmlBronName}/{username}/{xmlbronDate}")
+    public ResponseEntity<List<Label>> getLabelsByUsernameAndXMLBron(@PathVariable String xmlBronName,
+                                                                              @PathVariable String username,
+                                                                              @PathVariable LocalDate xmlbronDate) {
+
+        List<Label> labels = labelService.getLabelsByUsernameAndXMLBron(username, xmlBronName, xmlbronDate);
+
+        return new ResponseEntity<>(labels, HttpStatus.OK);
+    }
+
     @GetMapping("{labelId}")
     public ResponseEntity<Label> getLabelById(@PathVariable int labelId) {
         Optional<Label> label = labelService.getLabelById(labelId);
@@ -38,10 +49,20 @@ public class LabelController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("addLabel")
-    public ResponseEntity<Label> saveLabel(@RequestBody Label label) {
-        label.setDatum(LocalDateTime.now());
-        Label savedLabel = labelService.saveLabel(label);
+//    @PostMapping("addLabel")
+//    public ResponseEntity<Label> saveLabel(@RequestBody Label label) {
+//        label.setDatum(LocalDateTime.now());
+//        Label savedLabel = labelService.saveLabel(label);
+//        return new ResponseEntity<>(savedLabel, HttpStatus.CREATED);
+//    }
+
+    @PostMapping("addLabel/{xmlBronName}/{username}/{xmlbronDate}")
+    public ResponseEntity<Label> saveLabel(@RequestBody Label label,
+                                           @PathVariable String xmlBronName,
+                                           @PathVariable String username,
+                                           @PathVariable LocalDate xmlbronDate) {
+        //label.setDatum(LocalDateTime.now());
+        Label savedLabel = labelService.saveLabelAndAssociateWithXMLBron(label, xmlBronName, username, xmlbronDate);
         return new ResponseEntity<>(savedLabel, HttpStatus.CREATED);
     }
 
