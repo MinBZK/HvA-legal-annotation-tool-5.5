@@ -9,10 +9,10 @@
           <v-card-text>
             <!-- Form for user login -->
             <v-form @submit.prevent="loginUser">
-              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="usernameErrors"
+              <v-text-field v-model="username" label="Gebruikersnaam" outlined required :error-messages="errors.username"
                             class="mb-4"></v-text-field>
               <v-text-field v-model="password" label="Wachtwoord" type="password" outlined required
-                            :error-messages="passwordErrors" class="mb-4"></v-text-field>
+                            :error-messages="errors.password" class="mb-4"></v-text-field>
               <!-- Button for login submission -->
               <v-btn type="submit" color="primary" class="white--text" block v-if="!loading">Inloggen</v-btn>
               <!-- Loading indicator while processing login -->
@@ -27,7 +27,7 @@
             </v-alert>
             <!-- Display success message -->
             <v-alert v-if="loginSuccess" type="success" outlined class="mt-4" dense>
-              {{ loginSuccesMessage }}
+              {{ loginSuccessMessage }}
             </v-alert>
           </v-card-text>
         </v-card>
