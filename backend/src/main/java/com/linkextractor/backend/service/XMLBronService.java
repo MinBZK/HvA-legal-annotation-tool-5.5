@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class XMLBronService {
-
     private XMLBronRepository xmlBronRepository;
 
     @Autowired

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.linkextractor.backend.views.Views;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +18,6 @@ import java.util.Set;
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -30,7 +32,7 @@ public class User implements UserDetails {
     private String email;
 
     private String firstname;
-
+    
     private String lastname;
 
     @OneToMany(mappedBy = "user")

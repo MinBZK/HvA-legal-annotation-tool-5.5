@@ -1,8 +1,14 @@
 package com.linkextractor.backend.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.linkextractor.backend.dto.XmlBronTimeLineDto;
 import com.linkextractor.backend.models.XMLBron;
 import com.linkextractor.backend.respositories.XMLBronRepository;
+
 import com.linkextractor.backend.service.XMLBronService;
+import com.linkextractor.backend.views.Views;
+
+import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +37,11 @@ public class XMLBronController {
         return xmlBronRepository.findAll();
     }
 
+    @GetMapping("/api/v1/timelinedata/{artikelNaam}")
+    private Iterable<XmlBronTimeLineDto> getAllTimeLineData(@PathVariable String artikelNaam){
+        System.out.println(artikelNaam);
+        return xmlBronRepository.findXmlBronDetailsByArtikelNaam(artikelNaam);
+    }
     @GetMapping("/api/v1/paginated/")
     private Page<XMLBron> getAllXmlBronnen(Pageable pageable){
         return xmlBronRepository.findAll(pageable);
@@ -80,7 +91,7 @@ public class XMLBronController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(toBeSavedXmlBron.getXmlbron_id()).toUri();
+                .buildAndExpand(toBeSavedXmlBron.getXmlBronId()).toUri();
 
 
         return ResponseEntity.created(location).build();

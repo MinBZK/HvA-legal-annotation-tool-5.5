@@ -96,6 +96,12 @@ export const store = defineStore('app', {
       return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}/${xmlbronDate}`);
     },
 
+    async getXMLBronnenByNameTimeLine(artikelNaam){
+      let response = await this.genericGetRequests(`XMLBron/api/v1/timelinedata/${artikelNaam}`);
+      console.log(response.data)
+      this.xmlbronnen = response.data
+    },
+    
     async getXMLbronnenByName(artikelNaam){
       let response = await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
       console.log(response)

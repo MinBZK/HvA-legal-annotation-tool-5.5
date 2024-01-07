@@ -28,7 +28,7 @@
         </v-card>
       </v-col>
       <v-col col="6">
-        <XMLbronTimeLine :timelineData="timelineData"></XMLbronTimeLine>
+        <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
          <v-card>
           <v-card-title>XML Content</v-card-title>
           <v-card-text v-if="parsedData.articles.length > 0">
@@ -143,7 +143,9 @@ export default {
             {id: 1, name: "Mock data title 1", date: '2023-01-01'},
             {id: 2, name: "Mock data title 2", date: '2023-01-02'},
             {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+            {id: 4, name: "Mock data title 3", date: '2023-01-02'},
         ],
+      timelineDataLive:[],
       isVisible: false,
       selectedText: "",
       xmlFile: null,
@@ -353,7 +355,7 @@ export default {
     },
 
     // TODO Method should be split up in separate smaller methods
-    handleParsedData(articleNode) {
+    async handleParsedData(articleNode) {
       const parsedData = {articles: []};
       let wordIndex = -1; // Internal counter for word index
       let allWords = []; // Array to store all words
@@ -411,6 +413,10 @@ export default {
       if (allWords.length !== 0) {
         this.checkIfXMLBronExists();
       }
+      
+      await store().getXMLBronnenByNameTimeLine(this.articleTitle)
+      this.timelineDataLive = store().xmlbronnen;
+      console.log(this.timelineDataLive)
     },
 
     async checkIfXMLBronExists() {
