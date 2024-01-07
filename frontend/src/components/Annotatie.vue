@@ -146,7 +146,7 @@ export default {
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
-      console.log(this.olderDefinitionsArray)
+      console.log(this.olderDefinitions)
 
       if (!matchingDefinition) {
         return;
