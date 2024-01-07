@@ -11,14 +11,12 @@ export const store = defineStore('app', {
     loadedXMLIdentifier: "",
     XMLBwbrCode: "",
     user: {
-    loadedXMLDate: "",
+      loadedXMLDate: "",
       permissions: "",
-      === undefined ? "" : JSON.parse(localStorage.getItem('username'))
-    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT'))
-    === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
-    },
-      username: JSON.parse(localStorage.getItem('username'))
+      username: JSON.parse(localStorage.getItem('username')) === undefined ? "" : JSON.parse(localStorage.getItem('username')),
+      tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
       loggedIn: false,
+    }
   }),
 
   actions: {
@@ -96,18 +94,18 @@ export const store = defineStore('app', {
       return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}/${xmlbronDate}`);
     },
 
-    async getXMLBronnenByNameTimeLine(artikelNaam){
+    async getXMLBronnenByNameTimeLine(artikelNaam) {
       let response = await this.genericGetRequests(`XMLBron/api/v1/timelinedata/${artikelNaam}`);
       console.log(response.data)
       this.xmlbronnen = response.data
     },
-    
-    async getXMLbronnenByName(artikelNaam){
+
+    async getXMLbronnenByName(artikelNaam) {
       let response = await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
       console.log(response)
       this.xmlbronnen = response.data
     },
-    
+
     async getDefinitions(xmlBronName, username, xmlbronDate) {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
@@ -128,8 +126,8 @@ export const store = defineStore('app', {
     },
 
     async postLabel(body, xmlBronName, username, xmlbronDate) {
-        let url = "label/addLabel";
-        this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
+      let url = "label/addLabel";
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
     },
 
     async postNewXMLBron(body) {
