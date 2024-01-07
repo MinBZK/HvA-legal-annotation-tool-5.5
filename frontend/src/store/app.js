@@ -117,12 +117,12 @@ export const store = defineStore('app', {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.labels = response.data;
-
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
       let url = "define/addDefinition";
       this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
+      await this.getDefinitions(xmlBronName, username, xmlbronDate);
     },
 
     async postLabel(body, xmlBronName, username, xmlbronDate) {

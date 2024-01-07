@@ -258,7 +258,7 @@ export default {
         console.error('Error getting labels:', labelsError);
       }
 
-      this.insertLabelColours(store().labels)
+      await this.insertLabelColours(store().labels)
     },
 
     handleSelection() {
@@ -298,8 +298,8 @@ export default {
       this.showTooltip = false;
     },
 
-    applyAnnotation() {
-      this.loadAssociatedData();
+    async applyAnnotation() {
+      await this.loadLabelsForArticle();
     },
 
     RegExp(string) {
@@ -406,7 +406,6 @@ export default {
 
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
       this.timelineDataLive = store().xmlbronnen;
-      console.log(this.timelineDataLive)
     },
 
     async checkIfXMLBronExists() {
@@ -430,9 +429,9 @@ export default {
       }
     },
 
-    loadAssociatedData() {
-      this.loadDefinitions();
-      this.loadLabelsForArticle();
+    async loadAssociatedData() {
+      await this.loadDefinitions();
+      await this.loadLabelsForArticle();
     },
 
     removeDotsAndSymbols(word) {

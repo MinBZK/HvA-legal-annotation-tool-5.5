@@ -141,7 +141,7 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty("definitions") === false) {
+      if (this.checkIfValueIsUndefinedOrEmpty(store().definitions) === false) {
         return;
       }
 
@@ -149,7 +149,7 @@ export default {
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
-      if (!matchingDefinition) {
+      if (this.checkIfValueIsUndefinedOrEmpty(matchingDefinition) === false) {
         return;
       }
 
@@ -162,17 +162,22 @@ export default {
     },
 
     checkIfValueIsUndefinedOrEmpty(variable) {
-      return !(store()[variable] !== undefined || store[variable].length === 0);
+      return !(variable === undefined || variable.length === 0);
     },
 
     checkMatchingLabels(words) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty("labels") === false) {
+      if (this.checkIfValueIsUndefinedOrEmpty(store().labels) === false) {
         return;
       }
 
       let matchingLabel = store().labels.filter(label => label.woord === words);
+
+      if (this.checkIfValueIsUndefinedOrEmpty(matchingLabel) === false) {
+        return;
+      }
+
       this.olderLabels = matchingLabel;
       matchingLabel = matchingLabel[matchingLabel.length - 1];
 
@@ -181,9 +186,7 @@ export default {
       if (this.startMatch && this.endMatch) {
         this.label = matchingLabel.label;
         this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
-
       }
-
     },
 
     findStartEndMatch(match) {
@@ -201,6 +204,10 @@ export default {
      */
     saveDefinition() {
       let selectedText = this.removeDotsAndSymbols(this.selectedText);
+
+      if (this.definition === "") {
+        return;
+      }
 
       if (selectedText) {
         let {positie_start, positie_end} = this.calculatePositionIndexes();
@@ -245,7 +252,6 @@ export default {
       let xmlbronDate = store().loadedXMLDate;
 
       await store().postDefinition(definition, xmlBronName, username, xmlbronDate);
-      await store().getDefinitions(xmlBronName, username, xmlbronDate);
     },
 
     saveLabel() {
@@ -304,7 +310,6 @@ export default {
       let xmlbronDate = store().loadedXMLDate;
 
       await store().postLabel(label, xmlBronName, username, xmlbronDate);
-      await store().getLabels(xmlBronName, username, xmlbronDate);
     },
 
     removeDotsAndSymbols(word) {
