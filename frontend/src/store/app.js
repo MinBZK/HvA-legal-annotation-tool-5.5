@@ -11,12 +11,13 @@ export const store = defineStore('app', {
     loadedXMLIdentifier: "",
     XMLBwbrCode: "",
     user: {
-      loadedXMLDate: "",
-      permissions: "",
-      username: JSON.parse(localStorage.getItem('username')) === undefined ? "" : JSON.parse(localStorage.getItem('username')),
-      tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
       loggedIn: false,
-    }
+      permissions: "",
+      username: JSON.parse(localStorage.getItem('username'))
+      === undefined ? "" : JSON.parse(localStorage.getItem('username'))
+    },
+    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT'))
+    === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
   }),
 
   actions: {
