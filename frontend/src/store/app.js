@@ -21,6 +21,20 @@ export const store = defineStore('app', {
   }),
 
   actions: {
+    addEigenaarToDefinitions(username) {
+      this.definitions = this.definitions.map(item => {
+        // Add the 'eigenaar' property to each object
+        return {...item, eigenaar: username};
+      })
+    },
+
+    addEigenaarToLabels(username) {
+      this.labels = this.labels.map(item => {
+        // Add the 'eigenaar' property to each object
+        return {...item, eigenaar: username};
+      })
+    },
+
     logout() {
       this.user.loggedIn = false;
       localStorage.setItem('isLoggedIn', JSON.stringify("false"));
@@ -111,12 +125,14 @@ export const store = defineStore('app', {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
+      this.addEigenaarToDefinitions(username);
     },
 
     async getLabels(xmlBronName, username, xmlbronDate) {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.labels = response.data;
+      this.addEigenaarToLabels(username);
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
@@ -136,13 +152,11 @@ export const store = defineStore('app', {
 
     async login(body) {
       try {
-        const response = await axios.post("http://localhost:8085/auth/login", body);
-        return response;
+        return await axios.post("http://localhost:8085/auth/login", body);
       } catch (error) {
         throw error; // Re-throw the error to handle it in the component
       }
     },
-
   },
 });
 

@@ -61,7 +61,7 @@ public class LabelController {
                                            @PathVariable String xmlBronName,
                                            @PathVariable String username,
                                            @PathVariable LocalDate xmlbronDate) {
-        //label.setDatum(LocalDateTime.now());
+
         Label savedLabel = labelService.saveLabelAndAssociateWithXMLBron(label, xmlBronName, username, xmlbronDate);
         return new ResponseEntity<>(savedLabel, HttpStatus.CREATED);
     }
