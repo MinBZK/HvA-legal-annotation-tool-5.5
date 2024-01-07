@@ -247,16 +247,12 @@ export default {
     },
 
     async loadLabelsForArticle() {
-      // this.labels = await store().getLabels();
-      // this.insertLabelColours(this.labels);
-
       try {
         let xmlBronId = store().loadedXMLIdentifier;
         let username = JSON.parse(localStorage.getItem('username'));
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
-
 
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);

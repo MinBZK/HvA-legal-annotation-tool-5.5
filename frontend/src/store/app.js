@@ -111,7 +111,6 @@ export const store = defineStore('app', {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
-      console.log("Definition", this.definitions);
     },
 
     async getLabels(xmlBronName, username, xmlbronDate) {

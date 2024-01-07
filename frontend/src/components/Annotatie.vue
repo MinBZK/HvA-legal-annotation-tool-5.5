@@ -92,7 +92,7 @@ export default {
       tab: null,
       definition: "",
       olderDefinitions: "",
-        olderLabels: "",
+      olderLabels: "",
       selectedColour: "",
       label: "",
       matchedWordsWithIndexes: [],
@@ -141,57 +141,55 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      if (!store().definitions) {
-        return
+      if (this.checkIfValueIsUndefinedOrEmpty("definitions") === false) {
+        return;
       }
 
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
-      console.log(this.olderDefinitions)
 
       if (!matchingDefinition) {
         return;
       }
 
-      this.findStarEndMatch(matchingDefinition);
+      this.findStartEndMatch(matchingDefinition);
 
       if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
-        // this.selectedColour = matchingDefinition.selectedColor;
       }
 
     },
-      checkMatchingLabels(words) {
-          this.handleSelectedWord();
-          //let matchingLabel = store().labels.find(label => label.woord === words);
 
-          if (!store().labels) {
-              return;
-          }
+    checkIfValueIsUndefinedOrEmpty(variable) {
+      return !(store()[variable] !== undefined || store[variable].length === 0);
+    },
 
-          let matchingLabel = store().labels.filter(label => label.woord === words);
-          this.olderLabels = matchingLabel;
-          matchingLabel = matchingLabel[matchingLabel.length - 1];
+    checkMatchingLabels(words) {
+      this.handleSelectedWord();
 
-          this.findStarEndMatch(matchingLabel);
+      if (this.checkIfValueIsUndefinedOrEmpty("labels") === false) {
+        return;
+      }
 
-          console.log()
+      let matchingLabel = store().labels.filter(label => label.woord === words);
+      this.olderLabels = matchingLabel;
+      matchingLabel = matchingLabel[matchingLabel.length - 1];
 
-          if (this.startMatch && this.endMatch) {
-              this.label = matchingLabel.label;
-              this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
+      this.findStartEndMatch(matchingLabel);
 
-          }
+      if (this.startMatch && this.endMatch) {
+        this.label = matchingLabel.label;
+        this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
 
-      },
-
-    findStarEndMatch(match) {
-      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
-      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      }
 
     },
 
+    findStartEndMatch(match) {
+      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
+      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+    },
 
     getFormattedDate() {
       let date = new Date();
@@ -202,8 +200,6 @@ export default {
      * Saves a definition and emits an event with the annotation information.
      */
     saveDefinition() {
-      console.log(this.selectedText)
-      console.log(this.hoveredWordObject)
       let selectedText = this.removeDotsAndSymbols(this.selectedText);
 
       if (selectedText) {
@@ -234,7 +230,6 @@ export default {
      * @returns {Object} An object with positie_start and positie_end properties.
      */
     calculatePositionIndexes() {
-      console.log(this.matchedWordsWithIndexes)
       let positie_start = this.matchedWordsWithIndexes[0].number;
       let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
       return {positie_start, positie_end};
@@ -290,30 +285,28 @@ export default {
           date: this.getFormattedDate()
         }
 
-        console.log(label);
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
 
-          let xmlBronId = store().loadedXMLIdentifier;
-          let username = JSON.parse(localStorage.getItem('username'));
-
-          this.saveAndFetchLabels(label, xmlBronId, username);
+        this.saveAndFetchLabels(label, xmlBronId, username);
 
         this.$emit('annotation-saved', {
           text: selectedText,
           color: this.selectedColour
         });
 
-
       } else {
         console.warn('Label not found for the selected color:', this.selectedColour);
       }
     },
 
-      async saveAndFetchLabels(label, xmlBronName, username) {
-          let xmlbronDate = store().loadedXMLDate;
+    async saveAndFetchLabels(label, xmlBronName, username) {
+      let xmlbronDate = store().loadedXMLDate;
 
-          await store().postLabel(label, xmlBronName, username, xmlbronDate);
-          await store().getLabels(xmlBronName, username, xmlbronDate);
-      },
+      await store().postLabel(label, xmlBronName, username, xmlbronDate);
+      await store().getLabels(xmlBronName, username, xmlbronDate);
+    },
+
     removeDotsAndSymbols(word) {
       // Remove special symbols
       const cleanedWord = word.replace(/[.,]/gi, '');
