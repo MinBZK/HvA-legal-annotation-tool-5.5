@@ -98,7 +98,7 @@ export const store = defineStore('app', {
 
     async getXMLBronnenByNameTimeLine(artikelNaam){
       let response = await this.genericGetRequests(`XMLBron/api/v1/timelinedata/${artikelNaam}`);
-      console.log(response.data)
+      console.log(response)
       this.xmlbronnen = response.data
     },
     

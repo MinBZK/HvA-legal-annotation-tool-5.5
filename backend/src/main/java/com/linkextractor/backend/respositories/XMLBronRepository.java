@@ -19,11 +19,13 @@ public interface XMLBronRepository extends CrudRepository<XMLBron, Integer> {
 
     @Query("SELECT new com.linkextractor.backend.dto.XmlBronTimeLineDto(" +
     "xm.xmlBronId, xm.artikelNaam, xm.xmlbron_date, " +
-    "us.firstname, us.lastname, us.userId) " +
+    "us.firstname, us.lastname, us.userId, d.date) " +
     "FROM XMLBron xm " +
     "INNER JOIN xm.userDefinitionXMLTables ud " +
     "INNER JOIN ud.user us "+
-    "WHERE xm.artikelNaam = :artikelNaam")
+    "INNER JOIN ud.definitie d "+
+    "WHERE xm.artikelNaam = :artikelNaam " +
+    "ORDER BY ABS(DATEDIFF(CURRENT_DATE, d.date)) DESC")
     List<XmlBronTimeLineDto> findXmlBronDetailsByArtikelNaam(@Param("artikelNaam") String artikelNaam);
 
     @Query("SELECT x FROM XMLBron x WHERE x.artikelNaam = :artikelNaam")

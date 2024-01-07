@@ -1,6 +1,7 @@
 package com.linkextractor.backend.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class XmlBronTimeLineDto {
     private Integer xmlbron_id;
@@ -9,20 +10,29 @@ public class XmlBronTimeLineDto {
     private String firstname;
     private String lastname;
     private Integer userId;
+    private LocalDateTime date;
     
-    public XmlBronTimeLineDto(int xmlbron_id, String artikel_naam, LocalDate xmlbronDate, String firstname,
-            String lastname, int userId) {
+    public XmlBronTimeLineDto(Integer xmlbron_id, String artikel_naam, LocalDate xmlbronDate, String firstname,
+            String lastname, Integer userId, LocalDateTime date) {
         this.xmlbron_id = xmlbron_id;
         this.artikel_naam = artikel_naam;
         this.xmlbronDate = xmlbronDate;
         this.firstname = firstname;
         this.lastname = lastname;
         this.userId = userId;
+        this.date = date;
+    }
+
+    public XmlBronTimeLineDto() {
     }
 
     
+    public LocalDateTime getDate() {
+        return date;
+    }
 
-    public XmlBronTimeLineDto() {
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     public int getXmlbronId() {

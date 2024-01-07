@@ -32,7 +32,6 @@ public class DefinitionController {
     public ResponseEntity<List<Definitie>> getDefinitionsByUsernameAndXMLBron(@PathVariable String xmlBronName,
                                                                               @PathVariable String username,
                                                                               @PathVariable LocalDate xmlbronDate) {
-
         List<Definitie> definitions = definitionService.getDefinitionsByUsernameAndXMLBron(username, xmlBronName, xmlbronDate);
 
         return new ResponseEntity<>(definitions, HttpStatus.OK);
