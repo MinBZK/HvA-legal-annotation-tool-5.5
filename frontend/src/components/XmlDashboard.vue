@@ -310,6 +310,7 @@ export default {
 
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
+      this.getUserFromXML(this.xmlFile);
     },
 
     loadXML() {
@@ -320,6 +321,9 @@ export default {
       const reader = new FileReader();
       reader.onload = (event) => {
         this.xmlContent = event.target.result;
+        const username = this.getUserFromXML(this.xmlContent); // Extract the username
+        // Use the extracted username as needed
+        console.log('Extracted username from file:', username);
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
