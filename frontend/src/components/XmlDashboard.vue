@@ -47,6 +47,18 @@
               </v-card-text>
             </v-card>
           </v-col>
+      <v-col col="6">
+        <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+         <v-card>
+          <v-card-title>XML Content</v-card-title>
+          <v-card-text v-if="parsedData.articles.length > 0">
+            <v-scroll-area @mouseup="handleSelection()">
+              <div class="formatted-xml">
+                <div v-for="article in parsedData.articles" :key="article.number">
+                  <h3>{{ article.title }}</h3>
+                  <ol>
+                    <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                      <div>
 
           <!-- Showcase widget -->
           <v-col cols="12" md="8">
@@ -159,6 +171,9 @@
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
+import AnnotatieDialog from "@/components/Annotatie";
+import Annotatie from "@/components/Annotatie.vue";
+import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
 import {store} from "@/store/app";
 import {isProxy, toRaw} from 'vue';
 import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
@@ -166,9 +181,17 @@ import AnnotatieDialog from "@/components/Annotatie";
 import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
+  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine},
   components: {AppHeaderSidebar, AnnotatieDialog, XmlDownloader} ,
   data() {
     return {
+      timelineData:[
+            {id: 1, name: "Mock data title 1", date: '2023-01-01'},
+            {id: 2, name: "Mock data title 2", date: '2023-01-02'},
+            {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+            {id: 4, name: "Mock data title 3", date: '2023-01-02'},
+        ],
+      timelineDataLive:[],
       isVisible: false,
       selectedText: "",
       xmlFile: null,
@@ -346,7 +369,7 @@ export default {
     },
 
     // TODO Method should be split up in separate smaller methods
-    handleParsedData(articleNode) {
+    async handleParsedData(articleNode) {
       const parsedData = {articles: []};
       let wordIndex = -1; // Internal counter for word index
       let allWords = []; // Array to store all words
@@ -404,6 +427,10 @@ export default {
       if (allWords.length !== 0) {
         this.checkIfXMLBronExists();
       }
+      
+      await store().getXMLBronnenByNameTimeLine(this.articleTitle)
+      this.timelineDataLive = store().xmlbronnen;
+      console.log(this.timelineDataLive)
     },
 
     async checkIfXMLBronExists() {

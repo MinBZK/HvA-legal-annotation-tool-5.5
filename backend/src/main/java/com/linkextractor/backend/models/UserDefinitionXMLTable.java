@@ -3,6 +3,7 @@ package com.linkextractor.backend.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "user_definitionxmltable")
 public class UserDefinitionXMLTable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

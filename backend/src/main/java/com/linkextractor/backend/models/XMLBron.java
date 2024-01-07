@@ -1,20 +1,24 @@
 package com.linkextractor.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.linkextractor.backend.views.Views;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
+@Table(name = "xmlbron")
 public class XMLBron {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "xmlbron_id")
-    private int xmlbron_id;
+    private int xmlBronId;
 
     @Column(name = "artikel_naam")
-    private String artikel_naam;
+    private String artikelNaam;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "xmlbron_date")
@@ -49,27 +53,27 @@ public class XMLBron {
         this.xmlbron_date = date;
     }
 
-    public int getXmlbron_id() {
-        return xmlbron_id;
+    public int getXmlBronId() {
+        return xmlBronId;
     }
 
-    public void setXmlbron_id(int xmlbron_id) {
-        this.xmlbron_id = xmlbron_id;
+    public void setXmlBronId(int xmlbron_id) {
+        this.xmlBronId = xmlbron_id;
     }
 
-    public String getArtikel_naam() {
-        return artikel_naam;
+    public String getArtikelNaam() {
+        return artikelNaam;
     }
 
-    public void setArtikel_naam(String artikel_naam) {
-        this.artikel_naam = artikel_naam;
+    public void setArtikelNaam(String artikel_naam) {
+        this.artikelNaam = artikel_naam;
     }
 
     @Override
     public String toString() {
         return "XMLBron{" +
-                "xmlbron_id=" + xmlbron_id +
-                ", artikel_naam='" + artikel_naam + '\'' +
+                "xmlbron_id=" + xmlBronId +
+                ", artikel_naam='" + artikelNaam + '\'' +
                 ", xmlbron_date=" + xmlbron_date +
                 ", link='" + link + '\'' +
                 ", rechtssubject=" + rechtssubject +
