@@ -306,8 +306,6 @@ export default {
         let xmlBronId = store().loadedXMLIdentifier;
         let username = JSON.parse(localStorage.getItem('username'));
 
-
-        
         this.saveAndFetchLabels(label, xmlBronId, username);
       } else {
         console.warn('Label not found for the selected color:', this.selectedColour);
@@ -316,7 +314,9 @@ export default {
 
     async saveAndFetchLabels(label, xmlBronName, username) {
       let xmlbronDate = store().loadedXMLDate;
+
       await store().postLabel(label, xmlBronName, username, xmlbronDate);
+      await store().getLabels(xmlBronName, username, xmlbronDate);
     },
 
     removeDotsAndSymbols(word) {

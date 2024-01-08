@@ -298,6 +298,7 @@ export default {
     },
 
     applyAnnotation() {
+      this.loadXML();
       this.loadAssociatedData();
     },
 
