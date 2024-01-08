@@ -306,6 +306,8 @@ export default {
         let xmlBronId = store().loadedXMLIdentifier;
         let username = JSON.parse(localStorage.getItem('username'));
 
+
+        
         this.saveAndFetchLabels(label, xmlBronId, username);
       } else {
         console.warn('Label not found for the selected color:', this.selectedColour);

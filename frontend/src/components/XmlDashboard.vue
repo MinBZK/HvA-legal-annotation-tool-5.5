@@ -298,7 +298,7 @@ export default {
     },
 
     applyAnnotation() {
-      this.loadLabelsForArticle();
+      this.loadAssociatedData();
     },
 
     RegExp(string) {
