@@ -42,6 +42,7 @@ public class XMLBronController {
         System.out.println(artikelNaam);
         return xmlBronRepository.findXmlBronDetailsByArtikelNaam(artikelNaam);
     }
+    
     @GetMapping("/api/v1/paginated/")
     private Page<XMLBron> getAllXmlBronnen(Pageable pageable){
         return xmlBronRepository.findAll(pageable);

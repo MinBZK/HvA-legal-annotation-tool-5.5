@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
-        <v-timeline direction="horizontal" align-top>
-            <v-timeline-item v-for="(item, index) in displayedItems" :key="index" reverse>
+        <v-timeline v-if="!this.hidden" direction="horizontal" align-top>
+            <v-timeline-item v-for="(timeLineItem, index) in TimelineData" :key="index" reverse>
                 <v-card class="timeline-card d-flex flex-column">
                     <v-card-title class="flex-grow-1 timelinecard-title">
                         <v-icon>
@@ -10,11 +10,11 @@
                         Bewerking
                     </v-card-title>
                     <v-card-text class="flex-grow-1 timelinecard-body">
-                        <p> Author: {{ item.firstname }} {{ item.lastname }}</p>
-                        <p> Bewerkt op: {{ item.xmlbronDate }}</p>
+                        <p> Author: {{ timeLineItem.firstname }} {{ timeLineItem.lastname }}</p>
+                        <p> Bewerkt op: {{ formatDate(timeLineItem.date) }}</p>
                     </v-card-text>
                     <v-card-actions class="flex-grow-1 timelinecard-footer">
-                        <v-btn color="red" @click="showDeleteAlert(item)">
+                        <v-btn color="red" @click="showDeleteAlert(timeLineItem)">
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
                         <v-spacer></v-spacer>
@@ -30,7 +30,7 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
-                        <v-btn color="blue" @click="openModal(item)">
+                        <v-btn color="blue" @click="openModal(timeLineItem)">
                             <v-icon>mdi-eye</v-icon>
                         </v-btn>
                         <v-dialog v-model="modalOpen" max-width="600">
@@ -39,7 +39,9 @@
                                     {{ selectedModalItem.artikelNaam }}
                                 </v-card-title>
                                 <v-card-subtitle>
-                                    Naam: {{ selectedModalItem.firstname }} {{ selectedModalItem.lastname }}
+                                    <p>Naam: {{ selectedModalItem.firstname }} {{ selectedModalItem.lastname }}</p>
+                                    <p>Artikel datum: {{ selectedModalItem.xmlbronDate }}</p>
+                                    <p>Bewerkt op: {{ formatDate(selectedModalItem.date) }}</p>
                                 </v-card-subtitle>
                                 <v-card-text>
                                     Full text description
@@ -63,6 +65,7 @@
             <v-col class="timeline-navbar d-flex justify-end">
                 <v-btn color="primary" @click="prev" :disabled="currentIndex === 0">Previous</v-btn>
                 <v-btn color="primary" @click="next" :disabled="currentIndex >= timelineData.length - 3">Next</v-btn>
+                <v-btn color="primary" @click="hide">Hide</v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -70,7 +73,7 @@
 <style scoped>
 .timeline-card {
     width: 300px;
-    height: 200px;
+    height: 250px;
 }
 
 .timelinecard-title {
@@ -89,11 +92,11 @@
     text-align: center;
 }
 
-.timeline-navbar {}
+.timeline-navbar {
+
+}
 </style>
 <script>
-
-import { xmlBronStore } from "@/store/xmlbron"
 import axios from "axios";
 export default {
     data() {
@@ -101,7 +104,8 @@ export default {
             modalOpen: false,
             deleteDialog: false,
             selectedModalItem: {},
-            currentIndex: 0
+            currentIndex: 0,
+            hidden: false
         };
     },
     props: {
@@ -111,11 +115,25 @@ export default {
         },
     },
     computed: {
-        displayedItems() {
+        TimelineData() {
+            this.timelineData.map(item => {
+                item.date = new Date(item.date);
+                return item;
+            })
             return this.timelineData.slice(this.currentIndex, this.currentIndex + 3)
         }
     },
     methods: {
+        formatDate(date){
+            return date.toLocaleDateString('en-Us',{
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        },
         openModal(item) {
             this.modalOpen = true;
             this.selectedModalItem = item;
@@ -147,6 +165,10 @@ export default {
         editArticle() {
             return null;
         },
+        hide(){
+            this.hidden = !this.hidden;
+            console.log(this.hidden)
+        },
         next() {
             if (this.currentIndex < this.timelineData.length - 3) {
                 this.currentIndex += 3;
@@ -158,7 +180,5 @@ export default {
             }
         }
     }
-
-
 };
 </script>
