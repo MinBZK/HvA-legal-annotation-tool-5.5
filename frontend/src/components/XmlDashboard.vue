@@ -235,6 +235,18 @@ export default {
       }
     },
 
+    async loadDefinitionsForUser(username) {
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getDefinitions(xmlBronId, username, xmlbronDate);
+
+      } catch (definitionsError) {
+        console.error('Error getting definitions:', definitionsError);
+      }
+    },
+
     insertLabelColours(labels) {
       labels.forEach(label => {
         let startPosition = label.positie_start;
@@ -260,6 +272,21 @@ export default {
       }
       this.insertLabelColours(store().labels)
     },
+
+    async loadLabelsForArticleForUser(username) {
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getLabels(xmlBronId, username, xmlbronDate);
+
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
+      this.insertLabelColours(store().labels)
+    },
+
+
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -436,6 +463,7 @@ export default {
     loadAssociatedData() {
       this.loadDefinitions();
       this.loadLabelsForArticle();
+      this.getUserFromXML(this.xmlContent)
     },
 
     removeDotsAndSymbols(word) {
@@ -452,6 +480,11 @@ export default {
 
       // Get the username attribute from the root element
       const username = rootElement.getAttribute('username');
+
+      if (username){
+        this.loadDefinitionsForUser(username);
+        this.loadLabelsForArticleForUser(username);
+      }
 
       // Return the username value or null if the attribute doesn't exist
       return username ? username : null;

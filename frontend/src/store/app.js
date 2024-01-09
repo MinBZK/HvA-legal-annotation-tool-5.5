@@ -126,11 +126,27 @@ export const store = defineStore('app', {
       this.addEigenaarToDefinitions(username);
     },
 
+    async getDefinitionsForUser(xmlBronName, username, xmlbronDate) {
+      let url = "define/getDefinitions";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+      this.definitions.push(response.data);
+      this.addEigenaarToDefinitions(username);
+    },
+
     async getLabels(xmlBronName, username, xmlbronDate) {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
       this.labels = response.data;
+      this.addEigenaarToLabels(username);
+      return this.labels
+    },
+
+    async getLabelsForUser(xmlBronName, username, xmlbronDate) {
+      let url = "label/getLabels";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+
+      this.labels.push(response.data);
       this.addEigenaarToLabels(username);
       return this.labels
     },
