@@ -6,16 +6,40 @@ import axiosInterceptor from "@/axios-request/axios-interceptor";
 export const store = defineStore('app', {
   state: () => ({
     definitions: [],
+    xmlbronnen: [],
+    labels: [],
     loadedXMLIdentifier: "",
-    user: {loggedIn: false, permissions: ""},
-    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT')) === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
+    XMLBwbrCode: "",
+    user: {
+      loggedIn: false,
+      permissions: "",
+      username: JSON.parse(localStorage.getItem('username'))
+      === undefined ? "" : JSON.parse(localStorage.getItem('username'))
+    },
+    tokenJWT: JSON.parse(localStorage.getItem('tokenJWT'))
+    === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
   }),
 
   actions: {
+    addEigenaarToDefinitions(username) {
+      this.definitions = this.definitions.map(item => {
+        // Add the 'eigenaar' property to each object
+        return {...item, eigenaar: username};
+      })
+    },
+
+    addEigenaarToLabels(username) {
+      this.labels = this.labels.map(item => {
+        // Add the 'eigenaar' property to each object
+        return {...item, eigenaar: username};
+      })
+    },
+
     logout() {
       this.user.loggedIn = false;
       localStorage.setItem('isLoggedIn', JSON.stringify("false"));
       localStorage.setItem('tokenJWT', JSON.stringify(""));
+      localStorage.setItem('username', JSON.stringify(""));
     },
 
     async genericGetRequests(url) {
@@ -28,7 +52,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -55,7 +79,7 @@ export const store = defineStore('app', {
       })
         .then((response) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(`${url} :`, response);
+            // console.log(`${url} :`, response);
           }
           this.responseCode = response.status;
           responseData = response;
@@ -81,23 +105,75 @@ export const store = defineStore('app', {
       }
     },
 
-    async getXMLBron(artikelNaam) {
-      return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
+    async getXMLBron(artikelNaam, xmlbronDate) {
+      return await this.genericGetRequests(`XMLBron/byName/${artikelNaam}/${xmlbronDate}`);
     },
 
-    async getDefinitions() {
-      let response = await this.genericGetRequests("define");
+    async getXMLBronnenByNameTimeLine(artikelNaam) {
+      let response = await this.genericGetRequests(`XMLBron/api/v1/timelinedata/${artikelNaam}`);
+      this.xmlbronnen = response.data
+    },
+
+    async getXMLbronnenByName(artikelNaam) {
+      let response = await this.genericGetRequests(`XMLBron/byName/${artikelNaam}`);
+      this.xmlbronnen = response.data
+    },
+
+    async getDefinitions(xmlBronName, username, xmlbronDate) {
+      let url = "define/getDefinitions";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
+      this.addEigenaarToDefinitions(username);
     },
 
-    async postDefinition(body) {
-      this.responseCode = await this.genericPostRequest("define/addDefinition", body);
+    async getDefinitionsForUser(xmlBronName, username, xmlbronDate) {
+      let url = "define/getDefinitions";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+      this.definitions.push(response.data);
+      this.addEigenaarToDefinitions(username);
     },
+
+    async getLabels(xmlBronName, username, xmlbronDate) {
+      let url = "label/getLabels";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+
+      this.labels = response.data;
+      this.addEigenaarToLabels(username);
+      return this.labels
+    },
+
+    async getLabelsForUser(xmlBronName, username, xmlbronDate) {
+      let url = "label/getLabels";
+      let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
+
+      this.labels.push(response.data);
+      this.addEigenaarToLabels(username);
+      return this.labels
+    },
+
+    async postDefinition(body, xmlBronName, username, xmlbronDate) {
+      let url = "define/addDefinition";
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
+      await this.getDefinitions(xmlBronName, username, xmlbronDate);
+    },
+
+    async postLabel(body, xmlBronName, username, xmlbronDate) {
+      let url = "label/addLabel";
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body)
+        .then((e)=> this.getLabels(xmlBronName, username, xmlbronDate));
+      },
 
     async postNewXMLBron(body) {
       this.responseCode = await this.genericPostRequest("XMLBron/api/v1/", body);
     },
 
+    async login(body) {
+      try {
+        return await axios.post("http://localhost:8085/auth/login", body);
+      } catch (error) {
+        throw error; // Re-throw the error to handle it in the component
+      }
+    },
   },
 });
 

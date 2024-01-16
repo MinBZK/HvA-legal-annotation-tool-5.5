@@ -1,15 +1,15 @@
 package com.linkextractor.backend.dto;
 
 /**
- * Data Transfer Object (DTO) representing login information.
+ * Data Transfer Object (DTO) representing login credentials.
  */
-public class LoginDTO {
+public class LoginRequestDTO {
 
     private String username;
 
     private String password;
 
-    public LoginDTO(String username, String password) {
+    public LoginRequestDTO(String username, String password) {
         this.username = username;
         this.password = password;
     }

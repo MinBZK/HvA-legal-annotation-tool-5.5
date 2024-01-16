@@ -1,37 +1,29 @@
 package com.linkextractor.backend.models;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.linkextractor.backend.views.Views;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity representing a user in the application.
  * Implements UserDetails to integrate with Spring Security for user authentication and authorization.
  */
 @Entity
-@Table(name="user")
-public class User implements UserDetails{
-
+@Table(name = "user")
+public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private int userId;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -40,14 +32,17 @@ public class User implements UserDetails{
     private String email;
 
     private String firstname;
-
+    
     private String lastname;
 
-    @ManyToMany(fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
+    private Set<UserDefinitionXMLTable> linkingTables;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-            name="user_role_junction",
-            joinColumns = {@JoinColumn(name="user_id")},
-            inverseJoinColumns = {@JoinColumn(name="role_id")}
+            name = "user_role_junction",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
     private Set<Role> authorities;
 
@@ -150,4 +145,16 @@ public class User implements UserDetails{
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", authorities=" + authorities +
+                '}';
+    }
 }

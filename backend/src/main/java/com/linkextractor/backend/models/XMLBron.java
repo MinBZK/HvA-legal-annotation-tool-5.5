@@ -1,78 +1,40 @@
 package com.linkextractor.backend.models;
 
-import java.util.HashSet;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.linkextractor.backend.views.Views;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
-
 @Entity
+@Table(name = "xmlbron")
 public class XMLBron {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "xmlbron_id")
-    private int xmlbron_id;
+    private int xmlBronId;
 
     @Column(name = "artikel_naam")
-    private String artikel_naam;
+    private String artikelNaam;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "xmlbron_date")
+    private LocalDate xmlbron_date;
 
     @Column(name = "link")
     private String link;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "XMLbron_definitie_junction",
-        joinColumns = {@JoinColumn(name="xmlbron_id")},
-        inverseJoinColumns = {@JoinColumn(name="definitie_id")}
-    )
-    private Set<Definitie> definities;
-
     @OneToOne(mappedBy = "xmlbron")
     private Rechtssubject rechtssubject;
 
+    @OneToMany(mappedBy = "xmlbron")
+    private Set<UserDefinitionXMLTable> userDefinitionXMLTables;
 
-    public XMLBron(int xmlbron_id, String artikel_naam, String link){
-        this.xmlbron_id = xmlbron_id;
-        this.artikel_naam = artikel_naam;
-        this.link = link;
-    }
+    public XMLBron() {
 
-    public XMLBron(){
-
-    }
-
-    
-
-    // public XMLBron() {
-    //     super();
-    //     definities = new HashSet<>();
-    //     rechtssubject = new Rechtssubject();
-    // }
-
-
-    public int getXmlbron_id() {
-        return xmlbron_id;
-    }
-
-    public void setXmlbron_id(int xmlbron_id) {
-        this.xmlbron_id = xmlbron_id;
-    }
-
-    public String getArtikel_naam() {
-        return artikel_naam;
-    }
-
-    public void setArtikel_naam(String artikel_naam) {
-        this.artikel_naam = artikel_naam;
     }
 
     public String getLink() {
@@ -83,11 +45,39 @@ public class XMLBron {
         this.link = link;
     }
 
-    public Set<Definitie> getDefinities() {
-        return definities;
+    public LocalDate getDate() {
+        return xmlbron_date;
     }
 
-    public void setDefinities(Set<Definitie> definities) {
-        this.definities = definities;
+    public void setDate(LocalDate date) {
+        this.xmlbron_date = date;
+    }
+
+    public int getXmlBronId() {
+        return xmlBronId;
+    }
+
+    public void setXmlBronId(int xmlbron_id) {
+        this.xmlBronId = xmlbron_id;
+    }
+
+    public String getArtikelNaam() {
+        return artikelNaam;
+    }
+
+    public void setArtikelNaam(String artikel_naam) {
+        this.artikelNaam = artikel_naam;
+    }
+
+    @Override
+    public String toString() {
+        return "XMLBron{" +
+                "xmlbron_id=" + xmlBronId +
+                ", artikel_naam='" + artikelNaam + '\'' +
+                ", xmlbron_date=" + xmlbron_date +
+                ", link='" + link + '\'' +
+                ", rechtssubject=" + rechtssubject +
+                ", userDefinitionXMLTables=" + userDefinitionXMLTables +
+                '}';
     }
 }
