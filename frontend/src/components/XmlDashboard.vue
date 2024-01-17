@@ -108,6 +108,29 @@
               <v-card-text v-else>
                 <v-alert type="info">Geen XML bestand geladen.</v-alert>
               </v-card-text>
+
+                    <v-btn v-if="showButton" @click="openCard" color="primary">Samenvatting</v-btn>
+
+                <v-card v-if="showCard">
+                    <v-card-title>
+                        Samenvatting
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- Display mergedData in the card -->
+                        <div ref="printContent" v-for="item in mergedData" :key="item.word">
+                            <p>
+                                <strong>Word:</strong> {{ item.word }},
+                                <strong>Definition:</strong> {{ item.definition }},
+                                <strong>Label:</strong> {{ item.label }}
+                            </p>
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <!-- Print button -->
+                        <v-btn @click="printCardContent" color="primary">Print</v-btn>
+                    </v-card-actions>
+                </v-card>
+
             </v-card>
           </v-col>
         </v-row>
@@ -174,6 +197,10 @@ export default {
         {id: 3, name: "Mock data title 3", date: '2023-01-02'},
         {id: 4, name: "Mock data title 3", date: '2023-01-02'},
       ],
+        showButton: false,
+        showCard: false,
+        filteredData: {},
+        mergedData: [],
       timelineDataLive: [],
       isVisible: false,
       selectedText: "",
@@ -352,6 +379,7 @@ export default {
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
+      this.showButton = true;
     },
 
     parseXML(xmlString) {
@@ -489,10 +517,108 @@ export default {
       // Return the username value or null if the attribute doesn't exist
       return username ? username : null;
     },
-  },
+      // getCurrentAnnotations(){
+      //
+      //   let allDefinitions = store().definitions;
+      //     console.log("allDefinitions" + allDefinitions);
+      //     let matchingDefinition = store().definitions.filter(definition => definition.woord === "gemeenteraad");
+      //     console.log(matchingDefinition);
+      //
+      //     const result = allDefinitions.reduce((acc, obj) => {
+      //         if (!allDefinitions[obj.woord] || new Date(obj.date) > new Date(allDefinitions[obj.woord].date)) {
+      //             allDefinitions[obj.woord] = obj;
+      //         }
+      //         return acc;
+      //     }, []);
+      //
+      //     console.log("result" + result);
+      //
+      // }
 
-  mounted() {
-    this.id = this._uid
+      getCurrentAnnotations() {
+          let allDefinitions = store().definitions;
+          let allLabels = store().labels;
+
+          const resultDefinitions = allDefinitions.reduce((acc, obj) => {
+              if (!acc[obj.woord] || new Date(obj.date) > new Date(acc[obj.woord].date)) {
+                  acc[obj.woord] = obj;
+              }
+              return acc;
+          }, {});
+
+          const resultLabels = allLabels.reduce((acc, obj) => {
+              if (!acc[obj.woord] || new Date(obj.datum) > new Date(acc[obj.woord].datum)) {
+                  acc[obj.woord] = obj;
+              }
+              return acc;
+          }, {});
+
+          const filteredDataDefinitions = Object.values(resultDefinitions);
+          const filteredDataLabels = Object.values(resultLabels);
+
+          // Merge the two arrays and create a new array with word, definition, and label
+          const mergedData = filteredDataDefinitions.map(definition => {
+              const matchingLabel = filteredDataLabels.find(label => label.woord === definition.woord);
+              return {
+                  word: definition.woord,
+                  definition: definition.definitie,
+                  label: matchingLabel ? matchingLabel.label : 'leeg',
+              };
+          });
+
+          console.log(mergedData);
+
+          return mergedData;
+      },
+
+
+      openCard() {
+          // Set filteredData based on your logic
+          this.mergedData = this.getCurrentAnnotations();
+
+          console.log("mergedData", this.filteredData);
+          this.showCard = true;
+      },
+  //     printCardContent() {
+  //         const printContentElement = this.$refs.printContent;
+  //
+  //         // Check if the element exists before proceeding
+  //         if (!printContentElement) {
+  //             console.error('Print content element not found.');
+  //             return;
+  //         }
+  //
+  //         const printContent = printContentElement.innerHTML;
+  //
+  //         const printTemplate = `
+  //     <html lang="en">
+  //       <head>
+  //         <meta charset="UTF-8">
+  //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  //         <title>Print Card Content</title>
+  //       </head>
+  //       <body onload="window.print(); window.onafterprint = function() { window.close(); }">
+  //         <div id="print-content">${printContent || ''}</div>
+  //       </body>
+  //     </html>
+  //   `;
+  //
+  //         const blob = new Blob([printTemplate], { type: 'text/html' });
+  //         const dataUrl = URL.createObjectURL(blob);
+  //
+  //         const printWindow = window.open();
+  //         printWindow.document.write(printTemplate);
+  //         printWindow.document.close();
+  //     },
+  //
+  // },
+
+  // mounted() {
+  //   this.id = this._uid
+  // }
+      printCardContent(){
+        
+    },
   }
 };
 </script>
