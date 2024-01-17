@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DefinitieRepository extends JpaRepository<Definitie, Long> {
+public interface DefinitieRepository extends JpaRepository<Definitie, Integer> {
     List<Definitie> findAll();
 
     Optional<Definitie> findById(int definitionId);

@@ -2,37 +2,58 @@
   <v-container>
     <v-card>
       <v-card-title class="headline">Annoteer tekst</v-card-title>
-
       <v-card-subtitle>{{ selectedText }}</v-card-subtitle>
-
       <v-tabs v-model="tab" background-color="primary">
         <v-tab value="one">Definitie</v-tab>
         <v-tab value="two">Labels</v-tab>
         <v-tab value="three">Relaties</v-tab>
-
       </v-tabs>
-
       <v-card-text>
         <v-window v-model="tab">
-
           <v-window-item value="one">
-            <v-text-field label="Definitie" @keyup.enter="saveDialog" v-model="definition"></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field label="Voeg een nieuwe definitie toe" v-model="definition"
+                              @keyup.enter="saveDialog"></v-text-field>
+              </v-col>
+              <v-col>
+                <v-select v-if="olderDefinitions.length" :items="olderDefinitions"
+                          label="Zie oudere definities"
+                          :item-title="getDefinitionTextFields"
+                          :item-value="'definitie'"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
           </v-window-item>
 
           <v-window-item value="two">
-            <v-select label="Label" :items="colorOptions" item-title="label" item-value="color" v-model="selectedColor">
-              <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props">
-                  <v-chip
-                    variant="flat"
-                    text-color="white"
-                    :color="item.raw.color"
-                    size="small">
-                  </v-chip>
-                </v-list-item>
-              </template>
-            </v-select>
-
+            <v-row>
+              <v-col>
+                <v-select @keyup.enter="saveDialog" label="Label" :items="colourOptions" item-title="label"
+                          item-value="color"
+                          v-model="selectedColour">
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item v-bind="props">
+                      <v-chip
+                        variant="flat"
+                        text-color="white"
+                        :color="item.raw.color"
+                        size="small">
+                      </v-chip>
+                    </v-list-item>
+                  </template>
+                </v-select>
+              </v-col>
+              <v-col>
+                <v-select v-if="olderLabels.length" :items="olderLabels"
+                          label="Zie oudere labels"
+                          :item-title="getLabelTextFields"
+                          :item-value="'label'"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
           </v-window-item>
 
           <v-window-item value="three"></v-window-item>
@@ -50,6 +71,7 @@
 
 <script>
 import {store} from "@/store/app";
+
 
 export default {
   name: "AnnotatieDialog",
@@ -80,8 +102,14 @@ export default {
       isVis: true,
       tab: null,
       definition: "",
-      selectedColor: "",
-      colorOptions: [
+      definitionCopy: "",
+      labelCopy: "",
+      olderDefinitions: "",
+      olderLabels: "",
+      selectedColour: "",
+      label: "",
+      matchedWordsWithIndexes: [],
+      colourOptions: [
         {label: 'Rechtssubject', color: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', color: 'rgb(112, 164, 255)'},
         {label: 'Rechtsobject', color: 'rgb(152, 190, 241)'},
@@ -99,67 +127,196 @@ export default {
         {label: 'Delegatieinvulling', color: 'rgb(226, 226, 226)'},
         {label: 'Brondefinitie', color: 'rgb(246, 246, 246)'},
       ],
-      matchedWordsWithIndexes: [],
+      startMatch: undefined,
+      endMatch: undefined,
     }
   },
   methods: {
+    getDefinitionTextFields(item) {
+      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.eigenaar}`
+    },
+
+    getLabelTextFields(item) {
+      return `${item.label} - ${this.formatDate(item.datum)} - ${item.eigenaar}`
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}/${month}/${day}`;
+    },
+
     closeDialog() {
       this.$emit('close');
     },
 
     saveDialog() {
-      this.saveDefinition();
+      if (this.definition !== "" || this.definition !== this.definition) {
+        this.saveDefinition();
+      }
+
+      if (this.selectedColour !== "" || this.selectedColour !== this.labelCopy) {
+        this.saveLabel();
+      }
+      this.$emit('annotation-saved');
       this.$emit('close');
     },
 
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      let matchingDefinition = store().definitions.find(definition => definition.woord === words);
-
-      if (matchingDefinition === undefined) {
+      if (this.checkIfValueIsUndefinedOrEmpty(store().definitions) === false) {
         return;
       }
 
-      let startMatch = matchingDefinition.positie_start === this.matchedWordsWithIndexes[0].number;
-      let endMatch = matchingDefinition.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
+      this.olderDefinitions = matchingDefinition;
+      matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
-      if (matchingDefinition && startMatch && endMatch) {
+      if (this.checkIfValueIsUndefinedOrEmpty(matchingDefinition) === false) {
+        return;
+      }
+
+      this.findStartEndMatch(matchingDefinition);
+
+      if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
-        this.selectedColor = matchingDefinition.selectedColor;
       }
     },
 
+    checkIfValueIsUndefinedOrEmpty(variable) {
+      return !(variable === undefined || variable.length === 0);
+    },
+
+    checkMatchingLabels(words) {
+      this.handleSelectedWord();
+
+      if (this.checkIfValueIsUndefinedOrEmpty(store().labels) === false) {
+        return;
+      }
+
+      let matchingLabel = store().labels.filter(label => label.woord === words);
+
+      if (this.checkIfValueIsUndefinedOrEmpty(matchingLabel) === false) {
+        return;
+      }
+
+      this.olderLabels = matchingLabel;
+
+      matchingLabel = matchingLabel[matchingLabel.length - 1];
+
+      this.findStartEndMatch(matchingLabel);
+
+      if (this.startMatch && this.endMatch) {
+        this.label = matchingLabel.label;
+        this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
+      }
+    },
+
+    findStartEndMatch(match) {
+      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
+      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+    },
+
+    getFormattedDate() {
+      let date = new Date();
+      return date.toISOString();
+    },
+
+    /**
+     * Saves a definition and emits an event with the annotation information.
+     */
     saveDefinition() {
-      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      let selectedText = this.removeDotsAndSymbols(this.selectedText);
+
+      if (this.definition === "") {
+        return;
+      }
 
       if (selectedText) {
-        const newDefinition = {
-          text: selectedText,
-          definition: this.definition,
-          selectedColor: this.selectedColor,
+        let {positie_start, positie_end} = this.calculatePositionIndexes();
+
+        let definition = {
+          definitie: this.definition,
+          positie_start,
+          positie_end,
+          woord: selectedText,
+          date: this.getFormattedDate(),
         };
 
-        store().definitions.push(newDefinition);
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
+
+        this.saveAndFetchDefinitions(definition, xmlBronId, username);
+      }
+    },
+
+    /**
+     * Calculates the start and end positions based on matched words with indexes.
+     * @returns {Object} An object with positie_start and positie_end properties.
+     */
+    calculatePositionIndexes() {
+      let positie_start = this.matchedWordsWithIndexes[0].number;
+      let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+      return {positie_start, positie_end};
+    },
+
+    /**
+     * Saves the definition, posts it, and fetches updated definitions.
+     * @param {Object} definition - The definition to be saved.
+     * @param {string} xmlBronName - The XML identifier.
+     * @param {string} username - The username.
+     */
+    async saveAndFetchDefinitions(definition, xmlBronName, username) {
+      let xmlbronDate = store().loadedXMLDate;
+
+      await store().postDefinition(definition, xmlBronName, username, xmlbronDate);
+    },
+
+    saveLabel() {
+      // Find the label object based on the selectedColor
+      const selectedText = this.removeDotsAndSymbols(this.selectedText);
+      const selectedLabelObject = this.colourOptions.find(option => option.color === this.selectedColour);
+
+      if (selectedLabelObject) {
+        // Create a span element to wrap the selected text with the chosen color
+        const span = document.createElement('span');
+        span.style.backgroundColor = this.selectedColour;
+        span.textContent = selectedText;
+
+        // Replace the selected text with the highlighted span
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(span);
 
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
-        let definition = {
-          definitie: newDefinition.definition,
+        let label = {
+          label: selectedLabelObject.label,
           positie_start: positie_start,
           positie_end: positie_end,
-          woord: newDefinition.text
+          woord: selectedText,
+          date: this.getFormattedDate()
         }
 
-        store().postDefinition(definition);
-        store().getDefinitions();
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
 
-        this.$emit('annotation-saved', {
-          text: selectedText,
-          color: this.selectedColor
-        });
+        this.saveAndFetchLabels(label, xmlBronId, username);
+      } else {
+        console.warn('Label not found for the selected color:', this.selectedColour);
       }
+    },
+
+    async saveAndFetchLabels(label, xmlBronName, username) {
+      let xmlbronDate = store().loadedXMLDate;
+
+      await store().postLabel(label, xmlBronName, username, xmlbronDate);
+      await store().getLabels(xmlBronName, username, xmlbronDate);
     },
 
     removeDotsAndSymbols(word) {
@@ -240,12 +397,16 @@ export default {
 
   mounted() {
     this.checkMatchingDefinitions(this.selectedText);
+    this.checkMatchingLabels(this.selectedText);
     this.handleSelectedWord();
+    this.definitionCopy = this.definition;
+    this.labelCopy = this.label.label;
   },
 
   watch: {
     selectedText(newValue) {
       this.checkMatchingDefinitions(newValue);
+      this.checkMatchingLabels(newValue);
     },
   },
 }

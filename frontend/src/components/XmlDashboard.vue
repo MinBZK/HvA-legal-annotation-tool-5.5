@@ -1,69 +1,93 @@
 <template>
-  <v-container fluid>
-    <v-icon color="info" @click="logout" icon="mdi-alert-circle"></v-icon>
-    <v-row>
-      <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
-        <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
-                         :hoveredWordObject="this.hoveredWordObject"
-                         @close="isVisible=false"
-                         @annotation-saved="applyAnnotation">
-        </AnnotatieDialog>
-      </v-dialog>
-      <v-col col="6">
-        <v-card>
-          <v-card-title>Load XML File</v-card-title>
-          <v-card-text>
-            <v-file-input
-              label="Select XML File"
-              accept=".xml"
-              @change="handleFileChange"
-            ></v-file-input>
-            <v-btn
-              color="primary"
-              @click="loadXML"
-              :disabled="!xmlFile"
-            >Load XML
-            </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col col="6">
-        <v-card>
-          <v-card-title>XML Content</v-card-title>
-          <v-card-text v-if="parsedData.articles.length > 0">
-            <v-scroll-area @mouseup="handleSelection()">
-              <div class="formatted-xml">
-                <div v-for="article in parsedData.articles" :key="article.number">
-                  <h3>{{ article.title }}</h3>
-                  <ol>
-                    <li v-for="(part, partIndex) in article.parts" :key="partIndex">
-                      <div>
+  <v-app>
+    <!-- Header & Sidebar content -->
+    <app-header-sidebar></app-header-sidebar>
+
+    <!-- Anotatie Dialog content -->
+    <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
+      <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
+                       :hoveredWordObject="this.hoveredWordObject"
+                       @close="isVisible=false"
+                       @annotation-saved="applyAnnotation">
+      </AnnotatieDialog>
+    </v-dialog>
+
+    <!-- Main content -->
+    <v-main>
+      <v-container fluid>
+        <!-- Widgets -->
+        <v-row>
+          <!-- Import/export widget -->
+          <v-col cols="12" md="4">
+            <v-card class="elevation-3">
+              <v-card-title class="headline">XML-bestanden Beheren</v-card-title>
+              <!-- Import/export section -->
+              <v-card-text>
+                <v-card>
+                  <v-card-title>XML Laden</v-card-title>
+                  <v-card-text>
+                    <v-file-input
+                      label="Selecteer XML-bestand"
+                      accept=".xml"
+                      @change="handleFileChange"
+                    ></v-file-input>
+                    <v-btn
+                      color="primary"
+                      variant="elevated"
+                      @click="loadXML"
+                      :disabled="!xmlFile"
+                    >XML Laden
+                    </v-btn>
+                  </v-card-text>
+                </v-card>
+                <!-- Xml Export content -->
+                <XmlDownloader v-if="xmlFile"
+                               :xmlContent="xmlContent"
+                               :defaultFileName="xmlFile.name"
+                               :xml-file="xmlFile"
+                ></XmlDownloader>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col col="6">
+            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+            <v-card>
+              <v-card-title>XML Content</v-card-title>
+              <v-card-text v-if="parsedData.articles.length > 0">
+                <v-scroll-area @mouseup="handleSelection()">
+                  <div class="formatted-xml">
+                    <div v-for="article in parsedData.articles" :key="article.number">
+                      <h3>{{ article.title }}</h3>
+                      <ol>
+                        <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                          <div>
                         <span @mouseleave="hideTooltip"
                               v-for="(word, wordIndex) in part.partWords"
                               :key="wordIndex"
+                              :style="{ backgroundColor: wordColours[word.number] }"
                               @mouseover="handleWordHover(word)"
+                              :id="'word-' + id"
                         >
                           {{ word.name }}
                           <span v-if="wordIndex < part.partWords.length - 1"> </span>
-
                            <v-tooltip bottom v-if="showTooltip"
                                       activator="parent"
                                       location="top"
                            >
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
-
                         </span>
-                        <ul>
-                          <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
-                            <span>{{ subPart.number }}</span>
-                            <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
-                            >
+                            <ul>
+                              <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex"
+                              >
+                                <span>{{ subPart.number }}</span>
+                                <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                      :style="{ backgroundColor: wordColours[word.number] }"
+                                      @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
+                                      :id="'word-' + id"
+                                >
                               {{ word.name }}
-
                               <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
-
                                <v-tooltip bottom v-if="showTooltip"
                                           activator="parent"
                                           location="top"
@@ -72,26 +96,37 @@
                         </v-tooltip>
 
                             </span>
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-                  </ol>
-                </div>
-              </div>
-            </v-scroll-area>
-          </v-card-text>
-          <v-card-text v-else>
-            <v-alert type="info">No XML file loaded.</v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                </v-scroll-area>
+              </v-card-text>
+              <v-card-text v-else>
+                <v-alert type="info">Geen XML bestand geladen.</v-alert>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-
 <style scoped>
+
+/* Add custom margin classes */
+.mb-3 {
+  margin-bottom: 1rem; /* You can adjust this value as needed */
+}
+
+.mt-3 {
+  margin-top: 1rem; /* You can adjust this value as needed */
+}
+
 .formatted-xml {
   margin: 0; /* Remove default margin */
   line-height: 1.5; /* Adjust line height for better readability */
@@ -118,20 +153,28 @@
 }
 </style>
 
-
 <script>
 import vkbeautify from "vkbeautify";
 import $ from "jquery";
 import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
+import Annotatie from "@/components/Annotatie.vue";
+import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
 import {store} from "@/store/app";
-import {isProxy, toRaw} from 'vue';
-import router from '@/router';
+import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
+import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
-  components: {AnnotatieDialog},
+  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader},
   data() {
     return {
+      timelineData: [
+        {id: 1, name: "Mock data title 1", date: '2023-01-01'},
+        {id: 2, name: "Mock data title 2", date: '2023-01-02'},
+        {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+        {id: 4, name: "Mock data title 3", date: '2023-01-02'},
+      ],
+      timelineDataLive: [],
       isVisible: false,
       selectedText: "",
       xmlFile: null,
@@ -143,6 +186,30 @@ export default {
       articleTitle: "",
       hoveredWordObject: "",
       allWordsInXML: "",
+      idCounter: 0,
+      wordIdMap: {}, // Map to store generated IDs for words
+      id: null,
+      numberOfWords: 0,
+      wordColours: [],
+      labels: {},
+      colourOptions: [
+        {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
+        {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
+        {label: 'Rechtsobject', colour: 'rgb(152, 190, 241)'},
+        {label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)'},
+        {label: 'Voorwaarde', colour: 'rgb(145, 232, 211)'},
+        {label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)'},
+        {label: 'Variabele', colour: 'rgb(255, 217, 93)'},
+        {label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)'},
+        {label: 'Parameter', colour: 'rgb(255, 180, 180)'},
+        {label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)'},
+        {label: 'Operator', colour: 'rgb(193, 235, 225)'},
+        {label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)'},
+        {label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)'},
+        {label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)'},
+        {label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)'},
+        {label: 'Brondefinitie', colour: 'rgb(246, 246, 246)'},
+      ],
     };
   },
   computed: {
@@ -155,28 +222,71 @@ export default {
 
   },
   methods: {
-    // TODO add proper error handling
     async loadDefinitions() {
-      let response = await store().getXMLBron(this.articleTitle);
-
-      let xmlBron = {
-        artikel_naam: this.articleTitle,
-        link: "http://example.com/xml",
-        definities: []
-      }
-
-      if (response === 404) {
-        await store().postNewXMLBron(xmlBron);
-      }
-
       try {
-        const definitions = await store().getDefinitions();
-        console.log('Definitions:', definitions);
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getDefinitions(xmlBronId, username, xmlbronDate);
 
       } catch (definitionsError) {
         console.error('Error getting definitions:', definitionsError);
       }
     },
+
+    async loadDefinitionsForUser(username) {
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getDefinitions(xmlBronId, username, xmlbronDate);
+
+      } catch (definitionsError) {
+        console.error('Error getting definitions:', definitionsError);
+      }
+    },
+
+    insertLabelColours(labels) {
+      labels.forEach(label => {
+        let startPosition = label.positie_start;
+        let textLength = (label.positie_end - label.positie_start) + 1;
+        let matchinglabel = this.colourOptions.find(option => option.label === label.label);
+
+        for (let i = 0; i < textLength; i++) {
+          this.wordColours[startPosition + i] = matchinglabel.colour;
+        }
+      })
+    },
+
+    async loadLabelsForArticle() {
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let username = JSON.parse(localStorage.getItem('username'));
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getLabels(xmlBronId, username, xmlbronDate);
+
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
+      this.insertLabelColours(store().labels)
+    },
+
+    async loadLabelsForArticleForUser(username) {
+      try {
+        let xmlBronId = store().loadedXMLIdentifier;
+        let xmlbronDate = store().loadedXMLDate;
+
+        await store().getLabels(xmlBronId, username, xmlbronDate);
+
+      } catch (labelsError) {
+        console.error('Error getting labels:', labelsError);
+      }
+      this.insertLabelColours(store().labels)
+    },
+
+
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -185,52 +295,38 @@ export default {
       }
     },
 
-    handleWordHover(word) {
+    async handleWordHover(word) {
       this.hoveredWordObject = word;
       this.hoveredWord = this.removeDotsAndSymbols(word.name);
-      this.matchedWord = this.findMatchingIndexes(word.number);
+      this.matchedWord = await this.findMatchingIndexes(word.number);
+
       if (this.matchedWord !== undefined) {
         this.showTooltip = true;
       }
     },
 
-    findMatchingIndexes(number) {
-      let definitions = this.convertProxyObjects(store().definitions);
+    async findMatchingIndexes(number) {
+      let definitions = await store().definitions;
 
-      return definitions.find(
+      if (definitions === undefined || definitions.length === 0) {
+        return
+      }
+
+      definitions = definitions.filter(
         definition =>
           (number >= definition.positie_start && number <= definition.positie_end)
       );
+
+      return definitions[definitions.length - 1];
     },
 
     hideTooltip() {
       this.showTooltip = false;
     },
 
-    convertProxyObjects(objects) {
-      if (isProxy(objects)) {
-        objects = toRaw(objects)
-      }
-      return objects
-    },
-
-    applyAnnotation(annotation) {
-      let {text, color} = annotation;
-      const regex = new RegExp(this.RegExp(text), 'g');
-      const replacement = `<span style="background-color: ${color};">${text}</span>`;
-
-      this.parsedData.articles.forEach(article => {
-        article.parts.forEach(part => {
-          if (part.name) {
-            part.name = part.name.replace(regex, replacement);
-          }
-          part.subParts.forEach(subPart => {
-            if (subPart.name) {
-              subPart.name = subPart.name.replace(regex, replacement);
-            }
-          });
-        });
-      });
+    applyAnnotation() {
+      this.loadXML();
+      this.loadAssociatedData();
     },
 
     RegExp(string) {
@@ -239,6 +335,7 @@ export default {
 
     handleFileChange(event) {
       this.xmlFile = event.target.files[0];
+      this.getUserFromXML(this.xmlFile);
     },
 
     loadXML() {
@@ -249,6 +346,9 @@ export default {
       const reader = new FileReader();
       reader.onload = (event) => {
         this.xmlContent = event.target.result;
+        const username = this.getUserFromXML(this.xmlContent); // Extract the username
+        // Use the extracted username as needed
+        console.log('Extracted username from file:', username);
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
@@ -256,11 +356,27 @@ export default {
 
     parseXML(xmlString) {
       const xmlObject = xml2js.xml2js(xmlString, {compact: true});
+      this.extractMetaDataXML(xmlObject);
       this.handleParsedData(xmlObject.artikel);
     },
 
+    extractMetaDataXML(xmlObject) {
+      const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
+
+      let {id} = xmlObject.artikel._attributes;
+      let dateMatch = id.match(datePattern);
+
+      if (dateMatch) {
+        dateMatch = dateMatch[0];
+        store().XMLBwbrCode = id;
+        store().loadedXMLDate = dateMatch;
+      } else {
+        console.error("Date not found in the provided XML id:", id);
+      }
+    },
+
     // TODO Method should be split up in separate smaller methods
-    handleParsedData(articleNode) {
+    async handleParsedData(articleNode) {
       const parsedData = {articles: []};
       let wordIndex = -1; // Internal counter for word index
       let allWords = []; // Array to store all words
@@ -268,6 +384,7 @@ export default {
       if (articleNode) {
         const articleNumber = articleNode.kop?.nr?._text?.trim();
         const articleTitle = articleNode.kop?._text?.trim();
+
         this.articleTitle = articleTitle;
         store().loadedXMLIdentifier = articleTitle;
 
@@ -310,9 +427,43 @@ export default {
 
         parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
       }
+
       this.allWordsInXML = allWords;
       this.parsedData = parsedData;
+
+      if (allWords.length !== 0) {
+        this.checkIfXMLBronExists();
+      }
+
+      await store().getXMLBronnenByNameTimeLine(this.articleTitle)
+      this.timelineDataLive = store().xmlbronnen;
+    },
+
+    async checkIfXMLBronExists() {
+      let xmlbronDate = store().loadedXMLDate;
+
+      let response = await store().getXMLBron(this.articleTitle, xmlbronDate);
+      let baseUrl = "https://wetten.overheid.nl";
+      let urlBWBR = store().XMLBwbrCode
+
+      if (response === 404) {
+        let xmlBron = {
+          artikel_naam: this.articleTitle,
+          link: `${baseUrl}/${urlBWBR}`,
+          definities: [],
+          xmlbron_date: xmlbronDate,
+        }
+
+        await store().postNewXMLBron(xmlBron);
+      } else {
+        this.loadAssociatedData();
+      }
+    },
+
+    loadAssociatedData() {
       this.loadDefinitions();
+      this.loadLabelsForArticle();
+      this.getUserFromXML(this.xmlContent)
     },
 
     removeDotsAndSymbols(word) {
@@ -320,22 +471,28 @@ export default {
       return word.replace(/[.,]/gi, '');
     },
 
-    logout() {
-      if (store().user.loggedIn === false) {
-        router.push({name: 'Login'});
+    getUserFromXML(xmlContent) {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+
+      // Get the root element of the XML document
+      const rootElement = xmlDoc.documentElement;
+
+      // Get the username attribute from the root element
+      const username = rootElement.getAttribute('username');
+
+      if (username){
+        this.loadDefinitionsForUser(username);
+        this.loadLabelsForArticleForUser(username);
       }
 
-      store().logout();
+      // Return the username value or null if the attribute doesn't exist
+      return username ? username : null;
     },
-
   },
 
   mounted() {
+    this.id = this._uid
   }
-
 };
 </script>
-
-
-
-

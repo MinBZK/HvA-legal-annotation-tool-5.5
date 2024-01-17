@@ -1,15 +1,14 @@
 package com.linkextractor.backend.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 public class Definitie {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "definitie_id")
     private int id;
 
@@ -18,12 +17,18 @@ public class Definitie {
 
     @Column(name = "definitie")
     private String definitie;
-    
+
     @Column(name = "positie_start")
     private int positie_start;
 
     @Column(name = "positie_end")
     private int positie_end;
+
+    @Column(name = "datum")
+    private LocalDateTime date;
+
+    @OneToMany(mappedBy = "definitie")
+    private Set<UserDefinitionXMLTable> linkingTables;
 
     public Definitie() {
         super();
@@ -49,6 +54,14 @@ public class Definitie {
         return definitie;
     }
 
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
     public void setDefinitie(String definitie) {
         this.definitie = definitie;
     }
@@ -68,6 +81,4 @@ public class Definitie {
     public void setPositie_end(int positie_end) {
         this.positie_end = positie_end;
     }
-    
-    
 }

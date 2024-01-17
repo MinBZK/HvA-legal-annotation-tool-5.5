@@ -3,7 +3,7 @@ package com.linkextractor.backend.dto;
 /**
  * Data Transfer Object (DTO) representing user registration information.
  */
-public class RegistrationDTO {
+public class RegistrationRequestDTO {
 
     private String firstname;
 
@@ -15,7 +15,7 @@ public class RegistrationDTO {
 
     private String password;
 
-    public RegistrationDTO(String firstname, String lastname, String email, String username, String password) {
+    public RegistrationRequestDTO(String firstname, String lastname, String email, String username, String password) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
