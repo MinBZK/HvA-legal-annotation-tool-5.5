@@ -113,7 +113,7 @@
 
               <v-card v-if="showCard" id="print">
                 <v-card-title>
-                  Samenvatting
+                  Samenvatting van annotaties:
                 </v-card-title>
                 <v-card-text>
                   <!-- Display mergedData in the card -->
@@ -123,13 +123,15 @@
                       <strong>Definition:</strong> {{ item.definition }},
                       <strong>Label:</strong> {{ item.label }}
                     </p>
+                    <br>
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <!-- Print button -->
-                  <v-btn @click="printCardContent" color="primary">Print</v-btn>
+<!--                  <v-btn @click="printCardContent" color="primary">Print</v-btn>-->
                 </v-card-actions>
               </v-card>
+              <v-btn v-if="showCard" @click="printCardContent" color="primary">Print samenvatting</v-btn>
 
             </v-card>
           </v-col>
@@ -198,6 +200,7 @@ export default {
         {id: 4, name: "Mock data title 3", date: '2023-01-02'},
       ],
       showButton: false,
+      showPrintButton: false,
       showCard: false,
       filteredData: {},
       mergedData: [],
@@ -214,6 +217,7 @@ export default {
       hoveredWordObject: "",
       allWordsInXML: "",
       idCounter: 0,
+
       wordIdMap: {}, // Map to store generated IDs for words
       id: null,
       numberOfWords: 0,
