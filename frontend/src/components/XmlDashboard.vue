@@ -359,7 +359,7 @@ export default {
       this.loadAssociatedData();
     },
 
-    RegExp(string) {
+    escapeSpecialCharacters(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
