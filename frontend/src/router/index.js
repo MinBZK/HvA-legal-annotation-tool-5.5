@@ -9,6 +9,11 @@ const routes = [
     component: () => import('@/components/AppLogin.vue'),
   },
   {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/components/Register.vue'),
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/components/XmlDashboard.vue'),
