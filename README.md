@@ -11,7 +11,7 @@ Voor dat aan dit project gewerkt kan worden zijn een aantal zaken belangrijk om 
 ## Frontend
 De frontend kan worden opgestart met de commando npm run dev, hiermee wordt de development omgeving aangeroepen. Vervolgens zijn een aantal zaken belangrijk om te weten:
 1. Om te loggen binnen de applicatie moet men de volgende url opzoeken localhost:8080/login
-2. Vervolgens kan een gebruiken een xml inladen in de XmlLoader.vue component. 
+2. Vervolgens kan een gebruiker een xml inladen in de XmlLoader.vue component. 
 3. Als dit is gedaan wordt de content van het xml bestand ingeladen in de XmlDashboard.vue component.
 4. Tenslotte wordt de XMLbronTimeLine component zichtbaar waarin een tijdlijn zichtbaar wordt met alle bewerkingen van de ingeladen artikel
 5. Refereer naar het onderstaande sequence diagram om te zien welke functies precies worden aangeroepen.

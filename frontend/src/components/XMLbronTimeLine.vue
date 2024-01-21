@@ -215,7 +215,6 @@ export default {
             });
         },
 
-
         openModal(item) {
             this.modalOpen = true;
             this.selectedModalItem = item;
