@@ -234,9 +234,6 @@ export default {
       if (this.definition === "") {
         return;
       }
-      console.log("HIER")
-      console.log(selectedText)
-      // console.log(this.matchedWordsWithIndexes)
 
       if (selectedText) {
         let {positie_start, positie_end} = this.calculatePositionIndexes();
@@ -264,7 +261,7 @@ export default {
       if (this.matchedWordsWithIndexes.length === 0) {
         this.handleSelectedWord()
       }
-      console.log(this.matchedWordsWithIndexes)
+
       let positie_start = this.matchedWordsWithIndexes[0].number;
       let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
       return {positie_start, positie_end};
@@ -278,7 +275,6 @@ export default {
      */
     async saveAndFetchDefinitions(definition, xmlBronName, username) {
       let xmlbronDate = store().loadedXMLDate;
-
       await store().postDefinition(definition, xmlBronName, username, xmlbronDate);
     },
 
@@ -298,6 +294,8 @@ export default {
         const range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(span);
+
+        console.log(this.matchedWordsWithIndexes[0].number)
 
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
@@ -321,9 +319,7 @@ export default {
 
     async saveAndFetchLabels(label, xmlBronName, username) {
       let xmlbronDate = store().loadedXMLDate;
-
       await store().postLabel(label, xmlBronName, username, xmlbronDate);
-      await store().getLabels(xmlBronName, username, xmlbronDate);
     },
 
     removeDotsAndSymbols(word) {
@@ -336,7 +332,7 @@ export default {
     /**
      * Finds a specified number of words related to a target text starting from a given hovered word.
      *
-     * @param {Array} wordsArray - An array of objects representing words, each containing a 'number' and 'word'.
+     * @param {Object} wordsArray - An array of objects representing words, each containing a 'number' and 'word'.
      * @param {string} targetText - The text used to identify target words.
      * @param {Object} hoveredWord - The word object from which the search should start, containing at least 'number' and 'word'.
      * @returns {Array} - An array of words related to the target text, including and around the hovered word.
@@ -357,7 +353,6 @@ export default {
 
       // Find the index in the array to start the search
       let startIndex = wordsArray.findIndex((word) => word.number === startNumber);
-
       // Check if the starting number is not found in the array
       if (startIndex === -1) {
         console.log(`Word with number ${startNumber} not found in the array.`);
@@ -365,11 +360,13 @@ export default {
       }
 
       // Iterate up the array
-      for (let i = startIndex+1; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
+      for (let i = startIndex; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
+        let selectedWordObject = wordsArray[i];
+        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
         // Check if the name of the word is in the target words
-        if (targetWords.includes(wordsArray[i].name)) {
+        if (targetWords.includes(selectedWord)) {
           // Add the word to the result data at the beginning
-          resultData.unshift(wordsArray[i]);
+          resultData.unshift(selectedWordObject);
         }
         // Check if enough words are found, and if so, break out of the loop
         if (resultData.length === targetWordsSize) {
@@ -382,11 +379,13 @@ export default {
       }
 
       // Iterate down the array
-      for (let i = startIndex-1; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
+      for (let i = startIndex; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
+        let selectedWordObject = wordsArray[i];
+        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
         // Check if the name of the word is in the target words
-        if (targetWords.includes(wordsArray[i].name)) {
+        if (targetWords.includes(selectedWord)) {
           // Add the word to the result data at the end
-          resultData.push(wordsArray[i]);
+          resultData.push(selectedWordObject);
         }
         // Check if enough words are found, and if so, break out of the loop
         if (targetWordsSize !== 1 && resultData.length === targetWordsSize * 2) {

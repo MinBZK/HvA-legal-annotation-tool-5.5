@@ -276,11 +276,11 @@ export default {
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
-
+        this.insertLabelColours(store().labels)
+        this.$forceUpdate(); // Force the component to re-render
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-      this.insertLabelColours(store().labels)
     },
 
     async loadLabelsForArticleForUser(username) {
@@ -369,23 +369,21 @@ export default {
 
     extractMetaDataXML(xmlObject) {
       const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
-      let dateMatch;
+      this.errorMessage = "";
 
       try {
         let {id} = xmlObject.artikel._attributes;
-        dateMatch = id.match(datePattern);
-      } catch (e) {
-        console.log("Here")
-        console.log(dateMatch)
-        this.errorMessage = "Fout met file inladen, format niet compatibel."
-      }
+        let dateMatch = id.match(datePattern);
 
-      if (dateMatch) {
-        dateMatch = dateMatch[0];
-        store().XMLBwbrCode = id;
-        store().loadedXMLDate = dateMatch;
-      } else {
-        console.error("Date not found in the provided XML id:", id);
+        if (dateMatch) {
+          dateMatch = dateMatch[0];
+          store().XMLBwbrCode = id;
+          store().loadedXMLDate = dateMatch;
+        } else {
+          console.error("Date not found in the provided XML id:", id);
+        }
+      } catch (e) {
+        this.errorMessage = "Fout met file inladen, format niet compatibel."
       }
     },
 

@@ -28,8 +28,6 @@ instance.interceptors.response.use((response) => {
               headers: {'Authorization': `Bearer ${store().tokenJWT}`},
             });
 
-// Update the token and clear the flag
-          //VueCookies.set('Access-Token', response.data, "7d");
           isRefreshing = false;
 
           refreshSubscribers.forEach((subscriber) => subscriber());
@@ -52,7 +50,6 @@ instance.interceptors.response.use((response) => {
     return Promise.reject(error);
   }
 );
-
 
 instance.interceptors.request.use(
   config => {
