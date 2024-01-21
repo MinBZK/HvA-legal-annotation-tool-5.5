@@ -287,7 +287,6 @@ export default {
     },
 
 
-
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
       if (this.selectedText) {
@@ -329,7 +328,7 @@ export default {
       this.loadAssociatedData();
     },
 
-    RegExp(string) {
+    escapeSpecialCharacters(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
