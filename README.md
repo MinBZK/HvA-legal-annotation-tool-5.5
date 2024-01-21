@@ -40,9 +40,9 @@ Hierna moet worden ingelogd op de volgende API endpoint: POST localhost:8085/aut
 ``
 
 De response zal de volgende drie items bevatten:
--de username
--een accesstoken(JWT Token)
--een refreshtoken(RSAKey)
+- de username
+- een accesstoken(JWT Token)
+- een refreshtoken(RSAKey)
 
 De JWT Token moet altijd worden meegegeven als een Bearer token:
 ![Bearer Token](docs/image-4.png)
