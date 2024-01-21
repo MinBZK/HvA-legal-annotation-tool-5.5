@@ -137,6 +137,7 @@ export const store = defineStore('app', {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
+      console.log(response.data)
       this.labels = response.data;
       this.addEigenaarToLabels(username);
       return this.labels

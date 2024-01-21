@@ -46,7 +46,9 @@
                                     <v-row>
                                         <v-col cols="6" md="6">
                                             <h2 class="text-h6">Aanpassingen Artikel</h2>
-                                            <ModalArticleComponent :articles="articleData.articles" :changes="findChangesInTimelineData(timelineData, articleData.articles)" ></ModalArticleComponent>
+                                            <ModalArticleComponent :articles="articleData.articles" 
+                                            :colors="wordColours"
+                                            ></ModalArticleComponent>
                                         </v-col>
                                         <v-col cols="6" md="6">
                                             <h2 class="text-h6">Origineel Artikel</h2>
@@ -112,6 +114,7 @@
 <script>
 import axios from "axios";
 import ModalArticleComponent from "./ModalArticleComponent.vue";
+import {store} from "@/store/app";
 export default {
     components: { ModalArticleComponent },
     data() {
@@ -122,6 +125,8 @@ export default {
             currentIndex: 0,
             hidden: false,
             changesData: [],
+            filterLabels: [],
+            wordColours: [],
         };
     },
     props: {
@@ -149,11 +154,40 @@ export default {
         
     },
     methods: {
+        async loadLabelsForSelectedArticle(currentModalData, changes){
+            try {
+                let articleBronName = currentModalData.artikelNaam;
+                let username = currentModalData.username;
+                let articleDate = store().loadedXMLDate;
+                
+                await store().getLabels(articleBronName, username, articleDate)
+            } catch(labelsError) {
+                console.error("error getting labels:", labelsError)
+            }
+
+            console.log(store().labels)
+            console.log(changes)
+
+            this.filterLabels = store().labels.filter(label => 
+            changes.some(item => item.woord === label.woord)
+            )
+
+            this.insertLabelColours(this.filterLabels)
+        },
+
+        insertLabelColours(labels){
+            labels.forEach(label => {
+                let startPosition = label.positie_start;
+                let textLength = (label.positie_end - label.positie_start) + 1;
+                let matchinglabel = this.colorOptions.find(option => option.label == label.label);
+
+                for(let i = 0; i < textLength; i++){
+                    this.wordColours[startPosition + i] = matchinglabel.colour;
+                }
+            });    
+        },
 
         findChangesInTimelineData(timeLineData){
-            timeLineData.filter((obj, index, self) =>
-                index === self.findIndex((t) => (t.woord === obj.woord))
-            )
             timeLineData.forEach(item => {
                 const match = this.selectedModalItem.date == item.date;
                 if (match){
@@ -166,7 +200,8 @@ export default {
                 }
             });
             console.log(this.changesData)
-            return this.changesData;
+            this.loadLabelsForSelectedArticle(this.selectedModalItem, this.changesData);
+
         },
 
         formatDate(date) {
@@ -179,9 +214,12 @@ export default {
                 hour12: false
             });
         },
+
+
         openModal(item) {
             this.modalOpen = true;
             this.selectedModalItem = item;
+            this.findChangesInTimelineData(this.timelineData, this.articleData.articles)
         },
         //role check needs to be added
         showDeleteAlert(item) {

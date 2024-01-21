@@ -75,6 +75,7 @@ Dit project gebruikt de volgende dependencies:
 - Jquery
 - axios
 - Babel
+- resize-observer-polyfill
 
 ## Backend
 (pom.xml)

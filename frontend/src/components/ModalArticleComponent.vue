@@ -1,5 +1,35 @@
 <template>
-    <div class="formatted-xml">
+    <div v-if="colors" class="formatted-xml">
+        <div v-for="article in articles" :key="article.number">
+            <h3>{{ article.title }}</h3>
+            <ol>
+                <li v-for="(part, partIndex) in article.parts" :key="partIndex">
+                    <div>
+                        <span v-for="(word, wordIndex) in part.partWords" :key="wordIndex"
+                        :style="{backgroundColor: this.colors[word.number]}"> 
+                            {{ processWordsToSpaceWords(word.name) }}
+                            </span>
+
+                            <span>
+
+                                <ul>
+                                    <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
+                                        <span> {{ processWordsToSpaceWords(subPart.number) }} </span>
+
+                                        <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
+                                        :style="{backgroundColor: this.colors[word.number]}">
+                                            {{ processWordsToSpaceWords(word.name) }}
+                                        </span>
+
+                                    </li>
+                                </ul>
+                        </span>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div v-else>
         <div v-for="article in articles" :key="article.number">
             <h3>{{ article.title }}</h3>
             <ol>
@@ -10,7 +40,6 @@
                             </span>
 
                             <span>
-
                                 <ul>
                                     <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                                         <span> {{ processWordsToSpaceWords(subPart.number) }} </span>
@@ -57,8 +86,16 @@
 }
 </style>
 <script>
+import store from '@/store'
+
 
 export default {
+    data() {
+        return {
+            timelineLabels: {}
+        }
+    },
+
     props: {
         articles: {
             type: Array,
@@ -68,11 +105,18 @@ export default {
             type: Array,
             required: false,
         },
+        colors: {
+            type: Array,
+            required: false,
+        }
     },
     methods: {
         processWordsToSpaceWords(text){
             return text + ' '
-        }
+        },
+    },
+    mounted(){
+        console.log(this.colors)
     }
 }
 
