@@ -31,6 +31,14 @@
                       accept=".xml"
                       @change="handleFileChange"
                     ></v-file-input>
+                    <v-btn
+                      color="primary"
+                      variant="elevated"
+                      @click="loadXML"
+                      :disabled="!xmlFile"
+                    >XML Laden
+                    </v-btn>
+
                     <!-- Error Alert -->
                     <v-alert
                       v-if="errorMessage"
@@ -40,13 +48,6 @@
                       {{ errorMessage }}
                     </v-alert>
 
-                    <v-btn
-                      color="primary"
-                      variant="elevated"
-                      @click="loadXML"
-                      :disabled="!xmlFile"
-                    >XML Laden
-                    </v-btn>
                   </v-card-text>
                 </v-card>
                 <!-- Xml Export content -->
@@ -228,8 +229,8 @@ export default {
       }
       return '';
     },
-
   },
+
   methods: {
     async loadDefinitions() {
       try {
@@ -295,7 +296,6 @@ export default {
       this.insertLabelColours(store().labels)
     },
 
-
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
       if (this.selectedText) {
@@ -355,29 +355,30 @@ export default {
       reader.onload = (event) => {
         this.xmlContent = event.target.result;
         const username = this.getUserFromXML(this.xmlContent); // Extract the username
-        // Use the extracted username as needed
-        console.log('Extracted username from file:', username);
+
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
     },
 
     parseXML(xmlString) {
-      let xmlObject;
-      try {
-        xmlObject = xml2js.xml2js(xmlString, {compact: true});
-      } catch (e) {
-        console.log(e)
-      }
+      const xmlObject = xml2js.xml2js(xmlString, {compact: true});
       this.extractMetaDataXML(xmlObject);
       this.handleParsedData(xmlObject.artikel);
     },
 
     extractMetaDataXML(xmlObject) {
       const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
+      let dateMatch;
 
-      let {id} = xmlObject.artikel._attributes;
-      let dateMatch = id.match(datePattern);
+      try {
+        let {id} = xmlObject.artikel._attributes;
+        dateMatch = id.match(datePattern);
+      } catch (e) {
+        console.log("Here")
+        console.log(dateMatch)
+        this.errorMessage = "Fout met file inladen, format niet compatibel."
+      }
 
       if (dateMatch) {
         dateMatch = dateMatch[0];
