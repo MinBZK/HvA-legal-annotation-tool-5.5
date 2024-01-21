@@ -447,7 +447,7 @@ export default {
 
       if (response === 404) {
         let xmlBron = {
-          artikel_naam: this.articleTitle,
+          artikelNaam: this.articleTitle,
           link: `${baseUrl}/${urlBWBR}`,
           definities: [],
           xmlbron_date: xmlbronDate,
@@ -480,7 +480,7 @@ export default {
       // Get the username attribute from the root element
       const username = rootElement.getAttribute('username');
 
-      if (username){
+      if (username) {
         this.loadDefinitionsForUser(username);
         this.loadLabelsForArticleForUser(username);
       }

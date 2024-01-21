@@ -258,6 +258,7 @@ export default {
      * @returns {Object} An object with positie_start and positie_end properties.
      */
     calculatePositionIndexes() {
+      console.log(this.matchedWordsWithIndexes)
       let positie_start = this.matchedWordsWithIndexes[0].number;
       let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
       return {positie_start, positie_end};
