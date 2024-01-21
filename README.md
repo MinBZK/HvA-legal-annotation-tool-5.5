@@ -67,25 +67,25 @@ Dit project gebruikt de volgende dependencies:
 
 ### Frontend
 (package.json)
--Vue
--Vuetify
--Jest
--Pinia
--xmlformatter
--Jquery
--axios
--Babel
+- Vue
+- Vuetify
+- Jest
+- Pinia
+- xmlformatter
+- Jquery
+- axios
+- Babel
 
 ## Backend
 (pom.xml)
--maven
--Bucket4J
--Spring security
--Oauth
+- maven
+- Bucket4J
+- Spring security
+- Oauth
 
 ## CI/CD
 (docker.compose.yml en git.yml)
--Docker
--Sonarqube
--Gitlabrunner
--Heroku
+- Docker
+- Sonarqube
+- Gitlabrunner
+- Heroku
