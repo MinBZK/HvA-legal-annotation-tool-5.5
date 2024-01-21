@@ -234,6 +234,9 @@ export default {
       if (this.definition === "") {
         return;
       }
+      console.log("HIER")
+      console.log(selectedText)
+      // console.log(this.matchedWordsWithIndexes)
 
       if (selectedText) {
         let {positie_start, positie_end} = this.calculatePositionIndexes();
@@ -258,6 +261,9 @@ export default {
      * @returns {Object} An object with positie_start and positie_end properties.
      */
     calculatePositionIndexes() {
+      if (this.matchedWordsWithIndexes.length === 0) {
+        this.handleSelectedWord()
+      }
       console.log(this.matchedWordsWithIndexes)
       let positie_start = this.matchedWordsWithIndexes[0].number;
       let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
@@ -359,7 +365,7 @@ export default {
       }
 
       // Iterate up the array
-      for (let i = startIndex; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
+      for (let i = startIndex+1; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
         // Check if the name of the word is in the target words
         if (targetWords.includes(wordsArray[i].name)) {
           // Add the word to the result data at the beginning
@@ -376,7 +382,7 @@ export default {
       }
 
       // Iterate down the array
-      for (let i = startIndex; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
+      for (let i = startIndex-1; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
         // Check if the name of the word is in the target words
         if (targetWords.includes(wordsArray[i].name)) {
           // Add the word to the result data at the end

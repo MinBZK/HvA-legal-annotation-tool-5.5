@@ -38,8 +38,8 @@ export default {
     async handleFileChange(event) {
       const file = event.target.files[0];
       if (!file) return;
-  
-        const reader = new FileReader();
+
+      const reader = new FileReader();
       reader.onload = async (event) => {
         const parsedXml = new DOMParser().parseFromString(event.target.result, "text/xml");
 

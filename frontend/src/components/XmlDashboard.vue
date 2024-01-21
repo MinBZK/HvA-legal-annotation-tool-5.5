@@ -31,6 +31,15 @@
                       accept=".xml"
                       @change="handleFileChange"
                     ></v-file-input>
+                    <!-- Error Alert -->
+                    <v-alert
+                      v-if="errorMessage"
+                      type="error"
+                      dense
+                    >
+                      {{ errorMessage }}
+                    </v-alert>
+
                     <v-btn
                       color="primary"
                       variant="elevated"
@@ -94,7 +103,6 @@
                                >
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
-
                             </span>
                               </li>
                             </ul>
@@ -192,6 +200,7 @@ export default {
       numberOfWords: 0,
       wordColours: [],
       labels: {},
+      errorMessage: '',
       colourOptions: [
         {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
@@ -354,7 +363,12 @@ export default {
     },
 
     parseXML(xmlString) {
-      const xmlObject = xml2js.xml2js(xmlString, {compact: true});
+      let xmlObject;
+      try {
+        xmlObject = xml2js.xml2js(xmlString, {compact: true});
+      } catch (e) {
+        console.log(e)
+      }
       this.extractMetaDataXML(xmlObject);
       this.handleParsedData(xmlObject.artikel);
     },
@@ -431,7 +445,7 @@ export default {
       this.parsedData = parsedData;
 
       if (allWords.length !== 0) {
-        this.checkIfXMLBronExists();
+        await this.checkIfXMLBronExists();
       }
 
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
