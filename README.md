@@ -60,7 +60,17 @@ Hieronder een lijst van endpoints die vaak gebruikt worden binnen de applicatie:
 - **/label/getLabels/{xmlbronnaam}/{username}/{xmlbrondate} GET. Endpoint voor het ophalen van labels op basis van artikelnaam, gebruikersnaam en artikeldatum.
 
 ## CI/CD
-tobewritten
+De CI/CD pipeline bestaat uit 4 stages, namelijk:
+- Het builden van het project.
+- Testen van het project met SonarQube.
+- Deployen van het front-end naar Heroku.
+- Deployen van de backend naar Heroku.
+
+De CI/CD pipeline is alleen gemaakt voor Gitlab. De stages en bijhorende informatie staan in het bestand .gitlab-ci.yml
+
+De CI/CD pipeline wordt gerund bij elke commit naar de main branch. Bijvoorbeeld iemand pusht een nieuwe commit naar de main branch. De CI/CD pipeline zal automatisch uitgevoerd worden en de wijzigingen worden zichtbaar op de live versie.
+
+De CI/CD pipeline heeft bij sommige stages informatie nodig, zoals inlog gegevens voor het deployment server. Die gegevens worden opgeslagen in Gitlab variabele en met $ en de naam worden ze opgehaald naar de CI/CD. Bijvoorbeeld $password, zal het wachtwoord ophalen en verwerken.
 
 ## Dependencies
 Dit project gebruikt de volgende dependencies:
