@@ -88,10 +88,12 @@ export default {
     handleLoginSuccess(data) {
       // Update user data and navigate to dashboard
       store().tokenJWT = data.accesToken;
+      store().refreshJWT = data.refreshToken;
       store().user.loggedIn = true;
       store().user.username = data.username;
       localStorage.setItem("isLoggedIn", JSON.stringify(true));
       localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+      localStorage.setItem("refreshJWT", JSON.stringify(store().refreshJWT));
       this.showLoginSuccessMessage();
       localStorage.setItem("username", JSON.stringify(this.username));
       this.$router.push({path: '/dashboard'});

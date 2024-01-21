@@ -48,10 +48,8 @@ export default {
     login() {
       // Login logic
     },
-    logout() {
-      // Logout logic in the store use that
-      window.localStorage.removeItem("isLoggedIn");
-      window.localStorage.removeItem("tokenJWT");
+    async logout() {
+      await store().logout();
       window.location.reload();
     },
     navigate(item) {
