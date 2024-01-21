@@ -50,7 +50,7 @@
             </v-card>
           </v-col>
           <v-col col="6">
-            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+            <XMLbronTimeLine :timelineData="timelineDataLive" :articleData="parsedData" :colorOptions="colourOptions"></XMLbronTimeLine>
             <v-card>
               <v-card-title>XML Content</v-card-title>
               <v-card-text v-if="parsedData.articles.length > 0">
