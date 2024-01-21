@@ -16,7 +16,7 @@ De frontend kan worden opgestart met de commando npm run dev, hiermee wordt de d
 4. Tenslotte wordt de XMLbronTimeLine component zichtbaar waarin een tijdlijn zichtbaar wordt met alle bewerkingen van de ingeladen artikel
 5. Refereer naar het onderstaande sequence diagram om te zien welke functies precies worden aangeroepen.
  
-![Sequence diagram](image.png)
+![Sequence diagram](docs/image.png)
 
 6. Tenslotte is er gebruik gemaakt van Pinia (te vinden in app.js) voor state-management. De redenen waarom zijn:
 -  Het gebruiken van een store zorgt ervoor dat we vaak maar 1 keer een API endpoint hoeven aan te roepen om data op te vragen. Dit doen we om performance en consistentie van data en deze applicatie te waarborgen.
@@ -31,12 +31,14 @@ Vervolgens worden de classes (entities) opgehaald en worden daarvoor tabellen ge
 ![Class diagram 3](docs/image-3.png)
 
 Hierna moet worden ingelogd op de volgende API endpoint: POST localhost:8085/auth/login met de volgende gegevens
+
 ``json
 {
     "username": "johndoe",
     "password": "password"
 }
 ``
+
 De response zal de volgende drie items bevatten:
 -de username
 -een accesstoken(JWT Token)
@@ -50,12 +52,12 @@ Hierna kunnen API endpoints aangroepen worden en krijg je een 200 of 202 respons
 ## Endpoints
 Hieronder een lijst van endpoints die vaak gebruikt worden binnen de applicatie:
 
-**/auth/login POST. Login endpoint
-**/XMLBron/api/v1/timelineData/{articlenaam} GET. Endpoint voor ophalen van tijdlijndata 
-**/define/deleteDefinition/{definitionId} DELETE. Endpoint voor verwijderen van definities
-**/XMLBron/ByName/{articlenaam}/{xmlbronDate} GET. Endpoint voor het ophalen van een artikel op basis van naam en datum
-**/define/getDefinitions/{xmlbronnaam}/{username}/{xmlbrondate} GET. Endpoint voor het ophalen van definities op basis van artikelnaam, gebruikersnaam en artikeldatum.
-**/label/getLabels/{xmlbronnaam}/{username}/{xmlbrondate} GET. Endpoint voor het ophalen van labels op basis van artikelnaam, gebruikersnaam en artikeldatum.
+- **/auth/login POST. Login endpoint
+- **/XMLBron/api/v1/timelineData/{articlenaam} GET. Endpoint voor ophalen van tijdlijndata 
+- **/define/deleteDefinition/{definitionId} DELETE. Endpoint voor verwijderen van definities
+- **/XMLBron/ByName/{articlenaam}/{xmlbronDate} GET. Endpoint voor het ophalen van een artikel op basis van naam en datum
+- **/define/getDefinitions/{xmlbronnaam}/{username}/{xmlbrondate} GET. Endpoint voor het ophalen van definities op basis van artikelnaam, gebruikersnaam en artikeldatum.
+- **/label/getLabels/{xmlbronnaam}/{username}/{xmlbrondate} GET. Endpoint voor het ophalen van labels op basis van artikelnaam, gebruikersnaam en artikeldatum.
 
 ## CI/CD
 tobewritten
