@@ -133,11 +133,11 @@ export default {
   },
   methods: {
     getDefinitionTextFields(item) {
-      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.eigenaar}`
+      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.username}`
     },
 
     getLabelTextFields(item) {
-      return `${item.label} - ${this.formatDate(item.datum)} - ${item.eigenaar}`
+      return `${item.label} - ${this.formatDate(item.datum)} - ${item.username}`
     },
 
     formatDate(dateString) {

@@ -23,20 +23,6 @@ export const store = defineStore('app', {
   }),
 
   actions: {
-    addEigenaarToDefinitions(username) {
-      this.definitions = this.definitions.map(item => {
-        // Add the 'eigenaar' property to each object
-        return {...item, eigenaar: username};
-      })
-    },
-
-    addEigenaarToLabels(username) {
-      this.labels = this.labels.map(item => {
-        // Add the 'eigenaar' property to each object
-        return {...item, eigenaar: username};
-      })
-    },
-
     async logout() {
       await this.RemoveTokens();
 
@@ -129,14 +115,12 @@ export const store = defineStore('app', {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
-      this.addEigenaarToDefinitions(username);
     },
 
     async getDefinitionsForUser(xmlBronName, username, xmlbronDate) {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions.push(response.data);
-      this.addEigenaarToDefinitions(username);
     },
 
     async getLabels(xmlBronName, username, xmlbronDate) {
@@ -144,7 +128,6 @@ export const store = defineStore('app', {
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
       this.labels = response.data;
-      this.addEigenaarToLabels(username);
       return this.labels
     },
 
@@ -153,7 +136,6 @@ export const store = defineStore('app', {
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
       this.labels.push(response.data);
-      this.addEigenaarToLabels(username);
       return this.labels
     },
 
