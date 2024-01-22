@@ -362,20 +362,24 @@ export default {
     },
 
     loadXML() {
-      if (!this.xmlFile) {
-        return;
-      }
-      this.clearAllWordColours();
-      this.hidden = false;
+      if (!this.xmlFile) return;
 
+      this.readFile(this.xmlFile);
+    },
+
+    readFile(file) {
       const reader = new FileReader();
       reader.onload = async (event) => {
         this.xmlContent = event.target.result;
-        const username = this.getUserFromXML(this.xmlContent); // Extract the username
-
-        await this.parseXML(this.xmlContent);
+        await this.processXMLContent(this.xmlContent);
       };
-      reader.readAsText(this.xmlFile);
+      reader.readAsText(file);
+    },
+
+    async processXMLContent(xmlContent) {
+      const username = this.getUserFromXML(xmlContent);
+      await this.parseXML(xmlContent);
+      this.clearAllWordColours();
       this.showButton = true;
     },
 
