@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col">
         <h2>XML Loader</h2>
-<!--        <input type="file" @change="handleFileChange" />-->
+        <!--        <input type="file" @change="handleFileChange" />-->
         <v-file-input label="File input" @change="handleFileChange"></v-file-input>
       </div>
       <div class="col">
@@ -16,12 +16,6 @@
     </div>
   </div>
   <div>
-<!--    <h2>XML Loader</h2>-->
-<!--    <input type="file" @change="handleFileChange" />-->
-<!--    <div v-if="xmlData">-->
-<!--      &lt;!&ndash;      <pre v-html="formattedXmlData"></pre>&ndash;&gt;-->
-<!--      <p v-html="formattedXmlData"></p>-->
-<!--    </div>-->
   </div>
 </template>
 

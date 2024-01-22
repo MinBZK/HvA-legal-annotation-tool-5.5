@@ -1,14 +1,9 @@
 package com.linkextractor.backend.controllers;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.linkextractor.backend.dto.XmlBronTimeLineDto;
 import com.linkextractor.backend.models.XMLBron;
 import com.linkextractor.backend.respositories.XMLBronRepository;
-
 import com.linkextractor.backend.service.XMLBronService;
-import com.linkextractor.backend.views.Views;
-
-import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,28 +33,29 @@ public class XMLBronController {
     }
 
     @GetMapping("/api/v1/timelinedata/{artikelNaam}")
-    private Iterable<XmlBronTimeLineDto> getAllTimeLineData(@PathVariable String artikelNaam){
+    private Iterable<XmlBronTimeLineDto> getAllTimeLineData(@PathVariable String artikelNaam) {
         System.out.println(artikelNaam);
         return xmlBronRepository.findXmlBronDetailsByArtikelNaam(artikelNaam);
     }
-    
+
     @GetMapping("/api/v1/paginated/")
-    private Page<XMLBron> getAllXmlBronnen(Pageable pageable){
+    private Page<XMLBron> getAllXmlBronnen(Pageable pageable) {
         return xmlBronRepository.findAll(pageable);
     }
 
     @GetMapping("/byName/paginated/{articleName}")
     private Page<XMLBron> getXmlBronnenByArticleNamePaginated(
-        @PathVariable String articleName,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
-    ){
+            @PathVariable String articleName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         return xmlBronRepository.findByArtikelNaam(articleName, pageable);
     }
 
     @GetMapping("/byName/v1/{articleName}")
-    private @ResponseBody Iterable<XMLBron> getXMLBronnenByArticleName(@PathVariable String articleName){
+    private @ResponseBody
+    Iterable<XMLBron> getXMLBronnenByArticleName(@PathVariable String articleName) {
         return xmlBronRepository.findByArticlesNameAndDate(articleName);
     }
 
@@ -87,6 +83,7 @@ public class XMLBronController {
 
     @PostMapping("/api/v1/")
     private ResponseEntity<XMLBron> createXMLBron(@RequestBody XMLBron xmlBron) {
+        System.out.println(xmlBron.toString());
         XMLBron toBeSavedXmlBron = xmlBronRepository.save(xmlBron);
 
         URI location = ServletUriComponentsBuilder

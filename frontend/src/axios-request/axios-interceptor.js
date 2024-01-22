@@ -1,69 +1,83 @@
 import axios from "axios";
 import axiosAuth from "@/axios-request/axios-auth";
-import {store} from "@/store/app";
+import { store } from "@/store/app";
 
 let isRefreshing = false; // Flag to track renewal request status
 let refreshSubscribers = []; // Array to hold pending requests that need the new token
 
 const instance = axios.create({
-  //baseURL: import.meta.env.VITE_API_BASE_URL,
   baseURL: "http://localhost:8085/",
   headers: {
     withCredentials: true,
   },
 });
 
-instance.interceptors.response.use((response) => {
+instance.interceptors.response.use(
+  (response) => {
     return response;
-  }, async (error) => {
+  },
+  async (error) => {
     if (error.response.status === 401) {
       // Check if renewal request is already in progress
       if (!isRefreshing) {
         isRefreshing = true;
+
         try {
-          let response = await axiosAuth(
-            {
-              method: 'post',
-              url: '/token/renew',
-              headers: {'Authorization': `Bearer ${store().tokenJWT}`},
-            });
+          console.log("Refreshing token...");
+          let response = await axiosAuth({
+            method: 'post',
+            url: "http://localhost:8085/token/refresh",
+            data: {
+              expiredAccessToken: store().tokenJWT,
+              refreshToken: store().refreshJWT,
+            },
+          });
 
-// Update the token and clear the flag
-          //VueCookies.set('Access-Token', response.data, "7d");
+          // Update the token and clear the flag
+          store().tokenJWT = response.data.accessToken;
+          localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+
+          console.log("Token refresh response:", response);
           isRefreshing = false;
+          console.log("Refreshed Token: " + response.data.accessToken);
 
-          refreshSubscribers.forEach((subscriber) => subscriber());
-          refreshSubscribers = [];
-
+          // Retry the original request with the new token
+          error.config.headers.Authorization = `Bearer ${store().tokenJWT}`;
+          return instance(error.config);
         } catch (renewalError) {
+          console.error("Error refreshing token:", renewalError);
           isRefreshing = false;
-          store().logout();
+          await store().logout();
+          return Promise.reject(renewalError);
         }
       }
 
-// If renewal is in progress, add the request to subscribers
+      // If renewal is in progress, add the request to subscribers
       return new Promise((resolve) => {
         refreshSubscribers.push(() => {
+          error.config.headers.Authorization = `Bearer ${store().tokenJWT}`;
           resolve(instance(error.config));
         });
       });
     }
-// Handle error scenarios
+
+    // Handle other error scenarios
     return Promise.reject(error);
   }
 );
 
-
 instance.interceptors.request.use(
-  config => {
+  (config) => {
     config.headers.common = {
       Authorization: `Bearer ${store().tokenJWT}`,
     };
     return config;
-  }, error => {
+  },
+  (error) => {
     // Do something with request error
     return Promise.reject(error);
-  });
+  }
+);
 
 export default instance;
 
