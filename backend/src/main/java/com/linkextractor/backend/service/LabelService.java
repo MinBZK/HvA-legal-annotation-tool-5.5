@@ -55,6 +55,7 @@ public class LabelService {
         // Step 4: Extract labels from the linkingTables and return them
         return linkingTables.stream()
                 .map(UserLabelXMLTable::getLabel)
+                .peek(label -> label.setUsername(username))
                 .collect(Collectors.toList());
     }
 
