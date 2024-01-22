@@ -6,7 +6,8 @@
     <!-- Anotatie Dialog content -->
     <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
       <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
-        :hoveredWordObject="this.hoveredWordObject" @close="isVisible = false" @annotation-saved="applyAnnotation">
+                       :hoveredWordObject="this.hoveredWordObject" @close="isVisible = false"
+                       @annotation-saved="applyAnnotation">
       </AnnotatieDialog>
     </v-dialog>
 
@@ -37,7 +38,7 @@
                 </v-card>
                 <!-- Xml Export content -->
                 <XmlDownloader v-if="xmlFile" :xmlContent="xmlContent" :defaultFileName="xmlFile.name"
-                  :xml-file="xmlFile"></XmlDownloader>
+                               :xml-file="xmlFile"></XmlDownloader>
               </v-card-text>
             </v-card>
           </v-col>
@@ -55,8 +56,9 @@
                         <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                           <div>
                             <span @mouseleave="hideTooltip" v-for="(word, wordIndex) in part.partWords" :key="wordIndex"
-                              :style="{ backgroundColor: wordColours[word.number] }" @mouseover="handleWordHover(word)"
-                              :id="'word-' + id">
+                                  :style="{ backgroundColor: wordColours[word.number] }"
+                                  @mouseover="handleWordHover(word)"
+                                  :id="'word-' + id">
                               {{ word.name }}
                               <span v-if="wordIndex < part.partWords.length - 1"> </span>
                               <v-tooltip bottom v-if="showTooltip" activator="parent" location="top">
@@ -67,8 +69,8 @@
                               <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                                 <span>{{ subPart.number }}</span>
                                 <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                  :style="{ backgroundColor: wordColours[word.number] }" @mouseleave="hideTooltip"
-                                  @mouseover="handleWordHover(word)" :id="'word-' + id">
+                                      :style="{ backgroundColor: wordColours[word.number] }" @mouseleave="hideTooltip"
+                                      @mouseover="handleWordHover(word)" :id="'word-' + id">
                                   {{ word.name }}
                                   <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
                                   <v-tooltip bottom v-if="showTooltip" activator="parent" location="top">
@@ -172,14 +174,14 @@ import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
 import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
-  components: { AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader },
+  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader},
   data() {
     return {
       timelineData: [
-        { id: 1, name: "Mock data title 1", date: '2023-01-01' },
-        { id: 2, name: "Mock data title 2", date: '2023-01-02' },
-        { id: 3, name: "Mock data title 3", date: '2023-01-02' },
-        { id: 4, name: "Mock data title 3", date: '2023-01-02' },
+        {id: 1, name: "Mock data title 1", date: '2023-01-01'},
+        {id: 2, name: "Mock data title 2", date: '2023-01-02'},
+        {id: 3, name: "Mock data title 3", date: '2023-01-02'},
+        {id: 4, name: "Mock data title 3", date: '2023-01-02'},
       ],
       hidden: true,
       showButton: false,
@@ -192,7 +194,7 @@ export default {
       selectedText: "",
       xmlFile: null,
       xmlContent: null,
-      parsedData: { articles: [] },
+      parsedData: {articles: []},
       showTooltip: false,
       hoveredWord: "",
       matchedWord: "",
@@ -208,23 +210,24 @@ export default {
       labels: {},
       errorMessage: '',
       firstParseCompleted: false,
+      articleNumber: "",
       colourOptions: [
-        { label: 'Rechtssubject', colour: 'rgb(194, 231, 255)' },
-        { label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)' },
-        { label: 'Rechtsobject', colour: 'rgb(152, 190, 241)' },
-        { label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)' },
-        { label: 'Voorwaarde', colour: 'rgb(145, 232, 211)' },
-        { label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)' },
-        { label: 'Variabele', colour: 'rgb(255, 217, 93)' },
-        { label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)' },
-        { label: 'Parameter', colour: 'rgb(255, 180, 180)' },
-        { label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)' },
-        { label: 'Operator', colour: 'rgb(193, 235, 225)' },
-        { label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)' },
-        { label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)' },
-        { label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)' },
-        { label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)' },
-        { label: 'Brondefinitie', colour: 'rgb(246, 246, 246)' },
+        {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
+        {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
+        {label: 'Rechtsobject', colour: 'rgb(152, 190, 241)'},
+        {label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)'},
+        {label: 'Voorwaarde', colour: 'rgb(145, 232, 211)'},
+        {label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)'},
+        {label: 'Variabele', colour: 'rgb(255, 217, 93)'},
+        {label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)'},
+        {label: 'Parameter', colour: 'rgb(255, 180, 180)'},
+        {label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)'},
+        {label: 'Operator', colour: 'rgb(193, 235, 225)'},
+        {label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)'},
+        {label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)'},
+        {label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)'},
+        {label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)'},
+        {label: 'Brondefinitie', colour: 'rgb(246, 246, 246)'},
       ],
     };
   },
@@ -263,7 +266,7 @@ export default {
     },
 
     insertLabelColours(labels) {
-         labels.forEach(label => {
+      labels.forEach(label => {
         let startPosition = label.positie_start;
         let textLength = (label.positie_end - label.positie_start) + 1;
         let matchingLabel = this.colourOptions.find(option => option.label === label.label);
@@ -377,7 +380,7 @@ export default {
     },
 
     parseXML(xmlString) {
-      const xmlObject = xml2js.xml2js(xmlString, { compact: true });
+      const xmlObject = xml2js.xml2js(xmlString, {compact: true});
       this.extractMetaDataXML(xmlObject);
       this.handleParsedData(xmlObject.artikel);
     },
@@ -387,7 +390,7 @@ export default {
       this.errorMessage = "";
 
       try {
-        let { id } = xmlObject.artikel._attributes;
+        let {id} = xmlObject.artikel._attributes;
         let dateMatch = id.match(datePattern);
 
         if (dateMatch) {
@@ -402,68 +405,75 @@ export default {
       }
     },
 
-    // TODO Method should be split up in separate smaller methods
     async handleParsedData(articleNode) {
-      const parsedData = { articles: [] };
+      if (!articleNode) return;
+
+      this.initializeParsedData(articleNode);
+      this.populateAllWords(articleNode);
+      await this.processXMLData();
+    },
+
+    initializeParsedData(articleNode) {
+      this.articleNumber = articleNode.kop._attributes.nr;
+      this.articleTitle = articleNode.kop._text;
+
+      store().loadedXMLIdentifier = this.articleTitle;
+      this.parsedData = {articles: [{number: this.articleNumber, title: this.articleTitle, parts: []}]};
+    },
+
+    populateAllWords(articleNode) {
+      let parsedData = {articles: []};
       let wordIndex = -1; // Internal counter for word index
       let allWords = []; // Array to store all words
 
-      if (articleNode) {
-        const articleNumber = articleNode.kop?.nr?._text?.trim();
-        const articleTitle = articleNode.kop?._text?.trim();
+      const parts = (articleNode.lid || []).map((lidNode) => {
+        const partNumber = lidNode.lidnr?._text?.trim();
+        const partName = lidNode.al?._text?.trim();
 
-        this.articleTitle = articleTitle;
-        store().loadedXMLIdentifier = articleTitle;
+        const partNameWords = partName.split(/\s+/); // Split by whitespace to get individual words
+        const partNameWordsElements = partNameWords.map((word) => ({
+          number: ++wordIndex, // Increment wordIndex for each word
+          name: word.trim(),
+        }));
 
-        const parts = (articleNode.lid || []).map((lidNode) => {
-          const partNumber = lidNode.lidnr?._text?.trim();
-          const partName = lidNode.al?._text?.trim();
+        // Add partNameWordsElements to the allWords array
+        allWords = allWords.concat(partNameWordsElements);
 
-          const partNameWords = partName.split(/\s+/); // Split by whitespace to get individual words
-          const partNameWordsElements = partNameWords.map((word) => ({
+        const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
+          $(liNode).find('li.nr').first();
+          const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
+
+          const subPartName = liNode.al?._text?.trim();
+          const subPartWords = subPartName.split(/\s+/); // Split by whitespace to get individual words
+          const subPartWordElements = subPartWords.map((word) => ({
             number: ++wordIndex, // Increment wordIndex for each word
             name: word.trim(),
           }));
 
-          // Add partNameWordsElements to the allWords array
-          allWords = allWords.concat(partNameWordsElements);
+          // Add subPartWordElements to the allWords array
+          allWords = allWords.concat(subPartWordElements);
 
-          const subParts = (lidNode.lijst?.li || []).map((liNode, index) => {
-            $(liNode).find('li.nr').first();
-            const subPartNumber = String.fromCharCode(97 + index) + '.'; // Convert index to letter (a., b., c., ...)
-
-            const subPartName = liNode.al?._text?.trim();
-            const subPartWords = subPartName.split(/\s+/); // Split by whitespace to get individual words
-            const subPartWordElements = subPartWords.map((word) => ({
-              number: ++wordIndex, // Increment wordIndex for each word
-              name: word.trim(),
-            }));
-
-            // Add subPartWordElements to the allWords array
-            allWords = allWords.concat(subPartWordElements);
-
-            return {
-              number: subPartNumber,
-              name: subPartName,
-              subPartWords: subPartWordElements,
-            };
-          });
-
-          return { number: partNumber, name: partName, partWords: partNameWordsElements, subParts };
+          return {
+            number: subPartNumber,
+            name: subPartName,
+            subPartWords: subPartWordElements,
+          };
         });
 
-        parsedData.articles.push({ number: articleNumber, title: articleTitle, parts });
-      }
+        return {number: partNumber, name: partName, partWords: partNameWordsElements, subParts};
+      });
+      parsedData.articles.push({number: this.articleNumber, title: this.articleTitle, parts});
 
       this.allWordsInXML = allWords;
       this.parsedData = parsedData;
+    },
 
-      if (allWords.length !== 0) {
+    async processXMLData() {
+      if (this.allWordsInXML.length !== 0) {
         await this.checkIfXMLBronExists();
       }
-
       this.hidden = true;
-      await store().getXMLBronnenByNameTimeLine(this.articleTitle)
+      await store().getXMLBronnenByNameTimeLine(this.articleTitle);
       this.timelineDataLive = store().xmlbronnen;
     },
 
