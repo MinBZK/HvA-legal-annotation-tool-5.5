@@ -101,10 +101,6 @@ export default {
             type: Array,
             required: true,
         },
-        changes: {
-            type: Array,
-            required: false,
-        },
         colors: {
             type: Array,
             required: false,
