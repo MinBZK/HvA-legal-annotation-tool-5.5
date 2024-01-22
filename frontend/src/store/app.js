@@ -143,7 +143,6 @@ export const store = defineStore('app', {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
-      console.log(response.data)
       this.labels = response.data;
       this.addEigenaarToLabels(username);
       return this.labels
@@ -160,8 +159,8 @@ export const store = defineStore('app', {
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
       let url = "define/addDefinition";
-      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
-      await this.getDefinitions(xmlBronName, username, xmlbronDate);
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body)
+        .then((e) => this.getDefinitions(xmlBronName, username, xmlbronDate));
     },
 
     async postLabel(body, xmlBronName, username, xmlbronDate) {

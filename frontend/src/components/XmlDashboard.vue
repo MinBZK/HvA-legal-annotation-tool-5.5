@@ -167,7 +167,7 @@ import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
 import Annotatie from "@/components/Annotatie.vue";
 import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
-import { store } from "@/store/app";
+import {store} from "@/store/app";
 import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
 import XmlDownloader from "@/components/XmlDownloader.vue";
 
@@ -255,7 +255,6 @@ export default {
       try {
         let xmlBronId = store().loadedXMLIdentifier;
         let xmlbronDate = store().loadedXMLDate;
-
         await store().getDefinitions(xmlBronId, username, xmlbronDate);
 
       } catch (definitionsError) {
@@ -264,9 +263,7 @@ export default {
     },
 
     insertLabelColours(labels) {
-      this.loadLabelsForArticle();
-      this.$forceUpdate(); // Force the component to re-render
-      labels.forEach(label => {
+         labels.forEach(label => {
         let startPosition = label.positie_start;
         let textLength = (label.positie_end - label.positie_start) + 1;
         let matchingLabel = this.colourOptions.find(option => option.label === label.label);
@@ -292,12 +289,6 @@ export default {
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
 
-        if (!this.firstParseCompleted) {
-          await this.insertLabelColours(store().labels)
-          this.firstParseCompleted = true;
-
-        }
-        this.firstParseCompleted = false;
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
