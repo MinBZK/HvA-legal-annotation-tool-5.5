@@ -123,10 +123,14 @@ export default {
             deleteDialog: false,
             selectedModalItem: {},
             currentIndex: 0,
+<<<<<<< HEAD
             hidden: false,
             changesData: [],
             filterLabels: [],
             wordColours: [],
+=======
+            hidden: true
+>>>>>>> mergebranchmainintotimeline
         };
     },
     props: {

@@ -1,9 +1,13 @@
 image: node:latest
 
+
 stages:
 #  - build
 #  - sonarqube-check
-  - deploy
+#  - deploy
+  - build backend
+  - test backend
+  - deploy backend
 
 #build:
 #  stage: build
@@ -41,19 +45,55 @@ stages:
 #  only:
 #    - main
 
-heroku_deploy:
-  stage: deploy
+#heroku_deploy:
+#  stage: deploy
+#  tags:
+#    - hva
+#  script:
+#    - cd frontend
+#    - npm set progress=off
+#    - npm install
+#    - export NODE_ENV=production
+#    - npm run build
+#    - apt-get update -qy
+#    - apt-get install -y ruby  # Install Ruby
+#    - gem install dpl
+#    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
+#  only:
+#    - main
+
+
+build_job:
+  stage: build backend
   tags:
     - hva
   script:
-    - cd frontend
-    - npm set progress=off
-    - npm install
-    - export NODE_ENV=production
-    - npm run build
+    - cd backend
+    - mvn compile
+  image:
+    name: maven:latest
+
+test_job:
+  stage: test backend
+  tags:
+    - hva
+  script:
+    - cd backend
+    - mvn clean test
+  image:
+    name: maven:latest
+
+deploy_backend:
+  stage: deploy backend
+  script:
+    - cd backend
     - apt-get update -qy
-    - apt-get install -y ruby  # Install Ruby
+    - apt-get install -y ruby
     - gem install dpl
-    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_PRODUCTION_KEY
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_BACKEND --api-key=$HEROKU_PRODUCTION_KEY
+  image:
+    name: maven:latest
   only:
     - main
+  tags:
+    - hva

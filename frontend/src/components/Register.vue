@@ -63,56 +63,64 @@
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      // User registration data
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      username: '',
+    data() {
+        return {
+            // User registration data
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            username: '',
 
-      // Registration status and message
-      registrationStatus: '', // 'success' or 'error'
-      registrationMessage: ''
-    };
-  },
-  computed: {
-    // Computed property to determine the color of the registration status
-    registrationStatusColor() {
-      return this.registrationStatus === 'success' ? 'success' : 'error';
-    }
-  },
-  methods: {
-    // Method to register a new user
-    registerUser() {
-      // User data to be sent to the server
-      const userData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        password: this.password,
-        username: this.username
-      };
+            // Registration status and message
+            registrationStatus: '', // 'success' or 'error'
+            registrationMessage: ''
+        };
+    },
+    computed: {
+        // Computed property to determine the color of the registration status
+        registrationStatusColor() {
+            return this.registrationStatus === 'success' ? 'success' : 'error';
+        }
+    },
+    methods: {
+        // Method to register a new user
+        registerUser() {
+            // Check if any of the required fields is empty
+            if (!this.firstName || !this.lastName || !this.email || !this.password || !this.username) {
+                this.registrationStatus = 'error';
+                this.registrationMessage = 'Vul alle gegevens in';
+                return;
+            }
 
-      // Send a POST request to the registration endpoint
-      axios.post('http://localhost:8085/auth/register', userData)
-          .then(response => {
-            // Handle successful registration
-            this.registrationStatus = 'success';
-            this.registrationMessage = 'Registratie is gelukt';
-            console.log('Registration successful', response.data);
-            // You can redirect the user or perform any other actions on successful registration
-          })
-          .catch(error => {
-            // Handle registration error
-            this.registrationStatus = 'error';
-            this.registrationMessage = 'Email of gebruikersnaam al in gebruik';
-            console.error('Registration failed', error);
-            // You can show a message to the user or perform other actions on registration error
-          });
+            // User data to be sent to the server
+            const userData = {
+                firstname: this.firstName,
+                lastname: this.lastName,
+                email: this.email,
+                password: this.password,
+                username: this.username
+            };
+
+            // Send a POST request to the registration endpoint
+            axios.post('http://localhost:8085/auth/register', userData)
+                .then(response => {
+                    // Handle successful registration
+                    this.registrationStatus = 'success';
+                    this.registrationMessage = 'Registratie is gelukt';
+                    console.log('Registration successful', response.data);
+                    // You can redirect the user or perform any other actions on successful registration
+                })
+                .catch(error => {
+                    // Handle registration error
+                    this.registrationStatus = 'error';
+                    this.registrationMessage = 'Email of gebruikersnaam al in gebruik';
+                    console.error('Registration failed', error);
+                    // You can show a message to the user or perform other actions on registration error
+                });
+            console.log("registrationMessage", this.registrationMessage);
+        }
     }
-  }
 };
 </script>
 

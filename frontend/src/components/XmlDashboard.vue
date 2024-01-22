@@ -38,6 +38,16 @@
                       :disabled="!xmlFile"
                     >XML Laden
                     </v-btn>
+
+                    <!-- Error Alert -->
+                    <v-alert
+                      v-if="errorMessage"
+                      type="error"
+                      dense
+                    >
+                      {{ errorMessage }}
+                    </v-alert>
+
                   </v-card-text>
                 </v-card>
                 <!-- Xml Export content -->
@@ -50,8 +60,13 @@
             </v-card>
           </v-col>
           <v-col col="6">
+<<<<<<< HEAD
             <XMLbronTimeLine :timelineData="timelineDataLive" :articleData="parsedData" :colorOptions="colourOptions"></XMLbronTimeLine>
             <v-card>
+=======
+            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+            <v-card v-if="hidden">
+>>>>>>> mergebranchmainintotimeline
               <v-card-title>XML Content</v-card-title>
               <v-card-text v-if="parsedData.articles.length > 0">
                 <v-scroll-area @mouseup="handleSelection()">
@@ -94,7 +109,6 @@
                                >
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
-
                             </span>
                               </li>
                             </ul>
@@ -174,6 +188,7 @@ export default {
         {id: 3, name: "Mock data title 3", date: '2023-01-02'},
         {id: 4, name: "Mock data title 3", date: '2023-01-02'},
       ],
+      hidden: true,
       timelineDataLive: [],
       isVisible: false,
       selectedText: "",
@@ -192,6 +207,8 @@ export default {
       numberOfWords: 0,
       wordColours: [],
       labels: {},
+      errorMessage: '',
+      firstParseCompleted: false,
       colourOptions: [
         {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
@@ -219,8 +236,8 @@ export default {
       }
       return '';
     },
-
   },
+
   methods: {
     async loadDefinitions() {
       try {
@@ -248,15 +265,24 @@ export default {
     },
 
     insertLabelColours(labels) {
+      this.loadLabelsForArticle();
+      this.$forceUpdate(); // Force the component to re-render
       labels.forEach(label => {
         let startPosition = label.positie_start;
         let textLength = (label.positie_end - label.positie_start) + 1;
-        let matchinglabel = this.colourOptions.find(option => option.label === label.label);
+        let matchingLabel = this.colourOptions.find(option => option.label === label.label);
 
         for (let i = 0; i < textLength; i++) {
-          this.wordColours[startPosition + i] = matchinglabel.colour;
+          this.wordColours[startPosition + i] = matchingLabel.colour;
         }
       })
+    },
+
+    clearAllWordColours() {
+      this.wordColours = [];
+      for (let i = 0; i < this.allWordsInXML.length; i++) {
+        this.wordColours[i] = "white";
+      }
     },
 
     async loadLabelsForArticle() {
@@ -266,11 +292,19 @@ export default {
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
+        if (!this.firstParseCompleted) {
+          setTimeout(async () => {
+            await this.insertLabelColours(store().labels)
+            this.firstParseCompleted = true;
+          }, 100); // 200 milliseconds delay
+        }
+        console.log("wat")
+        this.firstParseCompleted = false;
 
+        this.$forceUpdate(); // Force the component to re-render
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-      this.insertLabelColours(store().labels)
     },
 
     async loadLabelsForArticleForUser(username) {
@@ -285,8 +319,6 @@ export default {
       }
       this.insertLabelColours(store().labels)
     },
-
-
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -329,7 +361,7 @@ export default {
       this.loadAssociatedData();
     },
 
-    RegExp(string) {
+    escapeSpecialCharacters(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
@@ -342,14 +374,15 @@ export default {
       if (!this.xmlFile) {
         return;
       }
+      this.clearAllWordColours();
+      this.hidden = false;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         this.xmlContent = event.target.result;
         const username = this.getUserFromXML(this.xmlContent); // Extract the username
-        // Use the extracted username as needed
-        console.log('Extracted username from file:', username);
-        this.parseXML(this.xmlContent);
+
+        await this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
     },
@@ -362,16 +395,21 @@ export default {
 
     extractMetaDataXML(xmlObject) {
       const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
+      this.errorMessage = "";
 
-      let {id} = xmlObject.artikel._attributes;
-      let dateMatch = id.match(datePattern);
+      try {
+        let {id} = xmlObject.artikel._attributes;
+        let dateMatch = id.match(datePattern);
 
-      if (dateMatch) {
-        dateMatch = dateMatch[0];
-        store().XMLBwbrCode = id;
-        store().loadedXMLDate = dateMatch;
-      } else {
-        console.error("Date not found in the provided XML id:", id);
+        if (dateMatch) {
+          dateMatch = dateMatch[0];
+          store().XMLBwbrCode = id;
+          store().loadedXMLDate = dateMatch;
+        } else {
+          console.error("Date not found in the provided XML id:", id);
+        }
+      } catch (e) {
+        this.errorMessage = "Fout met file inladen, format niet compatibel."
       }
     },
 
@@ -432,9 +470,10 @@ export default {
       this.parsedData = parsedData;
 
       if (allWords.length !== 0) {
-        this.checkIfXMLBronExists();
+        await this.checkIfXMLBronExists();
       }
 
+      this.hidden = true;
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
       this.timelineDataLive = store().xmlbronnen;
     },
@@ -448,7 +487,7 @@ export default {
 
       if (response === 404) {
         let xmlBron = {
-          artikel_naam: this.articleTitle,
+          artikelNaam: this.articleTitle,
           link: `${baseUrl}/${urlBWBR}`,
           definities: [],
           xmlbron_date: xmlbronDate,
@@ -481,7 +520,7 @@ export default {
       // Get the username attribute from the root element
       const username = rootElement.getAttribute('username');
 
-      if (username){
+      if (username) {
         this.loadDefinitionsForUser(username);
         this.loadLabelsForArticleForUser(username);
       }

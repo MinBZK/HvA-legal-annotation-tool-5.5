@@ -18,6 +18,8 @@ export const store = defineStore('app', {
     },
     tokenJWT: JSON.parse(localStorage.getItem('tokenJWT'))
     === undefined ? "" : JSON.parse(localStorage.getItem('tokenJWT')),
+    refreshJWT: JSON.parse(localStorage.getItem('refreshJWT'))
+    === undefined ? "" : JSON.parse(localStorage.getItem('refreshJWT')),
   }),
 
   actions: {
@@ -35,11 +37,15 @@ export const store = defineStore('app', {
       })
     },
 
-    logout() {
+    async logout() {
+      await this.RemoveTokens();
+
       this.user.loggedIn = false;
-      localStorage.setItem('isLoggedIn', JSON.stringify("false"));
-      localStorage.setItem('tokenJWT', JSON.stringify(""));
-      localStorage.setItem('username', JSON.stringify(""));
+
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('tokenJWT');
+      localStorage.removeItem('refreshJWT');
+      localStorage.removeItem('username');
     },
 
     async genericGetRequests(url) {
@@ -161,8 +167,8 @@ export const store = defineStore('app', {
     async postLabel(body, xmlBronName, username, xmlbronDate) {
       let url = "label/addLabel";
       this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body)
-        .then((e)=> this.getLabels(xmlBronName, username, xmlbronDate));
-      },
+        .then((e) => this.getLabels(xmlBronName, username, xmlbronDate));
+    },
 
     async postNewXMLBron(body) {
       this.responseCode = await this.genericPostRequest("XMLBron/api/v1/", body);
@@ -172,7 +178,22 @@ export const store = defineStore('app', {
       try {
         return await axios.post("http://localhost:8085/auth/login", body);
       } catch (error) {
-        throw error; // Re-throw the error to handle it in the component
+        console.error("Error login in", error)
+        throw error;
+      }
+    },
+
+    async RemoveTokens() {
+      try {
+        const body = {
+          accesToken: this.tokenJWT,
+          refreshToken: this.refreshJWT,
+        };
+
+        await axios.post(`http://localhost:8085/auth/logout`, body);
+
+      } catch (error) {
+        console.error('Error removing tokens:', error);
       }
     },
   },
