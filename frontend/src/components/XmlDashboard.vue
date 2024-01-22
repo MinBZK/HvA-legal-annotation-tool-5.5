@@ -60,13 +60,8 @@
             </v-card>
           </v-col>
           <v-col col="6">
-<<<<<<< HEAD
             <XMLbronTimeLine :timelineData="timelineDataLive" :articleData="parsedData" :colorOptions="colourOptions"></XMLbronTimeLine>
-            <v-card>
-=======
-            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
             <v-card v-if="hidden">
->>>>>>> mergebranchmainintotimeline
               <v-card-title>XML Content</v-card-title>
               <v-card-text v-if="parsedData.articles.length > 0">
                 <v-scroll-area @mouseup="handleSelection()">
@@ -207,7 +202,7 @@ export default {
       numberOfWords: 0,
       wordColours: [],
       labels: {},
-      errorMessage: '',
+errorMessage: '',
       firstParseCompleted: false,
       colourOptions: [
         {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
@@ -265,7 +260,7 @@ export default {
     },
 
     insertLabelColours(labels) {
-      this.loadLabelsForArticle();
+this.loadLabelsForArticle();
       this.$forceUpdate(); // Force the component to re-render
       labels.forEach(label => {
         let startPosition = label.positie_start;
@@ -292,7 +287,7 @@ export default {
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
-        if (!this.firstParseCompleted) {
+if (!this.firstParseCompleted) {
           setTimeout(async () => {
             await this.insertLabelColours(store().labels)
             this.firstParseCompleted = true;
@@ -305,6 +300,7 @@ export default {
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
+      this.insertLabelColours(store().labels)
     },
 
     async loadLabelsForArticleForUser(username) {
@@ -374,14 +370,14 @@ export default {
       if (!this.xmlFile) {
         return;
       }
-      this.clearAllWordColours();
+this.clearAllWordColours();
       this.hidden = false;
 
       const reader = new FileReader();
       reader.onload = async (event) => {
         this.xmlContent = event.target.result;
         const username = this.getUserFromXML(this.xmlContent); // Extract the username
-
+        
         await this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
@@ -395,19 +391,19 @@ export default {
 
     extractMetaDataXML(xmlObject) {
       const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
-      this.errorMessage = "";
+this.errorMessage = "";
 
-      try {
-        let {id} = xmlObject.artikel._attributes;
-        let dateMatch = id.match(datePattern);
+try {
+      let {id} = xmlObject.artikel._attributes;
+      let dateMatch = id.match(datePattern);
 
-        if (dateMatch) {
-          dateMatch = dateMatch[0];
-          store().XMLBwbrCode = id;
-          store().loadedXMLDate = dateMatch;
-        } else {
-          console.error("Date not found in the provided XML id:", id);
-        }
+      if (dateMatch) {
+        dateMatch = dateMatch[0];
+        store().XMLBwbrCode = id;
+        store().loadedXMLDate = dateMatch;
+      } else {
+        console.error("Date not found in the provided XML id:", id);
+}
       } catch (e) {
         this.errorMessage = "Fout met file inladen, format niet compatibel."
       }
@@ -473,7 +469,7 @@ export default {
         await this.checkIfXMLBronExists();
       }
 
-      this.hidden = true;
+this.hidden = true;
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
       this.timelineDataLive = store().xmlbronnen;
     },
