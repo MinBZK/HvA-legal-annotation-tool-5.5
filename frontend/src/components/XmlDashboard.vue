@@ -38,6 +38,16 @@
                       :disabled="!xmlFile"
                     >XML Laden
                     </v-btn>
+
+                    <!-- Error Alert -->
+                    <v-alert
+                      v-if="errorMessage"
+                      type="error"
+                      dense
+                    >
+                      {{ errorMessage }}
+                    </v-alert>
+
                   </v-card-text>
                 </v-card>
                 <!-- Xml Export content -->
@@ -94,7 +104,6 @@
                                >
                                      {{ matchedWord.definitie }}
                         </v-tooltip>
-
                             </span>
                               </li>
                             </ul>
@@ -192,6 +201,7 @@ export default {
       numberOfWords: 0,
       wordColours: [],
       labels: {},
+      errorMessage: '',
       colourOptions: [
         {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
         {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
@@ -219,8 +229,8 @@ export default {
       }
       return '';
     },
-
   },
+
   methods: {
     async loadDefinitions() {
       try {
@@ -266,11 +276,11 @@ export default {
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
-
+        this.insertLabelColours(store().labels)
+        this.$forceUpdate(); // Force the component to re-render
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
-      this.insertLabelColours(store().labels)
     },
 
     async loadLabelsForArticleForUser(username) {
@@ -285,8 +295,6 @@ export default {
       }
       this.insertLabelColours(store().labels)
     },
-
-
 
     handleSelection() {
       this.selectedText = window.getSelection().toString().trim();
@@ -329,7 +337,7 @@ export default {
       this.loadAssociatedData();
     },
 
-    RegExp(string) {
+    escapeSpecialCharacters(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
@@ -347,8 +355,7 @@ export default {
       reader.onload = (event) => {
         this.xmlContent = event.target.result;
         const username = this.getUserFromXML(this.xmlContent); // Extract the username
-        // Use the extracted username as needed
-        console.log('Extracted username from file:', username);
+
         this.parseXML(this.xmlContent);
       };
       reader.readAsText(this.xmlFile);
@@ -362,16 +369,21 @@ export default {
 
     extractMetaDataXML(xmlObject) {
       const datePattern = /\b\d{4}-\d{2}-\d{2}\b/;
+      this.errorMessage = "";
 
-      let {id} = xmlObject.artikel._attributes;
-      let dateMatch = id.match(datePattern);
+      try {
+        let {id} = xmlObject.artikel._attributes;
+        let dateMatch = id.match(datePattern);
 
-      if (dateMatch) {
-        dateMatch = dateMatch[0];
-        store().XMLBwbrCode = id;
-        store().loadedXMLDate = dateMatch;
-      } else {
-        console.error("Date not found in the provided XML id:", id);
+        if (dateMatch) {
+          dateMatch = dateMatch[0];
+          store().XMLBwbrCode = id;
+          store().loadedXMLDate = dateMatch;
+        } else {
+          console.error("Date not found in the provided XML id:", id);
+        }
+      } catch (e) {
+        this.errorMessage = "Fout met file inladen, format niet compatibel."
       }
     },
 
@@ -432,7 +444,7 @@ export default {
       this.parsedData = parsedData;
 
       if (allWords.length !== 0) {
-        this.checkIfXMLBronExists();
+        await this.checkIfXMLBronExists();
       }
 
       await store().getXMLBronnenByNameTimeLine(this.articleTitle)
@@ -448,7 +460,7 @@ export default {
 
       if (response === 404) {
         let xmlBron = {
-          artikel_naam: this.articleTitle,
+          artikelNaam: this.articleTitle,
           link: `${baseUrl}/${urlBWBR}`,
           definities: [],
           xmlbron_date: xmlbronDate,
@@ -481,7 +493,7 @@ export default {
       // Get the username attribute from the root element
       const username = rootElement.getAttribute('username');
 
-      if (username){
+      if (username) {
         this.loadDefinitionsForUser(username);
         this.loadLabelsForArticleForUser(username);
       }

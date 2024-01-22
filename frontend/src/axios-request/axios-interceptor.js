@@ -33,11 +33,11 @@ instance.interceptors.response.use(
             },
           });
 
-          console.log("Token refresh response:", response);
-
           // Update the token and clear the flag
           store().tokenJWT = response.data.accessToken;
           localStorage.setItem("tokenJWT", JSON.stringify(store().tokenJWT));
+
+          console.log("Token refresh response:", response);
           isRefreshing = false;
           console.log("Refreshed Token: " + response.data.accessToken);
 

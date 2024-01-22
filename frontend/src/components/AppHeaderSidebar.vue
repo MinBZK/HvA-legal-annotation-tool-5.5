@@ -7,7 +7,7 @@
       <v-toolbar-title>Dashboard</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="!isLoggedIn" text @click="login">Login</v-btn>
-      <v-btn v-else text @click="logout">Logout</v-btn>
+      <v-btn v-else text @click="logout">Log uit</v-btn>
     </v-app-bar>
 
     <!-- Sidebar -->
