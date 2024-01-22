@@ -1,7 +1,5 @@
 # LinkeXtractor
 
-# LinkeXtractor
-
 ## Setup
 Voor dat aan dit project gewerkt kan worden zijn een aantal zaken belangrijk om te weten:
 

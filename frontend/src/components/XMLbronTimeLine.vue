@@ -18,7 +18,7 @@
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="deleteDialog" max-width="400">
+                        <v-dialog v-model="deleteDialog" max-width="900">
                             <v-card>
                                 <v-card-title class="headline">Warning</v-card-title>
                                 <v-card-text>
@@ -33,28 +33,39 @@
                         <v-btn color="blue" @click="openModal(timeLineItem)">
                             <v-icon>mdi-eye</v-icon>
                         </v-btn>
-                        <v-dialog v-model="modalOpen" max-width="600">
-                            <v-card>
-                                <v-card-title>
-                                    {{ selectedModalItem.artikelNaam }}
-                                </v-card-title>
-                                <v-card-subtitle>
-                                    <p>Naam: {{ selectedModalItem.firstname }} {{ selectedModalItem.lastname }}</p>
-                                    <p>Artikel datum: {{ selectedModalItem.xmlbronDate }}</p>
-                                    <p>Bewerkt op: {{ formatDate(selectedModalItem.date) }}</p>
-                                </v-card-subtitle>
-                                <v-card-text>
-                                    Full text description
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-btn color="black" class="ma-2" @click="closeModal">
-                                        <v-icon start icon="mdi-minus-circle">
-                                        </v-icon>
-                                        Close</v-btn>
-                                    <v-btn color="blue" class="ma-2">
-                                        <v-icon start icon="mdi-pencil">
-                                        </v-icon>Edit</v-btn>
-                                </v-card-actions>
+                        <v-dialog v-model="modalOpen" full-screen>
+                            <v-card class="article-modal">
+                                <v-row>
+                                    <v-col cols="12">
+                                        <p class="text-h6">Bewerkinginfo</p>
+                                        <p class="text-h8">Naam: {{ selectedModalItem.firstname }} - {{ selectedModalItem.lastname }}</p>
+                                        <p class="text-h8">Bewerking gedaan op {{ formatDate(selectedModalItem.date) }}</p>
+                                    </v-col>
+                                </v-row>
+                                <div class="formatted-xml">
+                                    <v-row>
+                                        <v-col cols="6" md="6">
+                                            <h2 class="text-h6">Aanpassingen Artikel</h2>
+                                            <ModalArticleComponent :articles="articleData.articles" 
+                                            :colors="wordColours"
+                                            ></ModalArticleComponent>
+                                        </v-col>
+                                        <v-col cols="6" md="6">
+                                            <h2 class="text-h6">Origineel Artikel</h2>
+                                            <ModalArticleComponent :articles="articleData.articles"></ModalArticleComponent>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-card-actions>
+                                                <v-btn color="black" class="ma-2" @click="closeModal">
+                                                    <v-icon start icon="mdi-minus-circle">
+                                                    </v-icon>
+                                                    Close</v-btn>
+                                            </v-card-actions>
+                                        </v-col>
+                                    </v-row>
+                                </div>
                             </v-card>
                         </v-dialog>
                     </v-card-actions>
@@ -92,19 +103,29 @@
     text-align: center;
 }
 
-.timeline-navbar {
 
-}
+/* .article-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+} */
 </style>
 <script>
 import axios from "axios";
+import ModalArticleComponent from "./ModalArticleComponent.vue";
+import {store} from "@/store/app";
 export default {
+    components: { ModalArticleComponent },
     data() {
         return {
             modalOpen: false,
             deleteDialog: false,
             selectedModalItem: {},
             currentIndex: 0,
+            changesData: [],
+            filterLabels: [],
+            wordColours: [],
             hidden: true
         };
     },
@@ -113,6 +134,14 @@ export default {
             type: Array,
             required: true
         },
+        articleData: {
+            type: Object,
+            required: true,
+        },
+        colorOptions: {
+            type: Array,
+            required: true,
+        }
     },
     computed: {
         TimelineData() {
@@ -122,10 +151,61 @@ export default {
             })
             return this.timelineData.slice(this.currentIndex, this.currentIndex + 3)
         }
+        
     },
     methods: {
-        formatDate(date){
-            return date.toLocaleDateString('en-Us',{
+        async loadLabelsForSelectedArticle(currentModalData, changes){
+            try {
+                let articleBronName = currentModalData.artikelNaam;
+                let username = currentModalData.username;
+                let articleDate = store().loadedXMLDate;
+                
+                await store().getLabels(articleBronName, username, articleDate)
+            } catch(labelsError) {
+                console.error("error getting labels:", labelsError)
+            }
+
+            console.log(store().labels)
+            console.log(changes)
+
+            this.filterLabels = store().labels.filter(label => 
+            changes.some(item => item.woord === label.woord)
+            )
+
+            this.insertLabelColours(this.filterLabels)
+        },
+
+        insertLabelColours(labels){
+            labels.forEach(label => {
+                let startPosition = label.positie_start;
+                let textLength = (label.positie_end - label.positie_start) + 1;
+                let matchinglabel = this.colorOptions.find(option => option.label == label.label);
+
+                for(let i = 0; i < textLength; i++){
+                    this.wordColours[startPosition + i] = matchinglabel.colour;
+                }
+            });    
+        },
+
+        findChangesInTimelineData(timeLineData){
+            timeLineData.forEach(item => {
+                const match = this.selectedModalItem.date == item.date;
+                if (match){
+                    const updatedItem = {
+                        ...item,
+                        color: true,
+
+                    }
+                    this.changesData.push(updatedItem)
+                }
+            });
+            console.log(this.changesData)
+            this.loadLabelsForSelectedArticle(this.selectedModalItem, this.changesData);
+
+        },
+
+        formatDate(date) {
+            return date.toLocaleDateString('en-Us', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -134,9 +214,11 @@ export default {
                 hour12: false
             });
         },
+
         openModal(item) {
             this.modalOpen = true;
             this.selectedModalItem = item;
+            this.findChangesInTimelineData(this.timelineData, this.articleData.articles)
         },
         //role check needs to be added
         showDeleteAlert(item) {
@@ -165,7 +247,7 @@ export default {
         editArticle() {
             return null;
         },
-        hide(){
+        hide() {
             this.hidden = !this.hidden;
             console.log(this.hidden)
         },

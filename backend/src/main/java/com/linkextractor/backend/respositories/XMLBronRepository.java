@@ -19,7 +19,7 @@ public interface XMLBronRepository extends CrudRepository<XMLBron, Integer> {
 
     @Query("SELECT new com.linkextractor.backend.dto.XmlBronTimeLineDto(" +
     "xm.xmlBronId, xm.artikelNaam, xm.xmlbron_date, " +
-    "us.firstname, us.lastname, us.userId, d.date) " +
+    "us.firstname, us.lastname, us.userId, d.date, d.woord, d.definitie, d.positie_end, d.positie_start, us.username) " +
     "FROM XMLBron xm " +
     "INNER JOIN xm.userDefinitionXMLTables ud " +
     "INNER JOIN ud.user us "+

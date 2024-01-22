@@ -11,9 +11,15 @@ public class XmlBronTimeLineDto {
     private String lastname;
     private Integer userId;
     private LocalDateTime date;
-    
+    private String woord;
+    private String definitie;
+    private Integer positie_end;
+    private Integer positie_start;
+    private String username;
+
     public XmlBronTimeLineDto(Integer xmlbron_id, String artikel_naam, LocalDate xmlbronDate, String firstname,
-            String lastname, Integer userId, LocalDateTime date) {
+            String lastname, Integer userId, LocalDateTime date, String woord, String definitie, Integer positie_end,
+            Integer positie_start, String username) {
         this.xmlbron_id = xmlbron_id;
         this.artikel_naam = artikel_naam;
         this.xmlbronDate = xmlbronDate;
@@ -21,7 +27,13 @@ public class XmlBronTimeLineDto {
         this.lastname = lastname;
         this.userId = userId;
         this.date = date;
+        this.woord = woord;
+        this.definitie = definitie;
+        this.positie_end = positie_end;
+        this.positie_start = positie_start;
+        this.username = username;
     }
+
 
     public XmlBronTimeLineDto() {
     }
@@ -82,6 +94,58 @@ public class XmlBronTimeLineDto {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+
+    public String getWoord() {
+        return woord;
+    }
+
+
+    public void setWoord(String woord) {
+        this.woord = woord;
+    }
+
+
+    public String getDefinitie() {
+        return definitie;
+    }
+
+
+    public void setDefinitie(String definitie) {
+        this.definitie = definitie;
+    }
+
+
+    public Integer getPositie_end() {
+        return positie_end;
+    }
+
+
+    public void setPositie_end(Integer positie_end) {
+        this.positie_end = positie_end;
+    }
+
+
+    public Integer getPositie_start() {
+        return positie_start;
+    }
+
+
+    public void setPositie_start(Integer positie_start) {
+        this.positie_start = positie_start;
+    }
+
+
+    public String getUsername() {
+        return username;
+    }
+
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    
 
     // Constructor, getters and setters
 

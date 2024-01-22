@@ -6,9 +6,7 @@
     <!-- Anotatie Dialog content -->
     <v-dialog max-width="50%" max-height="80vh" v-model="isVisible">
       <AnnotatieDialog :isVisible="isVisible" :selectedText="selectedText" :allWordsInXML="allWordsInXML"
-                       :hoveredWordObject="this.hoveredWordObject"
-                       @close="isVisible=false"
-                       @annotation-saved="applyAnnotation">
+        :hoveredWordObject="this.hoveredWordObject" @close="isVisible = false" @annotation-saved="applyAnnotation">
       </AnnotatieDialog>
     </v-dialog>
 
@@ -26,41 +24,26 @@
                 <v-card>
                   <v-card-title>XML Laden</v-card-title>
                   <v-card-text>
-                    <v-file-input
-                      label="Selecteer XML-bestand"
-                      accept=".xml"
-                      @change="handleFileChange"
-                    ></v-file-input>
-                    <v-btn
-                      color="primary"
-                      variant="elevated"
-                      @click="loadXML"
-                      :disabled="!xmlFile"
-                    >XML Laden
+                    <v-file-input label="Selecteer XML-bestand" accept=".xml" @change="handleFileChange"></v-file-input>
+                    <v-btn color="primary" variant="elevated" @click="loadXML" :disabled="!xmlFile">XML Laden
                     </v-btn>
 
                     <!-- Error Alert -->
-                    <v-alert
-                      v-if="errorMessage"
-                      type="error"
-                      dense
-                    >
+                    <v-alert v-if="errorMessage" type="error" dense>
                       {{ errorMessage }}
                     </v-alert>
 
                   </v-card-text>
                 </v-card>
                 <!-- Xml Export content -->
-                <XmlDownloader v-if="xmlFile"
-                               :xmlContent="xmlContent"
-                               :defaultFileName="xmlFile.name"
-                               :xml-file="xmlFile"
-                ></XmlDownloader>
+                <XmlDownloader v-if="xmlFile" :xmlContent="xmlContent" :defaultFileName="xmlFile.name"
+                  :xml-file="xmlFile"></XmlDownloader>
               </v-card-text>
             </v-card>
           </v-col>
           <v-col col="6">
-            <XMLbronTimeLine :timelineData="timelineDataLive"></XMLbronTimeLine>
+            <XMLbronTimeLine :timelineData="timelineDataLive" :articleData="parsedData" :colorOptions="colourOptions">
+            </XMLbronTimeLine>
             <v-card v-if="hidden">
               <v-card-title>XML Content</v-card-title>
               <v-card-text v-if="parsedData.articles.length > 0">
@@ -71,40 +54,27 @@
                       <ol>
                         <li v-for="(part, partIndex) in article.parts" :key="partIndex">
                           <div>
-                        <span @mouseleave="hideTooltip"
-                              v-for="(word, wordIndex) in part.partWords"
-                              :key="wordIndex"
-                              :style="{ backgroundColor: wordColours[word.number] }"
-                              @mouseover="handleWordHover(word)"
-                              :id="'word-' + id"
-                        >
-                          {{ word.name }}
-                          <span v-if="wordIndex < part.partWords.length - 1"> </span>
-                           <v-tooltip bottom v-if="showTooltip"
-                                      activator="parent"
-                                      location="top"
-                           >
-                                     {{ matchedWord.definitie }}
-                        </v-tooltip>
-                        </span>
+                            <span @mouseleave="hideTooltip" v-for="(word, wordIndex) in part.partWords" :key="wordIndex"
+                              :style="{ backgroundColor: wordColours[word.number] }" @mouseover="handleWordHover(word)"
+                              :id="'word-' + id">
+                              {{ word.name }}
+                              <span v-if="wordIndex < part.partWords.length - 1"> </span>
+                              <v-tooltip bottom v-if="showTooltip" activator="parent" location="top">
+                                {{ matchedWord.definitie }}
+                              </v-tooltip>
+                            </span>
                             <ul>
-                              <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex"
-                              >
+                              <li v-for="(subPart, subPartIndex) in part.subParts" :key="subPartIndex">
                                 <span>{{ subPart.number }}</span>
                                 <span v-for="(word, wordIndex) in subPart.subPartWords" :key="wordIndex"
-                                      :style="{ backgroundColor: wordColours[word.number] }"
-                                      @mouseleave="hideTooltip" @mouseover="handleWordHover(word)"
-                                      :id="'word-' + id"
-                                >
-                              {{ word.name }}
-                              <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
-                               <v-tooltip bottom v-if="showTooltip"
-                                          activator="parent"
-                                          location="top"
-                               >
-                                     {{ matchedWord.definitie }}
-                        </v-tooltip>
-                            </span>
+                                  :style="{ backgroundColor: wordColours[word.number] }" @mouseleave="hideTooltip"
+                                  @mouseover="handleWordHover(word)" :id="'word-' + id">
+                                  {{ word.name }}
+                                  <span v-if="wordIndex < subPart.subPartWords.length - 1"> </span>
+                                  <v-tooltip bottom v-if="showTooltip" activator="parent" location="top">
+                                    {{ matchedWord.definitie }}
+                                  </v-tooltip>
+                                </span>
                               </li>
                             </ul>
                           </div>
@@ -137,7 +107,7 @@
                 </v-card-text>
                 <v-card-actions>
                   <!-- Print button -->
-<!--                  <v-btn @click="printCardContent" color="primary">Print</v-btn>-->
+                  <!--                  <v-btn @click="printCardContent" color="primary">Print</v-btn>-->
                 </v-card-actions>
               </v-card>
               <v-btn v-if="showCard" @click="printCardContent" color="primary">Print samenvatting</v-btn>
@@ -151,19 +121,22 @@
 </template>
 
 <style scoped>
-
 /* Add custom margin classes */
 .mb-3 {
-  margin-bottom: 1rem; /* You can adjust this value as needed */
+  margin-bottom: 1rem;
+  /* You can adjust this value as needed */
 }
 
 .mt-3 {
-  margin-top: 1rem; /* You can adjust this value as needed */
+  margin-top: 1rem;
+  /* You can adjust this value as needed */
 }
 
 .formatted-xml {
-  margin: 0; /* Remove default margin */
-  line-height: 1.5; /* Adjust line height for better readability */
+  margin: 0;
+  /* Remove default margin */
+  line-height: 1.5;
+  /* Adjust line height for better readability */
 }
 
 .formatted-xml h3 {
@@ -194,19 +167,19 @@ import xml2js from "xml-js";
 import AnnotatieDialog from "@/components/Annotatie";
 import Annotatie from "@/components/Annotatie.vue";
 import XMLbronTimeLine from "@/components/XMLbronTimeLine.vue";
-import {store} from "@/store/app";
+import { store } from "@/store/app";
 import AppHeaderSidebar from "@/components/AppHeaderSidebar.vue";
 import XmlDownloader from "@/components/XmlDownloader.vue";
 
 export default {
-  components: {AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader},
+  components: { AnnotatieDialog, Annotatie, XMLbronTimeLine, AppHeaderSidebar, XmlDownloader },
   data() {
     return {
       timelineData: [
-        {id: 1, name: "Mock data title 1", date: '2023-01-01'},
-        {id: 2, name: "Mock data title 2", date: '2023-01-02'},
-        {id: 3, name: "Mock data title 3", date: '2023-01-02'},
-        {id: 4, name: "Mock data title 3", date: '2023-01-02'},
+        { id: 1, name: "Mock data title 1", date: '2023-01-01' },
+        { id: 2, name: "Mock data title 2", date: '2023-01-02' },
+        { id: 3, name: "Mock data title 3", date: '2023-01-02' },
+        { id: 4, name: "Mock data title 3", date: '2023-01-02' },
       ],
       hidden: true,
       showButton: false,
@@ -219,7 +192,7 @@ export default {
       selectedText: "",
       xmlFile: null,
       xmlContent: null,
-      parsedData: {articles: []},
+      parsedData: { articles: [] },
       showTooltip: false,
       hoveredWord: "",
       matchedWord: "",
@@ -236,22 +209,22 @@ export default {
       errorMessage: '',
       firstParseCompleted: false,
       colourOptions: [
-        {label: 'Rechtssubject', colour: 'rgb(194, 231, 255)'},
-        {label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)'},
-        {label: 'Rechtsobject', colour: 'rgb(152, 190, 241)'},
-        {label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)'},
-        {label: 'Voorwaarde', colour: 'rgb(145, 232, 211)'},
-        {label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)'},
-        {label: 'Variabele', colour: 'rgb(255, 217, 93)'},
-        {label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)'},
-        {label: 'Parameter', colour: 'rgb(255, 180, 180)'},
-        {label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)'},
-        {label: 'Operator', colour: 'rgb(193, 235, 225)'},
-        {label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)'},
-        {label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)'},
-        {label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)'},
-        {label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)'},
-        {label: 'Brondefinitie', colour: 'rgb(246, 246, 246)'},
+        { label: 'Rechtssubject', colour: 'rgb(194, 231, 255)' },
+        { label: 'Rechtsbetrekking', colour: 'rgb(112, 164, 255)' },
+        { label: 'Rechtsobject', colour: 'rgb(152, 190, 241)' },
+        { label: 'Rechtsfeit', colour: 'rgb(151, 214, 254)' },
+        { label: 'Voorwaarde', colour: 'rgb(145, 232, 211)' },
+        { label: 'Afleidingsregel', colour: 'rgb(255, 122, 122)' },
+        { label: 'Variabele', colour: 'rgb(255, 217, 93)' },
+        { label: 'Variabelewaarde', colour: 'rgb(255, 243, 128)' },
+        { label: 'Parameter', colour: 'rgb(255, 180, 180)' },
+        { label: 'Parameterwaarde', colour: 'rgb(255, 216, 239)' },
+        { label: 'Operator', colour: 'rgb(193, 235, 225)' },
+        { label: 'Tijdsaanduiding', colour: 'rgb(216, 176, 249)' },
+        { label: 'Plaatsaanduiding', colour: 'rgb(239, 202, 246)' },
+        { label: 'Delegatiebevoegdheid', colour: 'rgb(206, 206, 206)' },
+        { label: 'Delegatieinvulling', colour: 'rgb(226, 226, 226)' },
+        { label: 'Brondefinitie', colour: 'rgb(246, 246, 246)' },
       ],
     };
   },
@@ -318,19 +291,17 @@ export default {
         let xmlbronDate = store().loadedXMLDate;
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
-        if (!this.firstParseCompleted) {
 
-            await this.insertLabelColours(store().labels)
-            this.firstParseCompleted = true;
+        if (!this.firstParseCompleted) {
+          await this.insertLabelColours(store().labels)
+          this.firstParseCompleted = true;
 
         }
-
         this.firstParseCompleted = false;
-
-
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
+      this.insertLabelColours(store().labels);
     },
 
     async loadLabelsForArticleForUser(username) {
@@ -415,7 +386,7 @@ export default {
     },
 
     parseXML(xmlString) {
-      const xmlObject = xml2js.xml2js(xmlString, {compact: true});
+      const xmlObject = xml2js.xml2js(xmlString, { compact: true });
       this.extractMetaDataXML(xmlObject);
       this.handleParsedData(xmlObject.artikel);
     },
@@ -425,7 +396,7 @@ export default {
       this.errorMessage = "";
 
       try {
-        let {id} = xmlObject.artikel._attributes;
+        let { id } = xmlObject.artikel._attributes;
         let dateMatch = id.match(datePattern);
 
         if (dateMatch) {
@@ -442,7 +413,7 @@ export default {
 
     // TODO Method should be split up in separate smaller methods
     async handleParsedData(articleNode) {
-      const parsedData = {articles: []};
+      const parsedData = { articles: [] };
       let wordIndex = -1; // Internal counter for word index
       let allWords = []; // Array to store all words
 
@@ -487,10 +458,10 @@ export default {
             };
           });
 
-          return {number: partNumber, name: partName, partWords: partNameWordsElements, subParts};
+          return { number: partNumber, name: partName, partWords: partNameWordsElements, subParts };
         });
 
-        parsedData.articles.push({number: articleNumber, title: articleTitle, parts});
+        parsedData.articles.push({ number: articleNumber, title: articleTitle, parts });
       }
 
       this.allWordsInXML = allWords;
