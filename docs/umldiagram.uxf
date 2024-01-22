@@ -1,0 +1,179 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>320</x><y>50</y><w>210</w><h>130</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Afleidingsregel
+--
+-ar_id: int
+-ar_naam: String
+-ar_definitie: String
+-variabelen: Arrayllist&lt;Variable&gt;
+-operators: Arraylist&lt;Operator&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1370</x><y>440</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Rechtsbetrekking
+--
+-rb_code: String
+-rb_naam: String
+-rb_definitie: String
+-ondersoort: Ondersoort
+-hoofdsoort: Hoofdsoort
+-rechtssubject: Rechtssubject
+-rechtssobject: Rechtsobject
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1360</x><y>720</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Rechtsobject
+--
+-ro_code: String
+-ro_naam: String
+-specialisatie: boolean
+-ro_definitie: String
+-rechtsbetrekking_ro: Rechtsbetrekking
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>680</x><y>170</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Rechtsfeit
+--
+-rf_code: String
+-rf_naam: String
+-tijds_aanduiding: String
+-plaats_aanduiding: String
+-rf_definitie: String
+-voorwaardes: ArrayList&lt;Voorwaarde&gt;
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>260</x><y>870</y><w>210</w><h>170</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Definitie
+--
+-id: int
+-woord: String
+-definitie: String
+-positie_start: int
+-positie_end: int
+-date: LocalDateTime
+-linkingTables: Set&lt;UserDefinitionXMLTable&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>30</y><w>210</w><h>170</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Operator
+--
+-op_id: int
+-op_naam: String
+-op_type: String
+-op_definitie: String
+-afleidingsregel_op: Afleidingsregel
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>680</x><y>650</y><w>260</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Label
+--
+-id: int
+-woord: String
+-label: String
+-positie_start: int
+-positie_end: int
+-date: LocalDateTime
+-linkingTables: Set&lt;UserLabelXMLTable&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1370</x><y>160</y><w>240</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Enumeration&gt;&gt;
+enums:Ondersoort
+--
+KA
+ANI
+ZA
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>30</x><y>550</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Role
+--
+-roleId: int
+-authority: String
+-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>990</x><y>430</y><w>230</w><h>200</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Rechtssubject
+--
+-rs_code: String
+-rs_naam: String
+-specialisatie: Boolean
+-rs_definitie: String
+-rechtssubjecten: ArrayList&lt;Rechtssubject&gt;
+-rechtsbtrekking: Rechtsbetrekking
+-voorwaardes: ArrayList&lt;Voorwaarde&gt;
+-xmlBron: XMLBron
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>530</y><w>210</w><h>240</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::User
+--
+-userId: int
+-username: String
+-password: String
+-firstname: String
+-lastname: String
+-email: String
+-linkingTables: Set&lt;UserDefinitionXMLTable&gt;
+-authorities: Set&lt;Role&gt;
+-
++isAccountNonExpired(): boolean
++isAccountNonLocked(): boolean
++isCredentialsNonExpired(): boolean
++isEnabled(): boolean
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>670</x><y>890</y><w>200</w><h>130</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::UserDefinitionTable
+--
+-id: int
+-definitie: Definitie
+-user: User
+-xmlbron: XMLBron
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>450</x><y>0</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Variable
+--
+-var_id: int
+-var_naam: String
+-var_definitie: String
+-afleidingsregel_var: Afleidingsregel
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>680</x><y>430</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::Voorwaarde
+--
+-id: int
+-naam: string
+-voldaan: boolean
+-vw_definitie: String
+-rechtssubject_vw: Rechtssubject
+-rechtsfeit_vw: Rechtsfeit
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1060</x><y>850</y><w>230</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Entity&gt;&gt;
+Models::XMLBron
+--
+-xmBronId: int
+-artikelNaam: String
+-xmlbron_data: LocalDate
+-link: String
+-rechtssubject: Rechtssubject
+-userDefinitionXMLTables: Set&lt;UserDefinitionXMLTable&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>20</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Enumeration&gt;&gt;
+enums:Roles
+--
+USER
+ADMIN
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1150</x><y>160</y><w>210</w><h>190</h></coordinates><panel_attributes>&lt;&lt;Enumeration&gt;&gt;
+enums:Hoofdsoort
+--
+aanspraak
+verlof
+bevoegdheid</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>650</y><w>210</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=1..n
+</panel_attributes><additional_attributes>10;20;190;20</additional_attributes></element><element><id>Relation</id><coordinates><x>460</x><y>960</y><w>230</w><h>70</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>10;10;210;50</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>950</y><w>220</w><h>80</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>200;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>620</x><y>720</y><w>120</w><h>190</h></coordinates><panel_attributes>lt=-
+m2=1..n
+m1=0..1</panel_attributes><additional_attributes>90;170;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1210</x><y>530</y><w>180</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes><additional_attributes>10;10;160;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1090</x><y>620</y><w>100</w><h>250</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes><additional_attributes>80;230;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>880</x><y>530</y><w>130</w><h>40</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>110;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1460</x><y>620</y><w>40</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>1260</x><y>340</y><w>150</w><h>120</h></coordinates><panel_attributes>lt=-
+m1=0.1
+m2=0.1</panel_attributes><additional_attributes>130;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1430</x><y>340</y><w>150</w><h>120</h></coordinates><panel_attributes>lt=-
+m1=0.1
+m2=0.1</panel_attributes><additional_attributes>130;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>790</x><y>830</y><w>50</w><h>80</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0.1</panel_attributes><additional_attributes>10;10;20;60</additional_attributes></element><element><id>Relation</id><coordinates><x>780</x><y>350</y><w>50</w><h>100</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>470</x><y>40</y><w>90</w><h>110</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>60;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>290</x><y>40</y><w>80</w><h>180</h></coordinates><panel_attributes>lt=-
+m1=1..n
+m2=0..1</panel_attributes><additional_attributes>10;160;50;10</additional_attributes></element></diagram>
