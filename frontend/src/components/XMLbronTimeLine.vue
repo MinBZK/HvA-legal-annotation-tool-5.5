@@ -105,7 +105,7 @@ export default {
             deleteDialog: false,
             selectedModalItem: {},
             currentIndex: 0,
-            hidden: false
+            hidden: true
         };
     },
     props: {
