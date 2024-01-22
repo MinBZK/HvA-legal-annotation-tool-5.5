@@ -319,15 +319,15 @@ export default {
 
         await store().getLabels(xmlBronId, username, xmlbronDate);
         if (!this.firstParseCompleted) {
-          setTimeout(async () => {
+
             await this.insertLabelColours(store().labels)
             this.firstParseCompleted = true;
-          }, 100); // 200 milliseconds delay
+
         }
-        console.log("wat")
+
         this.firstParseCompleted = false;
 
-        this.$forceUpdate(); // Force the component to re-render
+
       } catch (labelsError) {
         console.error('Error getting labels:', labelsError);
       }
@@ -594,14 +594,10 @@ export default {
 
 
     openCard() {
-      // Set filteredData based on your logic
       this.mergedData = this.getCurrentAnnotations();
-
-      console.log("mergedData", this.filteredData);
       this.showCard = true;
     },
     printCardContent() {
-
 
       setTimeout(() => {
         // Your code after the delay
