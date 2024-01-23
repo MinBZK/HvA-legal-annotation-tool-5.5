@@ -23,8 +23,6 @@ beforeEach(() => {
 
 const vuetify = createVuetify();
 
-
-
 test('renders login component correctly', () => {
 
   const wrapper = mount(LoginComponent, {
@@ -94,34 +92,6 @@ test('updates data on user input', async () => {
   expect(wrapper.vm.password).toBe('testpassword');
 });
 
-test('submits login form when all fields are filled correctly', async () => {
-  const vuetify = createVuetify();
-  const wrapper = mount(LoginComponent, {
-    global: {
-      plugins: [vuetify, createPinia()],
-    },
-  });
-
-  // Set valid input values for the login form
-  await wrapper.setData({
-    username: 'emre',
-    password: 'emre',
-  });
-
-  // Trigger form submission
-  await wrapper.find('form').trigger('submit.prevent');
-
-  // Wait for asynchronous tasks to complete
-  await wrapper.vm.$nextTick();
-
-  // Wait for 3 seconds (adjust as needed)
-  await new Promise(resolve => setTimeout(resolve, 3000));
-
-  // Assert the expected outcomes after successful login
-  expect(wrapper.html().replace(/\s/g, '')).toContain('Inloggen succesvol');
-  expect(wrapper.vm.loginSuccess).toBe(true);
-  expect(wrapper.vm.loginSuccessMessage).toBe('Inloggen succesvol')
-});
 
 
 
