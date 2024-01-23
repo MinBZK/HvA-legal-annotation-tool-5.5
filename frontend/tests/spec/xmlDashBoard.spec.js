@@ -9,7 +9,7 @@ import {createVuetify} from "vuetify/dist/vuetify";
 
 import {createPinia, setActivePinia} from 'pinia';
 
-// XML content as a string (your provided XML content)
+// XML content as a string
 const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="bwbr0015703/2022-04-01/1/wet/hoofdstuk1/paragraaf1.2/artikel8">
   <kop label="Artikel" nr="8" titel="Verordeningen uitkeringen">Artikel 8 Verordeningen uitkeringen</kop>
   <lid>
