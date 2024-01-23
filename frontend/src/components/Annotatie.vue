@@ -104,8 +104,8 @@ export default {
       definition: "",
       definitionCopy: "",
       labelCopy: "",
-      olderDefinitions: "",
-      olderLabels: "",
+      olderDefinitions: [],
+      olderLabels: [],
       selectedColour: "",
       label: "",
       matchedWordsWithIndexes: [],
@@ -153,7 +153,7 @@ export default {
     },
 
     saveDialog() {
-      if (this.definition !== "" || this.definition !== this.definition) {
+      if (this.definition && this.definition !== this.definitionCopy) {
         this.saveDefinition();
       }
 
@@ -167,7 +167,7 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty(store().definitions) === false) {
+      if (this.isValueUndefinedOrEmpty(store().definitions) === false) {
         return;
       }
 
@@ -175,50 +175,57 @@ export default {
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
-      if (this.checkIfValueIsUndefinedOrEmpty(matchingDefinition) === false) {
+      if (this.isValueUndefinedOrEmpty(matchingDefinition) === false) {
         return;
       }
 
-      this.findStartEndMatch(matchingDefinition);
+      this.compareLabelPositionWithMatchedWords(matchingDefinition);
 
       if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
       }
     },
 
-    checkIfValueIsUndefinedOrEmpty(variable) {
+    isValueUndefinedOrEmpty(variable) {
       return !(variable === undefined || variable.length === 0);
     },
 
-    checkMatchingLabels(words) {
+    checkMatchingLabels(selectedWords) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty(store().labels) === false) {
+      // Check if any labels are defined in the store
+      if (this.isValueUndefinedOrEmpty(store().labels)) {
         return;
       }
 
-      let matchingLabel = store().labels.filter(label => label.woord === words);
+      // Find labels in the store that match the selected words
+      let matchingLabels = store().labels.filter(label => label.woord === selectedWords);
 
-      if (this.checkIfValueIsUndefinedOrEmpty(matchingLabel) === false) {
+      // Check if any matching labels are found
+      if (this.isValueUndefinedOrEmpty(matchingLabels)) {
         return;
       }
 
-      this.olderLabels = matchingLabel;
+      // Assign older labels for reference and select the most recent label
+      this.olderLabelsList = matchingLabels;
+      let latestMatchingLabel = matchingLabels[matchingLabels.length - 1];
 
-      matchingLabel = matchingLabel[matchingLabel.length - 1];
+      // Check if the positions of the latest label align with the matched words
+      this.compareLabelPositionWithMatchedWords(latestMatchingLabel);
 
-      this.findStartEndMatch(matchingLabel);
-
-      if (this.startMatch && this.endMatch) {
-        this.label = matchingLabel.label;
-        this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
+      // If positions match, set the label and its corresponding color
+      if (this.isStartPositionMatch && this.isEndPositionMatch) {
+        this.currentLabel = latestMatchingLabel.label;
+        this.selectedLabelColor = this.colourOptions.find(option => option.label === this.currentLabel).color;
       }
     },
 
-    findStartEndMatch(match) {
-      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
-      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+    compareLabelPositionWithMatchedWords(label) {
+      // Compare the start and end positions of the label with the positions in matchedWordsWithIndexes
+      this.isStartPositionMatch = label.positie_start === this.matchedWordsWithIndexes[0].number;
+      this.isEndPositionMatch = label.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
     },
+
 
     getFormattedDate() {
       let date = new Date();
