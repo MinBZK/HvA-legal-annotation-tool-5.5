@@ -35,26 +35,22 @@ const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instanc
     <al>De regels, bedoeld in het eerste lid, hebben voor zover het gaat om het eerste lid, onderdeel b, in ieder geval betrekking op de hoogte van de individuele inkomenstoeslag en de wijze waarop invulling wordt gegeven aan de begrippen langdurig en laag inkomen.</al>
   </lid>
 </artikel>`;
-console.log("HIER")
 
 // Create a Blob from the XML content
 const blob = new Blob([xmlContent], { type: 'text/xml' });
 
 // Convert the Blob to a File
-const xmlFile = new File([blob], 'PW - artikel8 1.xml', { type: 'text/xml' });
+const xmlBlobFile = new File([blob], 'PW - artikel8 1.xml', { type: 'text/xml' });
 
 // Check the file content
 const reader = new FileReader();
 reader.onload = function(e) {
   console.log('File content:', e.target.result); // This should log your XML content
 };
-reader.readAsText(xmlFile);
-
-// Create a mock File object
-const xmlFile = new File([xmlContent], 'PW - artikel8 1.xml', { type: 'text/xml' });
+reader.readAsText(xmlBlobFile);
 
 // Create a mock file input event
-const mockFileInputEvent = { target: { files: [xmlFile] } };
+const mockFileInputEvent = { target: { files: [xmlBlobFile] } };
 
 const vuetify = createVuetify({
   components,
@@ -80,8 +76,7 @@ describe('XmlDashboard', () => {
     // Check if the specific text is present in the rendered output
     const textPresent = wrapper.text().includes('De gemeenteraad stelt bij verordening regels met betrekking tot:');
     console.log("HIER")
-    console.log(xmlFile)
-    console.log("")
+
     console.log(wrapper.text());
     expect(textPresent).toBe(true);
   });
