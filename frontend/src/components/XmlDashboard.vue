@@ -267,14 +267,22 @@ export default {
 
     insertLabelColours(labels) {
       labels.forEach(label => {
-        let startPosition = label.positie_start;
-        let textLength = (label.positie_end - label.positie_start) + 1;
-        let matchingLabel = this.colourOptions.find(option => option.label === label.label);
+        this.applyColourToLabel(label);
+      });
+    },
 
-        for (let i = 0; i < textLength; i++) {
-          this.wordColours[startPosition + i] = matchingLabel.colour;
-        }
-      })
+    applyColourToLabel(label) {
+      const startPosition = label.positie_start;
+      const textLength = label.positie_end - startPosition + 1;
+      const matchingLabel = this.findMatchingColour(label.label);
+
+      for (let i = 0; i < textLength; i++) {
+        this.wordColours[startPosition + i] = matchingLabel.colour;
+      }
+    },
+
+    findMatchingColour(label) {
+      return this.colourOptions.find(option => option.label === label);
     },
 
     clearAllWordColours() {
