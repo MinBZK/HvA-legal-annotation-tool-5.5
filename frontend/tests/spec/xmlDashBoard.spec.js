@@ -58,6 +58,7 @@ global.ResizeObserver = require('resize-observer-polyfill')
 
 // Load in XML-File and check if text is generated
 describe('XmlDashboard', () => {
+
   it('loads XML file', async () => {
     const wrapper = mount(XmlDashboard, {
       global: {
@@ -90,6 +91,53 @@ describe('XmlDashboard', () => {
     const textNotPresent = wrapper.text().includes('Geen XML bestand geladen');
     expect(textNotPresent).toBe(false);
   });
+
+  it('shows definition tooltip on hover', async () => {
+    // Setup your component with necessary data and state
+    const wrapper = mount(XmlDashboard, {
+      props: {
+        definitions: [
+          {
+            id: 2902,
+            woord: "artikel",
+            definitie: "test",
+            positie_start: 31,
+            positie_end: 31,
+            date: "2024-01-22T12:36:32.406",
+            username: "emre"
+          },
+        ]
+      },
+      global: {
+        plugins: [vuetify, createPinia()],
+      },
+    });
+
+    // Read the XML file content
+    const fileContent = await readFileContent(xmlBlobFile);
+
+    // invoke method that handles xmlFileContent
+    await wrapper.vm.processXMLContent(fileContent);
+
+    // Wait for the component to update
+    await wrapper.vm.$nextTick();
+
+    // Find the text element that should show the tooltip on hover
+    const textElement = wrapper.find(/* selector for the text element */);
+
+    // Simulate a hover event
+    await textElement.trigger('mouseover');
+
+    // Check if the tooltip is visible and contains the correct definition
+    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(true);
+    expect(wrapper.find(/* selector for the tooltip */).text()).toContain("test");
+
+    // Optionally, you can also check if the tooltip disappears on mouseleave
+    await textElement.trigger('mouseleave');
+    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(false);
+  });
+
+
 });
 
 // Test if page is properly loaded

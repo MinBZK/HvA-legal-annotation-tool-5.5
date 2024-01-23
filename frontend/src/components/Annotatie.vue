@@ -232,31 +232,45 @@ export default {
       return date.toISOString();
     },
 
-    /**
-     * Saves a definition and emits an event with the annotation information.
-     */
     saveDefinition() {
-      let selectedText = this.removeDotsAndSymbols(this.selectedText);
-
-      if (this.definition === "") {
+      // Processed selectedText should be a computed property or handled in a watcher
+      if (!this.selectedText || this.definition === "") {
         return;
       }
 
-      if (selectedText) {
-        let {positie_start, positie_end} = this.calculatePositionIndexes();
+      let { positionStart, positionEnd } = this.calculatePositionIndexes();
 
-        let definition = {
-          definitie: this.definition,
-          positie_start,
-          positie_end,
-          woord: selectedText,
-          date: this.getFormattedDate(),
-        };
+      let definition = {
+        definitie: this.definition,
+        positie_start: positionStart,
+        positie_end: positionEnd,
+        woord: this.selectedText,
+        date: this.getFormattedDate(),
+      };
 
-        let xmlBronId = store().loadedXMLIdentifier;
-        let username = JSON.parse(localStorage.getItem('username'));
+      // Ensure XML identifier is present
+      let xmlBronId = store().loadedXMLIdentifier;
+      if (!xmlBronId) {
+        console.error('XML identifier is missing');
+        return;
+      }
 
+      // Fetch username from a Vuex store or a computed property instead of directly from localStorage
+      let username = this.getUsernameFromStore(); // This method should handle the JSON parsing and error checking
+
+      try {
         this.saveAndFetchDefinitions(definition, xmlBronId, username);
+      } catch (error) {
+        console.error('Error saving definition:', error);
+      }
+    },
+
+    getUsernameFromStore() {
+      try {
+        return JSON.parse(localStorage.getItem('username'));
+      } catch (error) {
+        console.error('Error parsing username from localStorage:', error);
+        return null;
       }
     },
 
@@ -302,8 +316,6 @@ export default {
         range.deleteContents();
         range.insertNode(span);
 
-        console.log(this.matchedWordsWithIndexes[0].number)
-
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
@@ -337,28 +349,47 @@ export default {
     },
 
     findNumbersForTextStartingFrom(wordsArray, targetText, hoveredWord) {
+      // Split the target text into a Set of unique words for efficient lookup
       let targetWords = new Set(targetText.split(/\s+/));
+
+      // Initialize an array to store the result data
       let resultData = [];
+
+      // Get the starting number from the hovered word
       let startNumber = hoveredWord.number;
+
+      // Calculate the size of the target words set
       let targetWordsSize = targetWords.size;
 
+      // Find the index in the array where the hovered word is located
       let startIndex = wordsArray.findIndex(word => word.number === startNumber);
+
+      // Handle case where the hovered word is not found
       if (startIndex === -1) {
         console.error(`Word with number ${startNumber} not found in the array.`);
         return resultData;
       }
 
+      // Loop through the words array, checking words around the hovered word
       for (let i = 0; i < targetWordsSize; i++) {
+        // Check and add the word before the hovered word, if it matches
         this.addWordIfMatches(wordsArray, startIndex - i, targetWords, resultData);
+
+        // Check and add the word after the hovered word, if it matches
         this.addWordIfMatches(wordsArray, startIndex + i, targetWords, resultData);
       }
 
+      // Return the array of words that match the target text
       return resultData;
     },
 
     addWordIfMatches(wordsArray, index, targetWords, resultData) {
+      // Check if the index is within the bounds of the words array
       if (index >= 0 && index < wordsArray.length) {
+        // Remove any dots and symbols from the word for accurate comparison
         let word = this.removeDotsAndSymbols(wordsArray[index].name);
+
+        // If the word is part of the target words, add it to the result data
         if (targetWords.has(word)) {
           resultData.push(wordsArray[index]);
         }
