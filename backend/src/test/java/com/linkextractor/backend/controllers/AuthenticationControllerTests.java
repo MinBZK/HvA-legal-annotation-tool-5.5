@@ -1,4 +1,4 @@
-package com.linkextractor.backend;
+package com.linkextractor.backend.controllers;
 
 import com.linkextractor.backend.dto.LoginRequestDTO;
 import com.linkextractor.backend.dto.LoginResponseDTO;
@@ -30,7 +30,9 @@ public class AuthenticationControllerTests {
     @MockBean
     private AuthenticationService authenticationService;
 
-    // Test for successful user registration
+    /**
+     * Test for successful user registration.
+     */
     @Test
     public void testRegisterUserEndpoint_Success() throws Exception {
         // Arrange
@@ -44,7 +46,9 @@ public class AuthenticationControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    // Test for existing username during user registration
+    /**
+     * Test for existing username during user registration.
+     */
     @Test
     public void testRegisterUserEndpoint_ExistingUsername() throws Exception {
         // Arrange
@@ -58,7 +62,9 @@ public class AuthenticationControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // Test for existing email during user registration
+    /**
+     * Test for existing email during user registration.
+     */
     @Test
     public void testRegisterUserEndpoint_ExistingEmail() throws Exception {
         // Arrange
@@ -72,7 +78,9 @@ public class AuthenticationControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // Test for invalid user registration data
+    /**
+     * Test for invalid user registration data.
+     */
     @Test
     public void testRegisterUserEndpoint_InvalidData() throws Exception {
         // Arrange
@@ -86,22 +94,28 @@ public class AuthenticationControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // Test for successful user login
-//    @Test
-//    public void testLoginUserEndpoint_Success() throws Exception {
-//        // Arrange
-//        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("johndoe", "password");
-//        when(authenticationService.loginUser(any(LoginRequestDTO.class))).thenReturn(new LoginResponseDTO("generatedAccesToken", "generatedRefreshToken"));
-//
-//        // Act & Assert
-//        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(loginRequestDTO)))
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.accesToken").exists());
-//    }
+    /**
+     * Test for successful user login.
+     */
+    @Test
+    public void testLoginUserEndpoint_Success() throws Exception {
+        // Arrange
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("johndoe", "password");
+        when(authenticationService.loginUser(any(LoginRequestDTO.class))).thenReturn(new LoginResponseDTO("username","generatedAccesToken", "generatedRefreshToken"));
 
-    // Test for invalid user credentials during login
+        // Act & Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(loginRequestDTO)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accesToken").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.refreshToken").exists());
+    }
+
+    /**
+     * Test for invalid user credentials during login
+     */
     @Test
     public void testLoginUserEndpoint_InvalidCredentials() throws Exception {
         // Arrange
@@ -115,7 +129,9 @@ public class AuthenticationControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
-    // Helper method to convert object to JSON string
+    /**
+     * Helper method to convert object to JSON string
+     */
     private String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);

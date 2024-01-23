@@ -1,20 +1,24 @@
-package com.linkextractor.backend;
+package com.linkextractor.backend.models;
 
-import com.linkextractor.backend.models.Role;
-import com.linkextractor.backend.models.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest
 public class UserTest {
 
+    /**
+     * Tests the creation of a user with a single role and ensures that attributes are set correctly.
+     */
     @Test
-    public void testUserCreationWithSingleRole() {
+    public void createUserWithSingleRole_ShouldSetAttributesCorrectly() {
         // Arrange
-        Role role = new Role("Admin");
+        Role adminRole = new Role("Admin");
         Set<Role> roles = new HashSet<>();
-        roles.add(role);
+        roles.add(adminRole);
 
         // Act
         User user = new User(1, "admin", "admin", "admin@hva.nl", "John", "Doe", roles);
@@ -29,9 +33,11 @@ public class UserTest {
         assertEquals(roles, user.getAuthorities());
     }
 
-
+    /**
+     * Tests the creation of a user with no roles and ensures that the authorities are empty.
+     */
     @Test
-    public void testUserWithNoRole() {
+    public void createUserWithNoRole_ShouldHaveEmptyAuthorities() {
         // Arrange
         Set<Role> roles = new HashSet<>();
 
@@ -43,8 +49,11 @@ public class UserTest {
         assertEquals(roles, user.getAuthorities());
     }
 
+    /**
+     * Tests the creation of a user with a single role and ensures that authorities are set correctly.
+     */
     @Test
-    public void testUserWithSingleRole() {
+    public void createUserWithSingleRole_ShouldSetAuthoritiesCorrectly() {
         // Arrange
         Role userRole = new Role("USER");
         Set<Role> roles = new HashSet<>();
@@ -58,8 +67,11 @@ public class UserTest {
         assertEquals(roles, user.getAuthorities());
     }
 
+    /**
+     * Tests the creation of a user with multiple roles and ensures that authorities are set correctly.
+     */
     @Test
-    public void testUserWithMultipleRoles() {
+    public void createUserWithMultipleRoles_ShouldSetAuthoritiesCorrectly() {
         // Arrange
         Role userRole = new Role("USER");
         Role adminRole = new Role("ADMIN");
