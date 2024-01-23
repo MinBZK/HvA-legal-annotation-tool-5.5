@@ -64,8 +64,21 @@ describe('XmlDashboard', () => {
         plugins: [vuetify, createPinia()],
       },
     });
+    // Reads xmlFile in
+    function readFileContent(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsText(file);
+      });
+    }
 
-    await wrapper.vm.processXMLContent(xmlContent);
+    // Read the XML file content
+    const fileContent = await readFileContent(xmlBlobFile);
+
+    // invoke method that handles xmlFileContent
+    await wrapper.vm.processXMLContent(fileContent);
 
     // Wait for any asynchronous updates
     await wrapper.vm.$nextTick();
