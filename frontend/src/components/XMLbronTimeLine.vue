@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
         <v-timeline v-if="!this.hidden" direction="horizontal" align-top>
-            <v-timeline-item v-for="(timeLineItem, index) in TimelineData" :key="index" reverse>
+            <v-timeline-item v-for="(timeLineItem, index) in timelineData" :key="index" reverse>
                 <v-card class="timeline-card d-flex flex-column">
                     <v-card-title class="flex-grow-1 timelinecard-title">
                         <v-icon>
@@ -104,12 +104,6 @@
 }
 
 
-/* .article-modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-} */
 </style>
 <script>
 import axios from "axios";
@@ -129,6 +123,7 @@ export default {
             hidden: true
         };
     },
+    // Initialize props that need to be initialized when using this component in other components
     props: {
         timelineData: {
             type: Array,
@@ -143,8 +138,9 @@ export default {
             required: true,
         }
     },
+
     computed: {
-        TimelineData() {
+        timelineData() {
             this.timelineData.map(item => {
                 item.date = new Date(item.date);
                 return item;
