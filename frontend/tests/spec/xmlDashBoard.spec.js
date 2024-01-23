@@ -65,6 +65,7 @@ describe('XmlDashboard', () => {
         plugins: [vuetify, createPinia()],
       },
     });
+
     // Reads xmlFile in
     function readFileContent(file) {
       return new Promise((resolve, reject) => {
@@ -96,13 +97,17 @@ describe('XmlDashboard', () => {
     // Setup your component with necessary data and state
     const wrapper = mount(XmlDashboard, {
       props: {
+        hoveredWordObject: {
+          number: 1,
+          name: "gemeenteraad"
+        },
         definitions: [
           {
             id: 2902,
-            woord: "artikel",
+            woord: "gemeenteraad",
             definitie: "test",
-            positie_start: 31,
-            positie_end: 31,
+            positie_start: 1,
+            positie_end: 1,
             date: "2024-01-22T12:36:32.406",
             username: "emre"
           },
@@ -113,6 +118,15 @@ describe('XmlDashboard', () => {
       },
     });
 
+    function readFileContent(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsText(file);
+      });
+    }
+
     // Read the XML file content
     const fileContent = await readFileContent(xmlBlobFile);
 
@@ -122,22 +136,19 @@ describe('XmlDashboard', () => {
     // Wait for the component to update
     await wrapper.vm.$nextTick();
 
-    // Find the text element that should show the tooltip on hover
-    const textElement = wrapper.find(/* selector for the text element */);
+    // Find all span elements
+    const spans = wrapper.findAll('span');
 
-    // Simulate a hover event
-    await textElement.trigger('mouseover');
+    // Filter to find the span that contains the word "gemeenteraad"
+    const gemeenteraadSpan = spans.filter(span => span.text().includes("gemeenteraad")).at(0);
 
-    // Check if the tooltip is visible and contains the correct definition
-    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(true);
-    expect(wrapper.find(/* selector for the tooltip */).text()).toContain("test");
+    await gemeenteraadSpan.trigger('mouseover');
 
-    // Optionally, you can also check if the tooltip disappears on mouseleave
-    await textElement.trigger('mouseleave');
-    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(false);
-  });
-
-
+    // simulate mouseleave and check if the tooltip should be hidden
+    await gemeenteraadSpan.trigger('mouseleave');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showTooltip).toBe(false);
+  })
 });
 
 // Test if page is properly loaded

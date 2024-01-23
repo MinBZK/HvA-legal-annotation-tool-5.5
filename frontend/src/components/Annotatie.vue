@@ -173,6 +173,7 @@ export default {
 
       let matchingDefinition = store().definitions.filter(definition => definition.woord === words);
       this.olderDefinitions = matchingDefinition;
+
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
       if (this.isValueUndefinedOrEmpty(matchingDefinition) === false) {
@@ -238,7 +239,7 @@ export default {
         return;
       }
 
-      let { positionStart, positionEnd } = this.calculatePositionIndexes();
+      let {positionStart, positionEnd} = this.calculatePositionIndexes();
 
       let definition = {
         definitie: this.definition,
