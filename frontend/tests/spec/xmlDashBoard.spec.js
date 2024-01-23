@@ -1,5 +1,5 @@
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import * as components from 'vuetify/lib/components/index.mjs'
+import * as directives from 'vuetify/lib/directives/index.mjs'
 
 // XmlDashboard.test.js
 import {expect} from 'vitest';
@@ -7,7 +7,7 @@ import {mount} from '@vue/test-utils';
 import XmlDashboard from '@/components/XmlDashboard.vue';
 import {createVuetify} from "vuetify/dist/vuetify";
 
-import {createPinia, setActivePinia} from 'pinia';
+import {createPinia} from 'pinia';
 
 // XML content as a string
 const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="bwbr0015703/2022-04-01/1/wet/hoofdstuk1/paragraaf1.2/artikel8">
@@ -37,20 +37,17 @@ const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instanc
 </artikel>`;
 
 // Create a Blob from the XML content
-const blob = new Blob([xmlContent], { type: 'text/xml' });
+const blob = new Blob([xmlContent], {type: 'text/xml'});
 
 // Convert the Blob to a File
-const xmlBlobFile = new File([blob], 'PW - artikel8 1.xml', { type: 'text/xml' });
+const xmlBlobFile = new File([blob], 'PW - artikel8 1.xml', {type: 'text/xml'});
 
 // Check the file content
 const reader = new FileReader();
-reader.onload = function(e) {
-  console.log('File content:', e.target.result); // This should log your XML content
+reader.onload = function (e) {
+  //console.log('File content:', e.target.result); // This should log your XML content
 };
 reader.readAsText(xmlBlobFile);
-
-// Create a mock file input event
-const mockFileInputEvent = { target: { files: [xmlBlobFile] } };
 
 const vuetify = createVuetify({
   components,
@@ -68,17 +65,17 @@ describe('XmlDashboard', () => {
       },
     });
 
-    await wrapper.vm.loadXML( mockFileInputEvent );
+    await wrapper.vm.processXMLContent(xmlContent);
 
     // Wait for any asynchronous updates
     await wrapper.vm.$nextTick();
 
     // Check if the specific text is present in the rendered output
     const textPresent = wrapper.text().includes('De gemeenteraad stelt bij verordening regels met betrekking tot:');
-    console.log("HIER")
-
-    console.log(wrapper.text());
     expect(textPresent).toBe(true);
+
+    const textNotPresent = wrapper.text().includes('Geen XML bestand geladen');
+    expect(textNotPresent).toBe(false);
   });
 });
 
