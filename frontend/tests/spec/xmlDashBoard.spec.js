@@ -6,6 +6,7 @@ import {expect} from 'vitest';
 import {mount} from '@vue/test-utils';
 import XmlDashboard from '@/components/XmlDashboard.vue';
 import {createVuetify} from "vuetify/dist/vuetify";
+import {createTestingPinia} from '@pinia/testing';
 
 import {createPinia} from 'pinia';
 
@@ -148,7 +149,7 @@ describe('XmlDashboard', () => {
     await gemeenteraadSpan.trigger('mouseleave');
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.showTooltip).toBe(false);
-  })
+  });
 });
 
 // Test if page is properly loaded
