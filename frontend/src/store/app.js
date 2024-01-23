@@ -23,20 +23,6 @@ export const store = defineStore('app', {
   }),
 
   actions: {
-    addEigenaarToDefinitions(username) {
-      this.definitions = this.definitions.map(item => {
-        // Add the 'eigenaar' property to each object
-        return {...item, eigenaar: username};
-      })
-    },
-
-    addEigenaarToLabels(username) {
-      this.labels = this.labels.map(item => {
-        // Add the 'eigenaar' property to each object
-        return {...item, eigenaar: username};
-      })
-    },
-
     async logout() {
       await this.RemoveTokens();
 
@@ -129,23 +115,19 @@ export const store = defineStore('app', {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions = response.data;
-      this.addEigenaarToDefinitions(username);
     },
 
     async getDefinitionsForUser(xmlBronName, username, xmlbronDate) {
       let url = "define/getDefinitions";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
       this.definitions.push(response.data);
-      this.addEigenaarToDefinitions(username);
     },
 
     async getLabels(xmlBronName, username, xmlbronDate) {
       let url = "label/getLabels";
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
-      console.log(response.data)
       this.labels = response.data;
-      this.addEigenaarToLabels(username);
       return this.labels
     },
 
@@ -154,14 +136,13 @@ export const store = defineStore('app', {
       let response = await this.genericGetRequests(`${url}/${xmlBronName}/${username}/${xmlbronDate}`);
 
       this.labels.push(response.data);
-      this.addEigenaarToLabels(username);
       return this.labels
     },
 
     async postDefinition(body, xmlBronName, username, xmlbronDate) {
       let url = "define/addDefinition";
-      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body);
-      await this.getDefinitions(xmlBronName, username, xmlbronDate);
+      this.responseCode = await this.genericPostRequest(`${url}/${xmlBronName}/${username}/${xmlbronDate}`, body)
+        .then((e) => this.getDefinitions(xmlBronName, username, xmlbronDate));
     },
 
     async postLabel(body, xmlBronName, username, xmlbronDate) {

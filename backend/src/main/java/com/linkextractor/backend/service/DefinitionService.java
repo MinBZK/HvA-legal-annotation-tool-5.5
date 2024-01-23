@@ -49,6 +49,7 @@ public class DefinitionService {
         // Step 4: Extract definitions from the linkingTables and return them
         return linkingTables.stream()
                 .map(UserDefinitionXMLTable::getDefinitie)
+                .peek(definitie -> definitie.setUsername(username))
                 .collect(Collectors.toList());
     }
 

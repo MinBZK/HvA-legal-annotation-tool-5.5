@@ -3,7 +3,6 @@ package com.linkextractor.backend.models;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -11,7 +10,7 @@ import java.util.Set;
 public class Label {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "label_id")
     private int id;
 
@@ -36,6 +35,17 @@ public class Label {
 
     @OneToMany(mappedBy = "label")
     private Set<UserLabelXMLTable> linkingTables;
+
+    @Transient
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public void setDatum(LocalDateTime datum) {
         this.date = datum;

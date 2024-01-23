@@ -104,8 +104,8 @@ export default {
       definition: "",
       definitionCopy: "",
       labelCopy: "",
-      olderDefinitions: "",
-      olderLabels: "",
+      olderDefinitions: [],
+      olderLabels: [],
       selectedColour: "",
       label: "",
       matchedWordsWithIndexes: [],
@@ -133,11 +133,11 @@ export default {
   },
   methods: {
     getDefinitionTextFields(item) {
-      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.eigenaar}`
+      return `${item.definitie} - ${this.formatDate(item.date)} - ${item.username}`
     },
 
     getLabelTextFields(item) {
-      return `${item.label} - ${this.formatDate(item.datum)} - ${item.eigenaar}`
+      return `${item.label} - ${this.formatDate(item.datum)} - ${item.username}`
     },
 
     formatDate(dateString) {
@@ -153,7 +153,7 @@ export default {
     },
 
     saveDialog() {
-      if (this.definition !== "" || this.definition !== this.definition) {
+      if (this.definition && this.definition !== this.definitionCopy) {
         this.saveDefinition();
       }
 
@@ -167,7 +167,7 @@ export default {
     checkMatchingDefinitions(words) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty(store().definitions) === false) {
+      if (this.isValueUndefinedOrEmpty(store().definitions) === false) {
         return;
       }
 
@@ -175,81 +175,102 @@ export default {
       this.olderDefinitions = matchingDefinition;
       matchingDefinition = matchingDefinition[matchingDefinition.length - 1];
 
-      if (this.checkIfValueIsUndefinedOrEmpty(matchingDefinition) === false) {
+      if (this.isValueUndefinedOrEmpty(matchingDefinition) === false) {
         return;
       }
 
-      this.findStartEndMatch(matchingDefinition);
+      this.compareLabelPositionWithMatchedWords(matchingDefinition);
 
       if (this.startMatch && this.endMatch) {
         this.definition = matchingDefinition.definitie;
       }
     },
 
-    checkIfValueIsUndefinedOrEmpty(variable) {
+    isValueUndefinedOrEmpty(variable) {
       return !(variable === undefined || variable.length === 0);
     },
 
-    checkMatchingLabels(words) {
+    checkMatchingLabels(selectedWords) {
       this.handleSelectedWord();
 
-      if (this.checkIfValueIsUndefinedOrEmpty(store().labels) === false) {
+      // Check if any labels are defined in the store
+      if (this.isValueUndefinedOrEmpty(store().labels)) {
         return;
       }
 
-      let matchingLabel = store().labels.filter(label => label.woord === words);
+      // Find labels in the store that match the selected words
+      let matchingLabels = store().labels.filter(label => label.woord === selectedWords);
 
-      if (this.checkIfValueIsUndefinedOrEmpty(matchingLabel) === false) {
+      // Check if any matching labels are found
+      if (this.isValueUndefinedOrEmpty(matchingLabels)) {
         return;
       }
 
-      this.olderLabels = matchingLabel;
+      // Assign older labels for reference and select the most recent label
+      this.olderLabelsList = matchingLabels;
+      let latestMatchingLabel = matchingLabels[matchingLabels.length - 1];
 
-      matchingLabel = matchingLabel[matchingLabel.length - 1];
+      // Check if the positions of the latest label align with the matched words
+      this.compareLabelPositionWithMatchedWords(latestMatchingLabel);
 
-      this.findStartEndMatch(matchingLabel);
-
-      if (this.startMatch && this.endMatch) {
-        this.label = matchingLabel.label;
-        this.selectedColour = this.colourOptions.find(option => option.label === this.label).color;
+      // If positions match, set the label and its corresponding color
+      if (this.isStartPositionMatch && this.isEndPositionMatch) {
+        this.currentLabel = latestMatchingLabel.label;
+        this.selectedLabelColor = this.colourOptions.find(option => option.label === this.currentLabel).color;
       }
     },
 
-    findStartEndMatch(match) {
-      this.startMatch = match.positie_start === this.matchedWordsWithIndexes[0].number;
-      this.endMatch = match.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
+    compareLabelPositionWithMatchedWords(label) {
+      // Compare the start and end positions of the label with the positions in matchedWordsWithIndexes
+      this.isStartPositionMatch = label.positie_start === this.matchedWordsWithIndexes[0].number;
+      this.isEndPositionMatch = label.positie_end === this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
     },
+
 
     getFormattedDate() {
       let date = new Date();
       return date.toISOString();
     },
 
-    /**
-     * Saves a definition and emits an event with the annotation information.
-     */
     saveDefinition() {
-      let selectedText = this.removeDotsAndSymbols(this.selectedText);
-
-      if (this.definition === "") {
+      // Processed selectedText should be a computed property or handled in a watcher
+      if (!this.selectedText || this.definition === "") {
         return;
       }
 
-      if (selectedText) {
-        let {positie_start, positie_end} = this.calculatePositionIndexes();
+      let { positionStart, positionEnd } = this.calculatePositionIndexes();
 
-        let definition = {
-          definitie: this.definition,
-          positie_start,
-          positie_end,
-          woord: selectedText,
-          date: this.getFormattedDate(),
-        };
+      let definition = {
+        definitie: this.definition,
+        positie_start: positionStart,
+        positie_end: positionEnd,
+        woord: this.selectedText,
+        date: this.getFormattedDate(),
+      };
 
-        let xmlBronId = store().loadedXMLIdentifier;
-        let username = JSON.parse(localStorage.getItem('username'));
+      // Ensure XML identifier is present
+      let xmlBronId = store().loadedXMLIdentifier;
+      if (!xmlBronId) {
+        console.error('XML identifier is missing');
+        return;
+      }
 
+      // Fetch username from a Vuex store or a computed property instead of directly from localStorage
+      let username = this.getUsernameFromStore(); // This method should handle the JSON parsing and error checking
+
+      try {
         this.saveAndFetchDefinitions(definition, xmlBronId, username);
+      } catch (error) {
+        console.error('Error saving definition:', error);
+      }
+    },
+
+    getUsernameFromStore() {
+      try {
+        return JSON.parse(localStorage.getItem('username'));
+      } catch (error) {
+        console.error('Error parsing username from localStorage:', error);
+        return null;
       }
     },
 
@@ -295,8 +316,6 @@ export default {
         range.deleteContents();
         range.insertNode(span);
 
-        console.log(this.matchedWordsWithIndexes[0].number)
-
         let positie_start = this.matchedWordsWithIndexes[0].number;
         let positie_end = this.matchedWordsWithIndexes[this.matchedWordsWithIndexes.length - 1].number;
 
@@ -329,18 +348,9 @@ export default {
       return cleanedWord.trim();
     },
 
-    /**
-     * Finds a specified number of words related to a target text starting from a given hovered word.
-     *
-     * @param {Object} wordsArray - An array of objects representing words, each containing a 'number' and 'word'.
-     * @param {string} targetText - The text used to identify target words.
-     * @param {Object} hoveredWord - The word object from which the search should start, containing at least 'number' and 'word'.
-     * @returns {Array} - An array of words related to the target text, including and around the hovered word.
-     *                    The length of the array will be the size of the target words.
-     */
     findNumbersForTextStartingFrom(wordsArray, targetText, hoveredWord) {
-      // Split the target text into an array of target words
-      let targetWords = targetText.split(/\s+/);
+      // Split the target text into a Set of unique words for efficient lookup
+      let targetWords = new Set(targetText.split(/\s+/));
 
       // Initialize an array to store the result data
       let resultData = [];
@@ -348,52 +358,42 @@ export default {
       // Get the starting number from the hovered word
       let startNumber = hoveredWord.number;
 
-      // Calculate the target words size
-      let targetWordsSize = targetWords.length;
+      // Calculate the size of the target words set
+      let targetWordsSize = targetWords.size;
 
-      // Find the index in the array to start the search
-      let startIndex = wordsArray.findIndex((word) => word.number === startNumber);
-      // Check if the starting number is not found in the array
+      // Find the index in the array where the hovered word is located
+      let startIndex = wordsArray.findIndex(word => word.number === startNumber);
+
+      // Handle case where the hovered word is not found
       if (startIndex === -1) {
-        console.log(`Word with number ${startNumber} not found in the array.`);
+        console.error(`Word with number ${startNumber} not found in the array.`);
         return resultData;
       }
 
-      // Iterate up the array
-      for (let i = startIndex; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
-        let selectedWordObject = wordsArray[i];
-        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
-        // Check if the name of the word is in the target words
-        if (targetWords.includes(selectedWord)) {
-          // Add the word to the result data at the beginning
-          resultData.unshift(selectedWordObject);
-        }
-        // Check if enough words are found, and if so, break out of the loop
-        if (resultData.length === targetWordsSize) {
-          break;
-        }
+      // Loop through the words array, checking words around the hovered word
+      for (let i = 0; i < targetWordsSize; i++) {
+        // Check and add the word before the hovered word, if it matches
+        this.addWordIfMatches(wordsArray, startIndex - i, targetWords, resultData);
+
+        // Check and add the word after the hovered word, if it matches
+        this.addWordIfMatches(wordsArray, startIndex + i, targetWords, resultData);
       }
 
-      if (targetWordsSize !== 1 && resultData.length === targetWordsSize) {
-        return resultData;
-      }
-
-      // Iterate down the array
-      for (let i = startIndex; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
-        let selectedWordObject = wordsArray[i];
-        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
-        // Check if the name of the word is in the target words
-        if (targetWords.includes(selectedWord)) {
-          // Add the word to the result data at the end
-          resultData.push(selectedWordObject);
-        }
-        // Check if enough words are found, and if so, break out of the loop
-        if (targetWordsSize !== 1 && resultData.length === targetWordsSize * 2) {
-          break;
-        }
-      }
-      // Return the result data containing the matching words
+      // Return the array of words that match the target text
       return resultData;
+    },
+
+    addWordIfMatches(wordsArray, index, targetWords, resultData) {
+      // Check if the index is within the bounds of the words array
+      if (index >= 0 && index < wordsArray.length) {
+        // Remove any dots and symbols from the word for accurate comparison
+        let word = this.removeDotsAndSymbols(wordsArray[index].name);
+
+        // If the word is part of the target words, add it to the result data
+        if (targetWords.has(word)) {
+          resultData.push(wordsArray[index]);
+        }
+      }
     },
 
     handleSelectedWord() {

@@ -30,6 +30,17 @@ public class Definitie {
     @OneToMany(mappedBy = "definitie")
     private Set<UserDefinitionXMLTable> linkingTables;
 
+    @Transient
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Definitie() {
         super();
     }

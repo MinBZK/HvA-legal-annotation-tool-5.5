@@ -1,5 +1,5 @@
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import * as components from 'vuetify/lib/components/index.mjs'
+import * as directives from 'vuetify/lib/directives/index.mjs'
 
 // XmlDashboard.test.js
 import {expect} from 'vitest';
@@ -7,9 +7,9 @@ import {mount} from '@vue/test-utils';
 import XmlDashboard from '@/components/XmlDashboard.vue';
 import {createVuetify} from "vuetify/dist/vuetify";
 
-import {createPinia, setActivePinia} from 'pinia';
+import {createPinia} from 'pinia';
 
-// XML content as a string (your provided XML content)
+// XML content as a string
 const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="bwbr0015703/2022-04-01/1/wet/hoofdstuk1/paragraaf1.2/artikel8">
   <kop label="Artikel" nr="8" titel="Verordeningen uitkeringen">Artikel 8 Verordeningen uitkeringen</kop>
   <lid>
@@ -35,14 +35,19 @@ const xmlContent = `<artikel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instanc
     <al>De regels, bedoeld in het eerste lid, hebben voor zover het gaat om het eerste lid, onderdeel b, in ieder geval betrekking op de hoogte van de individuele inkomenstoeslag en de wijze waarop invulling wordt gegeven aan de begrippen langdurig en laag inkomen.</al>
   </lid>
 </artikel>`;
-console.log('DAAR')
-console.log(xmlContent)
 
-// Create a mock File object
-const xmlFile = new File([xmlContent], 'PW - artikel8 1.xml', { type: 'text/xml' });
+// Create a Blob from the XML content
+const blob = new Blob([xmlContent], {type: 'text/xml'});
 
-// Create a mock file input event
-const mockFileInputEvent = { target: { files: [xmlFile] } };
+// Convert the Blob to a File
+const xmlBlobFile = new File([blob], 'PW - artikel8 1.xml', {type: 'text/xml'});
+
+// Check the file content
+const reader = new FileReader();
+reader.onload = function (e) {
+  //console.log('File content:', e.target.result); // This should log your XML content
+};
+reader.readAsText(xmlBlobFile);
 
 const vuetify = createVuetify({
   components,
@@ -53,26 +58,86 @@ global.ResizeObserver = require('resize-observer-polyfill')
 
 // Load in XML-File and check if text is generated
 describe('XmlDashboard', () => {
+
   it('loads XML file', async () => {
     const wrapper = mount(XmlDashboard, {
       global: {
         plugins: [vuetify, createPinia()],
       },
     });
+    // Reads xmlFile in
+    function readFileContent(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsText(file);
+      });
+    }
 
-    await wrapper.vm.loadXML( mockFileInputEvent );
+    // Read the XML file content
+    const fileContent = await readFileContent(xmlBlobFile);
+
+    // invoke method that handles xmlFileContent
+    await wrapper.vm.processXMLContent(fileContent);
 
     // Wait for any asynchronous updates
     await wrapper.vm.$nextTick();
 
     // Check if the specific text is present in the rendered output
     const textPresent = wrapper.text().includes('De gemeenteraad stelt bij verordening regels met betrekking tot:');
-    console.log("HIER")
-    console.log(xmlFile)
-    console.log("")
-    console.log(wrapper.text());
     expect(textPresent).toBe(true);
+
+    const textNotPresent = wrapper.text().includes('Geen XML bestand geladen');
+    expect(textNotPresent).toBe(false);
   });
+
+  it('shows definition tooltip on hover', async () => {
+    // Setup your component with necessary data and state
+    const wrapper = mount(XmlDashboard, {
+      props: {
+        definitions: [
+          {
+            id: 2902,
+            woord: "artikel",
+            definitie: "test",
+            positie_start: 31,
+            positie_end: 31,
+            date: "2024-01-22T12:36:32.406",
+            username: "emre"
+          },
+        ]
+      },
+      global: {
+        plugins: [vuetify, createPinia()],
+      },
+    });
+
+    // Read the XML file content
+    const fileContent = await readFileContent(xmlBlobFile);
+
+    // invoke method that handles xmlFileContent
+    await wrapper.vm.processXMLContent(fileContent);
+
+    // Wait for the component to update
+    await wrapper.vm.$nextTick();
+
+    // Find the text element that should show the tooltip on hover
+    const textElement = wrapper.find(/* selector for the text element */);
+
+    // Simulate a hover event
+    await textElement.trigger('mouseover');
+
+    // Check if the tooltip is visible and contains the correct definition
+    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(true);
+    expect(wrapper.find(/* selector for the tooltip */).text()).toContain("test");
+
+    // Optionally, you can also check if the tooltip disappears on mouseleave
+    await textElement.trigger('mouseleave');
+    expect(wrapper.find(/* selector for the tooltip */).isVisible()).toBe(false);
+  });
+
+
 });
 
 // Test if page is properly loaded
