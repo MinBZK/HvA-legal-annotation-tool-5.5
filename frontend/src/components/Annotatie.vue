@@ -336,71 +336,33 @@ export default {
       return cleanedWord.trim();
     },
 
-    /**
-     * Finds a specified number of words related to a target text starting from a given hovered word.
-     *
-     * @param {Object} wordsArray - An array of objects representing words, each containing a 'number' and 'word'.
-     * @param {string} targetText - The text used to identify target words.
-     * @param {Object} hoveredWord - The word object from which the search should start, containing at least 'number' and 'word'.
-     * @returns {Array} - An array of words related to the target text, including and around the hovered word.
-     *                    The length of the array will be the size of the target words.
-     */
     findNumbersForTextStartingFrom(wordsArray, targetText, hoveredWord) {
-      // Split the target text into an array of target words
-      let targetWords = targetText.split(/\s+/);
-
-      // Initialize an array to store the result data
+      let targetWords = new Set(targetText.split(/\s+/));
       let resultData = [];
-
-      // Get the starting number from the hovered word
       let startNumber = hoveredWord.number;
+      let targetWordsSize = targetWords.size;
 
-      // Calculate the target words size
-      let targetWordsSize = targetWords.length;
-
-      // Find the index in the array to start the search
-      let startIndex = wordsArray.findIndex((word) => word.number === startNumber);
-      // Check if the starting number is not found in the array
+      let startIndex = wordsArray.findIndex(word => word.number === startNumber);
       if (startIndex === -1) {
-        console.log(`Word with number ${startNumber} not found in the array.`);
+        console.error(`Word with number ${startNumber} not found in the array.`);
         return resultData;
       }
 
-      // Iterate up the array
-      for (let i = startIndex; i >= Math.max(0, startIndex - targetWordsSize + 1); i--) {
-        let selectedWordObject = wordsArray[i];
-        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
-        // Check if the name of the word is in the target words
-        if (targetWords.includes(selectedWord)) {
-          // Add the word to the result data at the beginning
-          resultData.unshift(selectedWordObject);
-        }
-        // Check if enough words are found, and if so, break out of the loop
-        if (resultData.length === targetWordsSize) {
-          break;
-        }
+      for (let i = 0; i < targetWordsSize; i++) {
+        this.addWordIfMatches(wordsArray, startIndex - i, targetWords, resultData);
+        this.addWordIfMatches(wordsArray, startIndex + i, targetWords, resultData);
       }
 
-      if (targetWordsSize !== 1 && resultData.length === targetWordsSize) {
-        return resultData;
-      }
-
-      // Iterate down the array
-      for (let i = startIndex; i < Math.min(wordsArray.length, startIndex + targetWordsSize); i++) {
-        let selectedWordObject = wordsArray[i];
-        let selectedWord = this.removeDotsAndSymbols(selectedWordObject.name);
-        // Check if the name of the word is in the target words
-        if (targetWords.includes(selectedWord)) {
-          // Add the word to the result data at the end
-          resultData.push(selectedWordObject);
-        }
-        // Check if enough words are found, and if so, break out of the loop
-        if (targetWordsSize !== 1 && resultData.length === targetWordsSize * 2) {
-          break;
-        }
-      }
-      // Return the result data containing the matching words
       return resultData;
+    },
+
+    addWordIfMatches(wordsArray, index, targetWords, resultData) {
+      if (index >= 0 && index < wordsArray.length) {
+        let word = this.removeDotsAndSymbols(wordsArray[index].name);
+        if (targetWords.has(word)) {
+          resultData.push(wordsArray[index]);
+        }
+      }
     },
 
     handleSelectedWord() {
