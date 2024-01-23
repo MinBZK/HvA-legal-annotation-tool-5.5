@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthenticationControllerTests {
+public class AuthenticationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
